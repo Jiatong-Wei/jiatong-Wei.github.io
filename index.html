@@ -1,3 +1,312 @@
-<p>Hello</p>
-<p>这是我的个人网站。</p>
-<p>很高兴你来到这里</p>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LEO.WEI</title>
+<meta name="description" content="Leo Wei（@JIATONG-WEI）— 西北工业大学机器人方向本科生：强化学习运动控制、3D Gaussian Splatting 重建、VLA 抓取。" />
+<meta name="theme-color" content="#0c0e13" />
+<meta property="og:title" content="LEO.WEI" />
+<meta property="og:description" content="Robotics undergrad — RL locomotion / 3DGS / VLA." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://jiatong-wei.github.io/" />
+<meta property="og:image" content="https://jiatong-wei.github.io/assets/avatar.png" />
+<meta name="twitter:card" content="summary" />
+<link rel="preload" href="assets/fonts/jbmono-wght.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M2 3h16l4 4v14l-3 1H2V3z' fill='none' stroke='%2300f0ff' stroke-width='1.4'/%3E%3Cpath d='M7 6v9h7' fill='none' stroke='%23fcee0a' stroke-width='2.4'/%3E%3Ccircle cx='17.3' cy='17' r='1.6' fill='%23ff2a6d'/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- ===== 氛围层 ===== -->
+<div class="fx-grid" aria-hidden="true"></div>
+<div class="fx-glow fx-glow--cyan" aria-hidden="true"></div>
+<div class="fx-glow fx-glow--magenta" aria-hidden="true"></div>
+<div class="fx-rain fx-rain--left" aria-hidden="true"></div>
+<div class="fx-rain fx-rain--right" aria-hidden="true"></div>
+<div class="fx-scanlines" aria-hidden="true"></div>
+<div class="fx-slices" aria-hidden="true">
+  <i class="slice slice--y" style="top:26%"></i>
+  <i class="slice slice--c" style="top:52%"></i>
+  <i class="slice slice--m" style="top:76%"></i>
+</div>
+
+<!-- ===== 开机动画：终端自检 ===== -->
+<div class="boot" id="boot" aria-hidden="true">
+  <div class="boot__term">
+    <p class="boot__ln">LEO.WEI // NIGHT_CITY_OS v2.6</p>
+    <p class="boot__ln">loading modules ......... <span class="ok">OK</span></p>
+    <p class="boot__ln">neural_link ............. <span class="ok">STABLE</span></p>
+    <p class="boot__ln">rendering ui ............ <span class="warn">DONE</span></p>
+  </div>
+</div>
+
+<!-- ===== 顶栏 ===== -->
+<header class="topbar">
+  <a class="logo">
+    <svg class="logo__mark" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+      <path d="M2 3h16l4 4v14l-3 1H2V3z" fill="none" stroke="#00f0ff" stroke-width="1.4"/>
+      <path d="M7 6v9h7" fill="none" stroke="#fcee0a" stroke-width="2.4"/>
+      <circle cx="17.3" cy="17" r="1.6" fill="#ff2a6d"/>
+    </svg>
+    <span class="glitch logo__word" data-text="LEO.WEI">LEO.WEI</span>
+  </a>
+  <nav class="tabs" id="tabs">
+    <button class="tab is-active" data-tab="projects"><b>[</b><span>01.</span>项目<b>]</b></button>
+    <button class="tab" data-tab="writing"><b>[</b><span>02.</span>写作<b>]</b></button>
+    <button class="tab" data-tab="wiki"><b>[</b><span>03.</span>WIKI<b>]</b></button>
+    <button class="tab" data-tab="about"><b>[</b><span>04.</span>关于<b>]</b></button>
+  </nav>
+  <div class="topbar__right">
+    <i class="dot"></i><span class="mono dim">ONLINE</span>
+  </div>
+</header>
+
+<!-- ===== 主区 ===== -->
+<main class="main">
+
+  <!-- 左侧信息面板 -->
+  <aside class="panel">
+    <div class="avatar">
+      <i class="avatar__offset avatar__offset--cyan"></i>
+      <i class="avatar__offset avatar__offset--magenta"></i>
+      <div class="avatar__img"><img src="assets/avatar.webp" width="112" height="112" decoding="async" alt="Leo Wei 的头像" /></div>
+      <svg class="avatar__ring" viewBox="0 0 136 136"><circle cx="68" cy="68" r="66"/><circle class="lock" cx="68" cy="2" r="2.5"/></svg>
+    </div>
+
+    <h1 class="glitch name" data-text="LEO WEI" data-scramble>LEO WEI</h1>
+    <p class="handle">@JIATONG-WEI // NPU</p>
+
+    <div class="terminal">
+      <p><span class="cmd">$ whoami</span></p>
+      <p><span class="out">&gt; robotics undergrad. builds, breaks, documents.</span></p>
+      <p><span class="cmd">$ ./interests --list</span></p>
+      <p><span class="out">&gt; [control, reconstruction, writing]<i class="cursor">_</i></span></p>
+    </div>
+
+    <dl class="meta">
+      <div><dt>ROLE</dt><dd>ROBOTICS · EMBODIED AI</dd></div>
+      <div><dt>BASE</dt><dd>XI'AN · 34.34°N 108.94°E</dd></div>
+      <div><dt>MAIL</dt><dd>JOYETONG58@GMAIL.COM</dd></div>
+      <div><dt>STAT</dt><dd class="ok">OPEN TO COLLAB</dd></div>
+    </dl>
+
+    <div class="procs">
+      <p class="procs__label">PROCESSES</p>
+      <p class="proc"><span class="proc__pid">023</span><span class="proc__name">gaussian-splatting</span><span class="proc__st st--run">RUNNING</span></p>
+      <p class="proc"><span class="proc__pid">017</span><span class="proc__name">rl-locomotion</span><span class="proc__st st--train">TRAINING</span></p>
+      <p class="proc"><span class="proc__pid">041</span><span class="proc__name">vla-grasping</span><span class="proc__st st--queue">QUEUED</span></p>
+    </div>
+
+    <div class="panel__spacer"></div>
+
+    <a class="btn btn--primary" href="assets/cv.pdf">
+      <svg viewBox="0 0 14 14" width="13" height="13" aria-hidden="true"><path d="M7 1v8M3.5 6 7 9.5 10.5 6M2 12.5h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>DOWNLOAD CV</span>
+    </a>
+    <a class="btn btn--ghost" href="https://github.com/Jiatong-Wei" target="_blank" rel="noopener">
+      <svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z" fill="currentColor"/></svg>
+      <span>GITHUB</span>
+    </a>
+  </aside>
+
+  <!-- 右侧内容面板 -->
+  <section class="pane">
+
+    <!-- 项目 -->
+    <div class="tabpane is-active" id="pane-projects">
+      <header class="pane__head">
+        <div>
+          <p class="systag systag--cyan">SYS://PROJECTS</p>
+          <h2 class="blocktitle">精选项目</h2>
+        </div>
+        <!-- TODO: 接博客后恢复
+        <a class="mono link" href="#">MORE →</a>
+        -->
+      </header>
+
+      <div class="cards">
+        <article class="card" data-glitch-hover>
+          <div class="card__img ph-img ph-img--p01">
+            <span class="rec"><i></i>CAM_01 · REC</span>
+            <span class="ph-label">PROJECT_01.PNG</span>
+          </div>
+          <div class="card__row"><h3>四足机器人运动控制</h3><span class="idx">01</span></div>
+          <p class="card__desc">强化学习全地形步态生成与实机部署</p>
+          <p class="tag tag--cyan">[ RL · LOCOMOTION ]</p>
+        </article>
+
+        <article class="card" data-glitch-hover>
+          <div class="card__img ph-img ph-img--p02"><span class="ph-label">PROJECT_02.PNG</span></div>
+          <div class="card__row"><h3>校园三维重建</h3><span class="idx">02</span></div>
+          <p class="card__desc">3D Gaussian Splatting 场景重建管线</p>
+          <p class="tag tag--cyan">[ 3DGS · NERF ]</p>
+        </article>
+
+        <article class="card" data-glitch-hover>
+          <div class="card__img ph-img ph-img--p03"><span class="ph-label">PROJECT_03.PNG</span></div>
+          <div class="card__row"><h3>机械臂抓取</h3><span class="idx">03</span></div>
+          <p class="card__desc">视觉语言模型驱动的桌面抓取策略</p>
+          <p class="tag tag--cyan">[ VLA · GRASPING ]</p>
+        </article>
+      </div>
+
+      <div class="home-bottom">
+        <div class="log">
+          <header class="log__head">
+            <p class="systag">LOG://WRITING</p>
+            <!-- TODO: 接博客后恢复
+            <a class="mono dim" href="#">ALL_POSTS →</a>
+            -->
+          </header>
+          <p class="log__row"><span class="log__date">2026.08.12</span><span class="log__title">&gt; 高斯泼溅二三事：从论文到校园重建实践</span></p>
+          <p class="log__row"><span class="log__date">2026.06.28</span><span class="log__title">&gt; 强化学习入门：从策略梯度到 PPO</span></p>
+          <p class="log__row"><span class="log__date">2026.04.09</span><span class="log__title">&gt; ROS2 通讯机制的工程实践笔记</span></p>
+        </div>
+        <div class="side-stack">
+          <div class="minicard">
+            <p class="systag systag--cyan">READING://PAPERS</p>
+            <p class="minicard__title">OpenVLA: An Open-Source Vision-Language-Action Model</p>
+            <div class="progress"><i style="--p:62"></i></div>
+            <p class="mono dim">62% · CH.4 EVAL</p>
+          </div>
+          <div class="minicard">
+            <p class="systag systag--cyan">TAGS://</p>
+            <div class="chips chips--dense">
+              <span class="chip chip--c">RL</span>
+              <span class="chip chip--c">3DGS</span>
+              <span class="chip chip--c">ROS2</span>
+              <span class="chip chip--c">VLA</span>
+              <span class="chip chip--c">SIM2REAL</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 写作 -->
+    <div class="tabpane" id="pane-writing">
+      <header class="pane__head">
+        <div>
+          <p class="systag systag--cyan">SYS://WRITING</p>
+          <h2 class="blocktitle">全部文章</h2>
+        </div>
+        <!-- TODO: 接博客后恢复
+        <a class="mono link" href="#">RSS →</a>
+        -->
+      </header>
+      <article class="featured">
+        <div class="featured__meta">
+          <p class="systag">FEATURED://LATEST</p>
+          <h3>高斯泼溅二三事：从论文到校园重建实践</h3>
+          <p class="featured__sum">从 3D Gaussian Splatting 原论文出发，记录把校园扫进点云的全过程：COLMAP 稀疏重建的坑、训练参数实测、以及实时渲染在笔记本上的性能边界。</p>
+        </div>
+        <div class="featured__side">
+          <span class="mono dim">2026.08.12</span>
+          <span class="chip chip--y">3DGS</span>
+          <span class="mono featured__read">READ →</span>
+        </div>
+      </article>
+      <div class="log">
+        <header class="log__head"><p class="systag">INDEX://POSTS</p><span class="mono dim">共 12 篇</span></header>
+        <p class="log__row"><span class="log__date">2026.06.28</span><span class="log__title">&gt; 强化学习入门：从策略梯度到 PPO</span><span class="log__tag">RL</span></p>
+        <p class="log__row"><span class="log__date">2026.04.09</span><span class="log__title">&gt; ROS2 通讯机制的工程实践笔记</span><span class="log__tag">ROS2</span></p>
+        <p class="log__row"><span class="log__date">2026.03.02</span><span class="log__title">&gt; 四足机器人 Sim-to-Real 迁移记录</span><span class="log__tag">RL</span></p>
+        <p class="log__row"><span class="log__date">2026.01.18</span><span class="log__title">&gt; 论文笔记：VLA 模型综述与方法对比</span><span class="log__tag">VLA</span></p>
+        <p class="log__row"><span class="log__date">2025.11.05</span><span class="log__title">&gt; 从零搭建 ROS2 开发环境的一些坑</span><span class="log__tag">ROS2</span></p>
+        <p class="eof">█ EOF // 12 POSTS · UPDATED WEEKLY</p>
+      </div>
+    </div>
+
+    <!-- Wiki -->
+    <div class="tabpane" id="pane-wiki">
+      <header class="pane__head">
+        <div>
+          <p class="systag systag--cyan">SYS://WIKI</p>
+          <h2 class="blocktitle">知识图谱</h2>
+        </div>
+        <!-- TODO: 接博客后恢复
+        <a class="mono link" href="#">ALL_ENTRIES →</a>
+        -->
+      </header>
+      <div class="wikicard">
+        <svg class="wikicard__graph" viewBox="0 0 640 300">
+          <line x1="140" y1="150" x2="320" y2="60"/><line x1="140" y1="150" x2="320" y2="240"/>
+          <line x1="320" y1="60" x2="500" y2="120"/><line x1="320" y1="240" x2="500" y2="120"/>
+          <line x1="320" y1="60" x2="320" y2="240" class="weak"/><line x1="140" y1="150" x2="500" y2="120" class="dash"/>
+          <circle cx="140" cy="150" r="14" class="n-yellow"/>
+          <circle cx="320" cy="60" r="10" class="n-cyan"/><circle cx="320" cy="240" r="10" class="n-cyan"/>
+          <circle cx="500" cy="120" r="14" class="n-yellow-o"/><circle cx="500" cy="120" r="22" class="n-ring"/>
+          <circle cx="220" cy="95" r="5" class="n-dot"/><circle cx="420" cy="185" r="5" class="n-dot"/>
+          <circle cx="230" cy="215" r="5" class="n-dot n-dot--m"/><circle cx="560" cy="210" r="5" class="n-dot"/>
+          <text x="140" y="180" text-anchor="middle">3DGS</text>
+          <text x="320" y="42" text-anchor="middle">RL</text>
+          <text x="320" y="268" text-anchor="middle">VLA</text>
+          <text x="500" y="152" text-anchor="middle">ROS2</text>
+          <text x="222" y="84" text-anchor="middle" class="t-dim">sim2real</text>
+          <text x="420" y="174" text-anchor="middle" class="t-dim">pointcloud</text>
+        </svg>
+        <p class="mono dim">32 NOTES · 8 PAPERS · 6 PROJECTS — LINKED</p>
+        <div class="chips">
+          <span class="chip chip--y">学习笔记</span>
+          <span class="chip chip--c">论文阅读</span>
+          <span class="chip chip--m">项目文档</span>
+        </div>
+        <div class="recent">
+          <p class="systag">RECENT://ENTRIES</p>
+          <p class="recent__row"><span class="mono dim">NOTE</span><span>高斯泼溅的协方差与自然梯度推导</span><span class="mono dim">08.10</span></p>
+          <p class="recent__row"><span class="mono dim">PAPER</span><span>OpenVLA §4 — 实验设计与泛化边界</span><span class="mono dim">08.02</span></p>
+          <p class="recent__row"><span class="mono dim">PROJ</span><span>校园重建管线 v0.3 — 训练参数归档</span><span class="mono dim">07.21</span></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 关于 -->
+    <div class="tabpane" id="pane-about">
+      <header class="pane__head">
+        <div>
+          <p class="systag systag--cyan">SYS://ABOUT</p>
+          <h2 class="blocktitle">关于我</h2>
+        </div>
+        <a class="mono link" href="assets/cv.pdf">CV.PDF →</a>
+      </header>
+      <div class="aboutcard">
+        <p class="systag systag--cyan">EDU //</p>
+        <div class="aboutcard__row"><h3>西北工业大学 · 本科在读</h3><span class="mono dim">2023 — NOW</span></div>
+        <hr />
+        <p class="systag systag--cyan">FOCUS //</p>
+        <p class="aboutcard__body">具身智能与机器人学习：强化学习运动控制、视觉语言动作模型（VLA）、三维重建与场景理解。关注从仿真到真实世界的迁移，以及机器人在开放环境中的泛化能力。</p>
+        <hr />
+        <p class="systag systag--cyan">TIMELINE //</p>
+        <div class="timeline">
+          <p class="tl__row"><span class="tl__year">2026</span><span class="tl__event">校园 3DGS 重建管线跑通，写下第一篇技术长文</span></p>
+          <p class="tl__row"><span class="tl__year">2025</span><span class="tl__event">四足机器人强化学习步态实机部署；开始系统读 VLA 论文</span></p>
+          <p class="tl__row"><span class="tl__year">2024</span><span class="tl__event">加入机器人队，第一次把代码烧进真实硬件</span></p>
+          <p class="tl__row"><span class="tl__year">2023</span><span class="tl__event">入学西北工业大学</span></p>
+        </div>
+        <hr />
+        <p class="systag systag--cyan">NOW //</p>
+        <div class="chips">
+          <span class="chip chip--y">SIM-TO-REAL</span>
+          <span class="chip chip--c">3DGS</span>
+          <span class="chip chip--m">VLA</span>
+        </div>
+        <blockquote class="quote">"Build, break, document — repeat."<span class="quote__by">// 我的工程信条</span></blockquote>
+        <p class="systag systag--cyan">LINKS //</p>
+        <p class="mono aboutcard__links"><a href="https://github.com/Jiatong-Wei" target="_blank" rel="noopener">GITHUB</a> · <a href="mailto:joyetong58@gmail.com">EMAIL</a> · <!-- TODO: 接博客后恢复：<a href="#">RSS</a> --></p>
+      </div>
+    </div>
+
+  </section>
+</main>
+
+<!-- ===== 底部状态栏 ===== -->
+<footer class="statusbar">
+  <span class="mono">MEM 64TB OK · NEURAL_LINK STABLE · NET SECURE</span>
+  <span class="mono" id="clock">2077.08.15 // --:--:--</span>
+</footer>
+
+<!-- Tab 切换（纯 CSS 过渡，无覆盖层） -->
+<script src="js/app.js"></script>
+</body>
+</html>
