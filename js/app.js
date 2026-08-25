@@ -1,10 +1,110 @@
-/* LEO.WEI // NIGHT CITY — 交互层 v3
-   1. 开机序列（终端自检逐行打出 → 整体上滑揭示 → 内容错峰入场 → 姓名解码）
-   2. Tab 切换（旧面板滑出 + 新面板浮入级联）
-   3. 数据雨 / 4. 夜城时钟 / 5. 霓虹随机闪烁
-   所有动效尊重 prefers-reduced-motion。 */
+/* ============================================================
+   LEO.WEI // NIGHT CITY — 交互层 v4
+   渲染数据层（js/data.js）+ 原有动效系统。
+   1. 数据渲染（meta/进程/日志/视频墙）
+   2. 视频点击播放（hero + 视频墙）
+   3. 开机序列 / Tab 切换 / 数据雨 / 时钟 / 霓虹闪烁
+   所有动效尊重 prefers-reduced-motion。
+   ============================================================ */
 
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- 0. 数据渲染 ---------- */
+function esc(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function renderMeta() {
+  const dl = document.getElementById('metaList');
+  dl.innerHTML = META.map(m =>
+    `<div><dt>${m.k}</dt><dd${m.cls ? ` class="${m.cls}"` : ''}>${esc(m.v)}</dd></div>`
+  ).join('');
+}
+
+function renderProcs() {
+  const el = document.querySelector('.procs');
+  el.innerHTML = '<p class="procs__label">PROCESSES</p>' + PROCESSES.map(p =>
+    `<p class="proc"><span class="proc__pid">${p.pid}</span>` +
+    `<span class="proc__name">${esc(p.name)}</span>` +
+    `<span class="proc__st st--${p.st}">${p.label}</span></p>`
+  ).join('');
+}
+
+function renderPosts() {
+  const list = document.getElementById('postList');
+  const first = POSTS[0];
+  const count = document.getElementById('postCount');
+  if (count) count.textContent = `共 ${POSTS.length} 篇`;
+  // 首页 FEATURED（写作页头条）—— 数据驱动
+  const featured = document.querySelector('.featured');
+  if (featured && first) {
+    featured.querySelector('h3').textContent = first.title;
+    featured.querySelector('.featured__sum').textContent =
+      '从程序化 oracle 采集，到 LeRobot 格式转换、ACT 训练，再到闭环 eval 的完整记录——' +
+      '一个晚上跑通一条数据管线，并诚实地写下它失败的部分。';
+    featured.querySelector('.featured__side .mono').textContent = first.date;
+    featured.querySelector('.chip').textContent = first.tag;
+  }
+  list.innerHTML = POSTS.map(p =>
+    `<a class="log__row" href="https://github.com/Jiatong-Wei" target="_blank" rel="noopener">` +
+    `<span class="log__date">${p.date}</span>` +
+    `<span class="log__title">&gt; ${esc(p.title)}</span>` +
+    `<span class="log__tag">${p.tag}</span></a>`
+  ).join('');
+}
+
+/* 视频墙：点击播放/暂停 */
+function renderWall() {
+  const grid = document.getElementById('wallGrid');
+  grid.innerHTML = MEDIA_WALL.map((m, i) => {
+    if (m.type === 'image') {
+      return `<figure class="wall__item wall__item--img" style="--d:${i * 45}ms">` +
+        `<img src="${m.src}" alt="${esc(m.label)}" loading="lazy" />` +
+        `<figcaption class="wall__cap"><span class="tag tag--${m.color}">${m.tag}</span>` +
+        `<span class="mono dim">${esc(m.label)}</span></figcaption>` +
+        `<p class="wall__note">${esc(m.caption)}</p></figure>`;
+    }
+    return `<figure class="wall__item wall__item--vid" style="--d:${i * 45}ms">` +
+      `<video muted loop playsinline preload="none" poster="${m.poster}">` +
+      `<source src="${m.src}" type="video/mp4" /></video>` +
+      `<button class="vbtn vbtn--mini" aria-label="播放/暂停 ${esc(m.label)}">▶</button>` +
+      `<figcaption class="wall__cap"><span class="tag tag--${m.color}">${m.tag}</span>` +
+      `<span class="mono dim">${esc(m.label)}</span></figcaption>` +
+      `<p class="wall__note">${esc(m.caption)}</p></figure>`;
+  }).join('');
+
+  // 视频点击播放
+  grid.querySelectorAll('.wall__item--vid').forEach(item => {
+    const vid = item.querySelector('video');
+    const btn = item.querySelector('.vbtn--mini');
+    const toggle = () => {
+      if (vid.paused) {
+        grid.querySelectorAll('video').forEach(v => { if (v !== vid) v.pause(); });
+        vid.play();
+        btn.textContent = '❚❚';
+      } else {
+        vid.pause();
+        btn.textContent = '▶';
+      }
+    };
+    item.addEventListener('click', toggle);
+  });
+}
+
+/* ---------- hero 视频点击播放 ---------- */
+function initHeroVideo() {
+  const vid = document.getElementById('heroVideo');
+  const btn = document.getElementById('heroVideoBtn');
+  if (!vid || !btn) return;
+  const toggle = () => {
+    if (vid.paused) { vid.play(); btn.textContent = '❚❚ PAUSE'; }
+    else { vid.pause(); btn.textContent = '▶ PLAY'; }
+  };
+  btn.addEventListener('click', e => { e.stopPropagation(); toggle(); });
+  vid.addEventListener('click', toggle);
+  vid.addEventListener('play', () => { btn.textContent = '❚❚ PAUSE'; });
+  vid.addEventListener('pause', () => { btn.textContent = '▶ PLAY'; });
+}
 
 /* ---------- 1. 开机序列 ---------- */
 const boot = document.getElementById('boot');
@@ -100,7 +200,7 @@ function tickClock() {
   const now = new Date();
   const y = now.getFullYear() + 51;
   const p = n => String(n).padStart(2, '0');
-  clockEl.innerHTML = `${y}.${p(now.getMonth() + 1)}.${p(now.getDate())} // ${p(now.getHours())}<span class="c">:</span>${p(now.getMinutes())}<span class="c">:</span>${p(now.getSeconds())}`;
+  clockEl.textContent = `${y}.${p(now.getMonth() + 1)}.${p(now.getDate())} // ${p(now.getHours())}:${p(now.getMinutes())}:${p(now.getSeconds())}`;
 }
 tickClock();
 setInterval(tickClock, 1000);
@@ -118,9 +218,7 @@ if (!reduced) {
   })();
 }
 
-/* ---------- 6. 无规律 RGB 故障（hover 驱动） ----------
-   真实信号干扰不是匀速的：在随机间隔（40~340ms）随机切换
-   三种错位姿态，偶尔完全归位——这才是"活"的故障。 */
+/* ---------- 6. 无规律 RGB 故障（hover 驱动） ---------- */
 if (!reduced) {
   document.querySelectorAll('.glitch').forEach(el => {
     let timer = null;
@@ -138,3 +236,10 @@ if (!reduced) {
     });
   });
 }
+
+/* ---------- init ---------- */
+renderMeta();
+renderProcs();
+renderPosts();
+renderWall();
+initHeroVideo();

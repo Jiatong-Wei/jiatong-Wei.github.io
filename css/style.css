@@ -214,6 +214,14 @@ body.is-ready .statusbar { opacity: 1; transform: none; transition-delay: 0.4s; 
   overflow: hidden;
 }
 .avatar__img img { width: 100%; height: 100%; object-fit: cover; object-position: 38% 25%; display: block; }
+.avatar__img--mono, #avatarMonogram {
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-weight: 800; font-size: 40px;
+  color: var(--yellow); letter-spacing: 2px;
+  background: linear-gradient(135deg, #14141c, #0a0a12);
+  border: 1px solid var(--line-soft);
+  text-shadow: 0 0 18px rgba(252, 238, 10, 0.35);
+}
 .avatar__ring { position: absolute; inset: 0; animation: spin 30s linear infinite; }
 .avatar__ring circle { fill: none; stroke: rgba(0, 240, 255, 0.45); stroke-dasharray: 4 10; }
 .avatar__ring .lock { fill: var(--yellow); stroke: none; }
@@ -302,6 +310,10 @@ body.is-ready .statusbar { opacity: 1; transform: none; transition-delay: 0.4s; 
   display: none; flex-direction: column; gap: 16px;
 }
 .tabpane.is-active { display: flex; }
+/* 内容超高时面板内部滚动（顶部/底部留渐进遮罩，保持单屏无滚动条的观感） */
+.tabpane.is-active { overflow-y: auto; scrollbar-width: none; }
+.tabpane.is-active::-webkit-scrollbar { display: none; }
+.tabpane.is-active > * { flex: 0 0 auto; min-height: 0; }
 
 /* 切换动效 v3：旧面板干净滑出，新面板浮入 + 子元素级联 */
 .tabpane.is-leaving { display: flex; animation: pane-out 0.14s var(--ease-out) forwards; }
@@ -594,3 +606,120 @@ body.is-ready .progress i { width: calc(var(--p, 0) * 1%); }
 .recent__row .mono:first-child { width: 46px; flex: none; }
 .recent__row span:nth-child(2) { flex: 1; }
 .recent__row .mono:last-child { flex: none; }
+
+/* ============================================================
+   v4 组件：旗舰项目卡 / 视频墙 / 数据统计（作品集升级）
+   ============================================================ */
+
+/* ---------- 旗舰卡（视频/图 + 数据） ---------- */
+.card--flag {
+  padding: 0; gap: 0; overflow: hidden;
+  flex: 0 0 auto; min-height: 268px;
+  flex-direction: row;
+}
+.card__flag {
+  position: relative; flex: none; width: 46%;
+  background: #0e1219; min-height: 268px;
+}
+.card__flag video {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  cursor: pointer; background: #0e1219;
+  position: absolute; inset: 0;
+}
+.card__flag .ph-img { width: 100%; height: 100%; position: absolute; inset: 0; }
+.card__flagBody {
+  flex: 1; display: flex; flex-direction: column; gap: 8px;
+  padding: 14px 18px 16px; min-height: 0;
+}
+.card__flagBody h3 { font-size: 16px; font-weight: 700; margin-top: 4px; }
+.card__flagBody .card__desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+.card__flagBody .card__row { align-items: flex-start; }
+
+.chip--sm { font-size: 9px; padding: 3px 8px; letter-spacing: 0.5px; }
+
+/* 统计数字（数据卡语法） */
+.stats {
+  display: flex; gap: 8px; margin-top: 6px; flex-wrap: wrap;
+}
+.stat {
+  flex: 1; min-width: 72px;
+  background: var(--terminal); border: 1px solid var(--line-soft);
+  padding: 8px 10px;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.stat__num {
+  font-family: var(--mono); font-weight: 800; font-size: 20px;
+  color: var(--yellow); letter-spacing: -0.5px;
+}
+.stat__lbl { font-family: var(--mono); font-size: 9.5px; color: var(--dim); letter-spacing: 1px; }
+
+.statline {
+  margin-top: 4px; padding-top: 8px; border-top: 1px dashed var(--line);
+  font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 0.5px;
+}
+
+/* 视频控制按钮（hero） */
+.vbtn {
+  position: absolute; left: 12px; bottom: 12px; z-index: 3;
+  background: rgba(10, 12, 15, 0.82); border: 1px solid var(--yellow);
+  color: var(--yellow); font-family: var(--mono); font-size: 10px;
+  letter-spacing: 1.5px; padding: 6px 12px; cursor: pointer;
+  transition: background 0.15s, box-shadow 0.15s;
+}
+.vbtn:hover { background: var(--yellow); color: var(--bg); box-shadow: 0 0 14px rgba(252, 238, 10, 0.4); }
+
+/* ---------- 视频墙 ---------- */
+.wall { display: flex; flex-direction: column; gap: 10px; }
+.wall__head { display: flex; justify-content: space-between; align-items: baseline; }
+.wall__head .systag { margin-bottom: 0; }
+.wall__grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.wall__item {
+  position: relative; background: var(--card); border: 1px solid var(--line);
+  overflow: hidden; display: flex; flex-direction: column;
+  cursor: pointer;
+  transition: transform 0.18s var(--ease-out), border-color 0.18s;
+  opacity: 0; transform: translateY(8px);
+}
+.tabpane.is-active .wall__item { animation: wall-in 0.4s var(--ease-out) forwards; animation-delay: var(--d, 0ms); }
+@keyframes wall-in { to { opacity: 1; transform: none; } }
+.wall__item:hover { transform: translateY(-3px); border-color: rgba(0, 240, 255, 0.5); }
+.wall__item video, .wall__item img {
+  width: 100%; height: 150px; object-fit: cover; display: block;
+  background: #0c0f15;
+}
+.wall__item--vid { position: relative; }
+.wall__item--vid video { transition: opacity 0.2s; }
+.wall__item--img { cursor: default; }
+.wall__item--img img { object-fit: contain; padding: 10px; }
+
+.vbtn--mini {
+  position: absolute; top: 8px; right: 8px; z-index: 2;
+  width: 26px; height: 26px; line-height: 1;
+  border: 1px solid rgba(0, 240, 255, 0.6); color: var(--cyan);
+  background: rgba(10, 12, 15, 0.72); font-size: 10px; padding: 0;
+}
+.vbtn--mini:hover { background: var(--cyan); color: var(--bg); }
+
+.wall__cap {
+  display: flex; align-items: center; gap: 8px; padding: 7px 10px 3px;
+}
+.wall__cap .tag { font-size: 9px; letter-spacing: 0.5px; }
+.wall__note {
+  font-size: 11px; color: var(--muted); line-height: 1.5;
+  padding: 0 10px 9px;
+}
+
+/* ---------- 响应式：视频墙塌缩 ---------- */
+@media (max-width: 960px) {
+  .wall__grid { grid-template-columns: repeat(2, 1fr); }
+  .card--flag { flex-direction: column; min-height: 0; }
+  .card__flag { width: 100%; min-height: 220px; flex: none; }
+  .card__flagBody { flex: none; }
+}
+
+@media (max-width: 560px) {
+  .wall__grid { grid-template-columns: 1fr; }
+}
