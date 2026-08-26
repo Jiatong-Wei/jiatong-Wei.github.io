@@ -120,7 +120,7 @@ function renderPosts() {
     document.getElementById('featuredDate').textContent = first.date;
     document.getElementById('featuredChip').textContent = first.tag;
   }
-  list.innerHTML = POSTS.map(p =>
+  list.innerHTML = POSTS.slice(1).map(p =>
     `<a class="log__row" href="https://github.com/Jiatong-Wei" target="_blank" rel="noopener">` +
     `<span class="log__date">${p.date}</span>` +
     `<span class="log__title">${esc(p.title)}</span>` +
