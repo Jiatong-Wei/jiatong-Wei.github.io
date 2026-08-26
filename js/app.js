@@ -89,6 +89,25 @@ function renderWall() {
   });
 }
 
+/* ---------- 实验弧：七档闭环对照渲染 ---------- */
+function renderArc() {
+  const tbody = document.getElementById('arcRows');
+  const steps = document.getElementById('arcSteps');
+  const conclusion = document.getElementById('arcConclusion');
+  if (!tbody || !EXPERIMENT_ARC) return;
+  tbody.innerHTML = EXPERIMENT_ARC.rows.map(r =>
+    `<tr><td class="arc__cfg">${esc(r.cfg)}</td>` +
+    `<td>${esc(r.setup)}</td>` +
+    `<td class="arc__loss">${esc(r.loss)}</td>` +
+    `<td>${esc(r.behavior)}</td>` +
+    `<td>${esc(r.takeaway)}</td></tr>`
+  ).join('');
+  if (steps) {
+    steps.innerHTML = EXPERIMENT_ARC.method.map(m => `<li>${esc(m)}</li>`).join('');
+  }
+  if (conclusion) conclusion.textContent = EXPERIMENT_ARC.conclusion;
+}
+
 /* ---------- hero 视频点击播放 ---------- */
 function initHeroVideo() {
   // 每个 .card__flag 内：video + .vbtn 配对，点击播放/暂停
@@ -243,4 +262,5 @@ renderMeta();
 renderProcs();
 renderPosts();
 renderWall();
+renderArc();
 initHeroVideo();

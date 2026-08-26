@@ -151,7 +151,28 @@
             <div class="stat"><span class="stat__num">0.860</span><span class="stat__lbl">2k 步 loss · 10k: 0.073</span></div>
           </div>
           <div class="statline">
-            <span>12/12 双门禁验证 · 8GB 显存仅占 1GB · 闭环 eval 0/10 诚实记录</span>
+            <span>12/12 双门禁验证 · 8GB 显存仅占 1GB · 闭环七档 0/35 · 每轮失效精确定位</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- 实验弧：七档闭环对照 -->
+      <article class="arc">
+        <header class="arc__head">
+          <p class="systag systag--cyan">SYS://EXPERIMENT_ARC</p>
+          <p class="mono dim">12 → 37 DEMOS · 7 CONFIGS · 0/35</p>
+        </header>
+        <div class="arc__body">
+          <table class="arc__table">
+            <thead>
+              <tr><th>档</th><th>配置</th><th>loss</th><th>行为</th><th>判读</th></tr>
+            </thead>
+            <tbody id="arcRows"><!-- js/app.js 注入 --></tbody>
+          </table>
+          <div class="arc__method">
+            <p class="systag">METHOD://诊断方法论</p>
+            <ol class="arc__steps" id="arcSteps"><!-- js/app.js 注入 --></ol>
+            <p class="arc__conclusion"><b>结论：</b><span id="arcConclusion"></span></p>
           </div>
         </div>
       </article>

@@ -19,9 +19,32 @@ const ISAAC_PROJECT = {
   metrics: [
     { name: '训练 loss', value: '5.759 → 0.860', note: '2k 步 · 加量至 10k 后 0.073' },
     { name: '峰值显存', value: '1.03 GB', note: '4060 8GB 仅占 1GB' },
-    { name: '闭环 eval', value: '0/10', note: '2k+10k 两档 · 诚实记录与判读' },
+    { name: '闭环 eval', value: '0/35', note: '七档实验弧 · 每轮失效模式精确定位' },
   ],
-  note: '演示含相对 SE(3) 动作（3 平移 + 3 轴角 + 夹爪开度），对齐 UMI 表示；转换 LeRobot 格式后训练。闭环 2k 与 10k 均 0/5 未夹住——10k 动作幅度减半更静止，拟合改善但未解锁抓取行为，瓶颈在演示数量/多样性。',
+  note: '演示含相对 SE(3) 动作（3 平移 + 3 轴角 + 夹爪开度），对齐 UMI 表示；转换 LeRobot 格式后训练。闭环七档 0/35 未解锁完整抓取，但每一轮失效模式都被精确定位并推进——最近一步为方块顶起 0.129m（grasped 首次 True）。',
+};
+
+/* ---------- 实验弧：七档闭环对照（Isaac Sim × ACT） ---------- */
+const EXPERIMENT_ARC = {
+  title: '闭环实验弧',
+  subtitle: '七档配置 · 每轮失效模式被下一环精确替换',
+  rows: [
+    { cfg: '2k',  setup: '12 演示 · 2000 步', loss: '0.860', behavior: '静止不动', takeaway: '基线：动作幅值过小，从不闭爪' },
+    { cfg: '10k', setup: '12 演示 · 10000 步', loss: '0.073', takeaway: '更静止（拟合改善）', behavior: '纹丝不动，无行为解锁' },
+    { cfg: '15k', setup: '37 演示 · 15000 步', loss: '0.049', behavior: '闭爪意图（grip_min 0.017）', takeaway: '演示数量解锁闭爪意图，但未逼近方块' },
+    { cfg: 'noVAE', setup: 'use_vae=false', loss: '0.036', behavior: '逼近（min_dist 0.30）', takeaway: '诊断：开环回放否证 VAE 后验塌陷假设' },
+    { cfg: 'bal', setup: '静止帧欠采样 11100→3320', loss: '0.027', behavior: '幅值 5× 解锁但猛冲', takeaway: '定位真因：81% 静止帧 → 动作不平衡' },
+    { cfg: 'dw', setup: 'descend 4× 过采样', loss: '0.025', behavior: '首次接触，推走 0.195m', takeaway: '分相诊断 → descend 塌缩被精确定位' },
+    { cfg: 'dws',  setup: '+方块位姿进 state（12 维）', loss: '0.025', behavior: '顶起 0.129m、grasped 首次 True', takeaway: 'privileged-state 消融分离视觉与运动技能缺口' },
+  ],
+  method: [
+    '0/15 后不盲目加数据，先做 20 分钟开环回放（黑图扰动 / 归一化往返 / 分相分析）',
+    '否证 VAE 后验塌陷假设（no-VAE 对照）',
+    '定位真因：动作不平衡（81% 静止帧，L1 回归退化为均值预测）',
+    '分相诊断精确定位 descend 塌缩 → 4× 过采样',
+    'privileged-state 消融分离视觉 grounding 与运动技能瓶颈',
+  ],
+  conclusion: '0/35 未解锁完整抓取，但每轮失效模式都被精确定位并推进，最近距成功一步（顶起 0.129m）。',
 };
 
 /* ---------- 第二条线：PushT ACT 50k ---------- */
@@ -102,6 +125,16 @@ const MEDIA_WALL = [
     poster: 'assets/media/posters/closedloop10k_ep00.jpg',
     label: 'CLOSEDLOOP10K_EP00.mp4',
     caption: '闭环 eval 10k · 动作更静止 · 0/10',
+    tag: 'CLOSED LOOP',
+    color: 'm',
+    videoMode: 'click',
+  },
+  {
+    type: 'video',
+    src: 'assets/media/cldws_ep03.mp4',
+    poster: 'assets/media/posters/cldws_ep03.jpg',
+    label: 'CLDWS_EP03.mp4',
+    caption: '最近尝试：方块顶起 0.129m（privileged-state 消融）',
     tag: 'CLOSED LOOP',
     color: 'm',
     videoMode: 'click',
