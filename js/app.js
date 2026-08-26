@@ -35,13 +35,11 @@ function renderPosts() {
   const first = POSTS[0];
   const count = document.getElementById('postCount');
   if (count) count.textContent = `共 ${POSTS.length} 篇`;
-  // 首页 FEATURED（写作页头条）—— 数据驱动
+  // 首页 FEATURED（写作页头条）—— 标题/日期/标签数据驱动；
+  // 摘要保留 index.html 静态文案（避免 JS 覆盖漂移）
   const featured = document.querySelector('.featured');
   if (featured && first) {
     featured.querySelector('h3').textContent = first.title;
-    featured.querySelector('.featured__sum').textContent =
-      '从程序化 oracle 采集，到 LeRobot 格式转换、ACT 训练，再到闭环 eval 的完整记录——' +
-      '一个晚上跑通一条数据管线，并诚实地写下它失败的部分。';
     featured.querySelector('.featured__side .mono').textContent = first.date;
     featured.querySelector('.chip').textContent = first.tag;
   }
@@ -93,17 +91,20 @@ function renderWall() {
 
 /* ---------- hero 视频点击播放 ---------- */
 function initHeroVideo() {
-  const vid = document.getElementById('heroVideo');
-  const btn = document.getElementById('heroVideoBtn');
-  if (!vid || !btn) return;
-  const toggle = () => {
-    if (vid.paused) { vid.play(); btn.textContent = '❚❚ PAUSE'; }
-    else { vid.pause(); btn.textContent = '▶ PLAY'; }
-  };
-  btn.addEventListener('click', e => { e.stopPropagation(); toggle(); });
-  vid.addEventListener('click', toggle);
-  vid.addEventListener('play', () => { btn.textContent = '❚❚ PAUSE'; });
-  vid.addEventListener('pause', () => { btn.textContent = '▶ PLAY'; });
+  // 每个 .card__flag 内：video + .vbtn 配对，点击播放/暂停
+  document.querySelectorAll('.card__flag').forEach(flag => {
+    const vid = flag.querySelector('video');
+    const btn = flag.querySelector('.vbtn');
+    if (!vid || !btn) return;
+    const toggle = () => {
+      if (vid.paused) { vid.play(); btn.textContent = '❚❚ PAUSE'; }
+      else { vid.pause(); btn.textContent = '▶ PLAY'; }
+    };
+    btn.addEventListener('click', e => { e.stopPropagation(); toggle(); });
+    vid.addEventListener('click', toggle);
+    vid.addEventListener('play', () => { btn.textContent = '❚❚ PAUSE'; });
+    vid.addEventListener('pause', () => { btn.textContent = '▶ PLAY'; });
+  });
 }
 
 /* ---------- 1. 开机序列 ---------- */
