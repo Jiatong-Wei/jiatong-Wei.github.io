@@ -19,6 +19,8 @@
 </head>
 <body>
 
+<div id="stage">
+
 <!-- ===== 顶栏 ===== -->
 <header class="topbar">
   <span class="topbar__logo">LEO.WEI</span>
@@ -30,7 +32,8 @@
   <!-- ===== 左轨 ===== -->
   <nav class="rail" aria-label="栏目导航">
     <span class="rail__sect">NAV</span>
-    <a class="rail__item is-active" href="#work" data-panel="work"><i class="rail__dot"></i>01 项目</a>
+    <a class="rail__item is-active" href="#home" data-panel="home"><i class="rail__dot"></i>00 首页</a>
+    <a class="rail__item" href="#work" data-panel="work"><i class="rail__dot"></i>01 项目</a>
     <a class="rail__item" href="#arc" data-panel="arc"><i class="rail__dot"></i>02 实验弧</a>
     <a class="rail__item" href="#media" data-panel="media"><i class="rail__dot"></i>03 媒体</a>
     <a class="rail__item" href="#writing" data-panel="writing"><i class="rail__dot"></i>04 写作</a>
@@ -44,8 +47,27 @@
   <!-- ===== 面板区 ===== -->
   <main class="panes">
 
+    <!-- 00 首页 -->
+    <section class="pane is-active" id="pane-home" data-panel="home">
+      <h2 class="pane__title">首页</h2>
+      <div class="home">
+        <div class="home__left">
+          <p class="home__name">LEO WEI <span class="home__cn">魏加桐</span></p>
+          <p class="home__role mono">ROBOTICS LEARNER</p>
+          <p class="home__edu mono">西北工业大学 · 本科在读 <span class="dim">2023 — NOW</span></p>
+          <p class="home__focus" id="homeFocus"></p>
+          <div class="tags" id="homeTags"><!-- js/app.js 注入 --></div>
+          <p class="home__links" id="homeLinks"><!-- js/app.js 注入 --></p>
+        </div>
+        <div class="home__right">
+          <p class="home__news-label mono">NEWS // 近期动态</p>
+          <div class="news" id="homeNews"><!-- js/app.js 注入 --></div>
+        </div>
+      </div>
+    </section>
+
     <!-- 01 项目 -->
-    <section class="pane is-active" id="pane-work" data-panel="work">
+    <section class="pane" id="pane-work" data-panel="work">
       <h2 class="pane__title">项目</h2>
 
       <div class="proj proj--isaac">
@@ -136,10 +158,10 @@
 <footer class="statusbar">
   <span class="mono">© 2026 LEO.WEI</span>
   <span class="mono statusbar__mid">35 ROLLOUTS · 7 CONFIGS · 19 BUGS</span>
-  <span class="mono" id="clock">--:--:--</span>
+  <span class="mono" id="clock">--:--:--</span><i class="cursor-box" aria-hidden="true"></i>
 </footer>
 
-<!-- 媒体 lightbox -->
+<!-- 媒体 lightbox（#stage 内,随缩放同步） -->
 <div class="lightbox" id="lightbox" aria-hidden="true">
   <div class="lightbox__inner">
     <button class="lightbox__close" aria-label="关闭">✕</button>
@@ -147,6 +169,8 @@
     <p class="lightbox__cap mono" id="lightboxCap"></p>
   </div>
 </div>
+
+</div><!-- /#stage -->
 
 <!-- 数据层 + 交互层 -->
 <script src="js/data.js"></script>
