@@ -1,120 +1,124 @@
 /* ============================================================
-   LEO.WEI // Swiss Editorial Light — 交互层 v5
-   渲染数据层(js/data.js) + 瑞士编辑式长页动效:
-   1. 数据渲染(项目卡/实验弧时间线/方法/媒体墙/写作/关于)
-   2. hero 视频点击播放
-   3. scroll-reveal(IntersectionObserver, respect prefers-reduced-motion)
-   4. hero 统计数字滚动计数
+   LEO.WEI // Instrument Panel — 交互层 v6
+   1. 数据渲染(指标表/实验弧表格/媒体墙/写作/关于)
+   2. 面板切换(hash 同步, 120ms 淡入, 无位移)
+   3. 媒体 lightbox(遮罩+居中视频, Esc/遮罩关闭)
+   4. 状态栏时钟
+   所有交互 ≤150ms, respect prefers-reduced-motion
    ============================================================ */
 
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const PANELS = ['work', 'arc', 'media', 'writing', 'about'];
 
 function esc(s) {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-/* ---------- 项目卡渲染 ---------- */
-function renderProject(elId, data) {
+/* ---------- 指标表(项目卡右侧) ---------- */
+function renderMetrics(elId, data) {
   const el = document.getElementById(elId);
   if (!el || !data) return;
-  el.querySelector('.projcard__title').textContent = data.title;
-  el.querySelector('.projcard__sub').textContent = data.subtitle;
-  el.querySelector('.projcard__metrics').innerHTML = data.metrics.map(m =>
-    `<div class="pmetric"><span class="pmetric__name">${esc(m.name)}</span>` +
-    `<span class="pmetric__value">${esc(m.value)}</span>` +
-    `<span class="pmetric__note">${esc(m.note)}</span></div>`
+  el.innerHTML = data.metrics.map(m =>
+    `<div class="metric-row"><span class="metric-row__name">${esc(m.name)}</span>` +
+    `<span class="metric-row__value">${esc(m.value)}</span>` +
+    `<span class="metric-row__note">${esc(m.note)}</span></div>`
   ).join('');
-  el.querySelector('.projcard__note').textContent = data.note;
 }
 
-/* ---------- 实验弧时间线 ---------- */
-function renderArc() {
-  const tl = document.getElementById('arcTimeline');
-  if (!tl || !EXPERIMENT_ARC) return;
-  const NUM = ['01', '02', '03', '04', '05', '06', '07'];
-  tl.innerHTML = EXPERIMENT_ARC.rows.map((r, i) => {
-    let cls = 'tl-item', badge = '';
-    if (i === 6) { cls += ' tl-item--best'; badge = '<span class="cfg-badge cfg-badge--best">最近</span>'; }
-    else if (i === 5) { cls += ' tl-item--good'; badge = '<span class="cfg-badge cfg-badge--good">进展</span>'; }
-    else if (i === 4) { cls += ' tl-item--fail'; badge = '<span class="cfg-badge cfg-badge--fail">失效</span>'; }
-    return `<div class="${cls} reveal">` +
-      `<div class="tl-item__num">${NUM[i]}</div>` +
-      `<div class="tl-item__body">` +
-      `<div class="tl-item__cfg">${esc(r.cfg)}${badge}<span class="mono tl-item__loss">loss ${esc(r.loss)}</span></div>` +
-      `<p class="tl-item__setup">${esc(r.setup)}</p>` +
-      `<p class="tl-item__behavior">${esc(r.behavior)}</p>` +
-      `<p class="tl-item__takeaway">${esc(r.takeaway)}</p>` +
-      `</div></div>`;
-  }).join('');
+/* ---------- 项目卡左信息 ---------- */
+function renderProjectMeta() {
+  if (ISAAC_PROJECT) {
+    document.getElementById('projIsaacTitle').textContent = ISAAC_PROJECT.title;
+    document.getElementById('projIsaacSub').textContent = ISAAC_PROJECT.subtitle;
+  }
+  if (PUSHT_PROJECT) {
+    document.getElementById('projPushTitle').textContent = PUSHT_PROJECT.title;
+    document.getElementById('projPushSub').textContent = PUSHT_PROJECT.subtitle;
+  }
+}
 
-  const steps = document.getElementById('methodList');
-  steps.innerHTML = EXPERIMENT_ARC.method.map(m => `<li>${esc(m)}</li>`).join('');
+/* ---------- 实验弧表格 ---------- */
+function renderArc() {
+  const tbody = document.getElementById('arcBody');
+  if (!tbody || !EXPERIMENT_ARC) return;
+  tbody.innerHTML = EXPERIMENT_ARC.rows.map((r, i) => {
+    let dot = '', badge = '';
+    if (i === 6)      { dot = '<i class="arc-dot dot-blue"></i>';   badge = '<span class="arc-badge badge-best">最近</span>'; }
+    else if (i === 5) { dot = '<i class="arc-dot dot-green"></i>';  badge = '<span class="arc-badge badge-good">进展</span>'; }
+    else if (i === 4) { dot = '<i class="arc-dot dot-red"></i>';    badge = '<span class="arc-badge badge-fail">失效</span>'; }
+    return `<tr>` +
+      `<td class="arc-no">${String(i + 1).padStart(2, '0')}</td>` +
+      `<td class="arc-cfg">${dot}${esc(r.cfg)}${badge}</td>` +
+      `<td class="arc-loss">${esc(r.loss)}</td>` +
+      `<td class="arc-beh">${esc(r.behavior)}</td>` +
+      `<td class="arc-take">${esc(r.takeaway)}</td></tr>`;
+  }).join('');
   document.getElementById('arcConclusion').textContent = '结论：' + EXPERIMENT_ARC.conclusion;
 }
 
-/* ---------- 视频墙 ---------- */
+/* ---------- 媒体墙 + lightbox ---------- */
 function renderWall() {
   const grid = document.getElementById('wallGrid');
   grid.innerHTML = MEDIA_WALL.map((m, i) => {
+    const span = (i === MEDIA_WALL.length - 1) ? ' wall__item--span' : '';
     if (m.type === 'image') {
-      return `<figure class="wall__item reveal" style="transition-delay:${(i % 3) * 60}ms">` +
+      return `<figure class="wall__item wall__item--img${span}" data-kind="img">` +
         `<img src="${m.src}" alt="${esc(m.label)}" loading="lazy" />` +
         `<figcaption class="wall__cap"><span class="wall__tag">${esc(m.tag)}</span><span class="wall__label mono">${esc(m.label)}</span></figcaption>` +
         `<p class="wall__note">${esc(m.caption)}</p></figure>`;
     }
-    return `<figure class="wall__item wall__item--vid reveal" style="transition-delay:${(i % 3) * 60}ms">` +
+    return `<figure class="wall__item wall__item--vid${span}" data-src="${m.src}" data-cap="${esc(m.caption)}" data-poster="${m.poster}" role="button" tabindex="0">` +
       `<video muted loop playsinline preload="none" poster="${m.poster}">` +
       `<source src="${m.src}" type="video/mp4" /></video>` +
-      `<button class="vbtn--mini" aria-label="播放/暂停 ${esc(m.label)}">▶</button>` +
+      `<button class="vbtn--mini" aria-label="播放 ${esc(m.label)}">▶</button>` +
       `<figcaption class="wall__cap"><span class="wall__tag">${esc(m.tag)}</span><span class="wall__label mono">${esc(m.label)}</span></figcaption>` +
       `<p class="wall__note">${esc(m.caption)}</p></figure>`;
   }).join('');
 
   grid.querySelectorAll('.wall__item--vid').forEach(item => {
-    const vid = item.querySelector('video');
-    const btn = item.querySelector('.vbtn--mini');
-    const toggle = () => {
-      if (vid.paused) {
-        grid.querySelectorAll('video').forEach(v => { if (v !== vid) v.pause(); });
-        vid.play();
-        btn.textContent = '❚❚';
-      } else {
-        vid.pause();
-        btn.textContent = '▶';
-      }
-    };
-    item.addEventListener('click', toggle);
+    const open = () => openLightbox(item.dataset.src, item.dataset.poster, item.dataset.cap);
+    item.addEventListener('click', open);
+    item.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') open(); });
   });
 }
 
-/* ---------- hero 视频 ---------- */
-function initHeroVideo() {
-  const vid = document.getElementById('heroVideo');
-  const btn = document.getElementById('heroVideoBtn');
-  if (!vid || !btn) return;
-  const toggle = () => {
-    if (vid.paused) { vid.play(); btn.textContent = '❚❚ 暂停'; }
-    else { vid.pause(); btn.textContent = '▶ 播放混剪 43s'; }
-  };
-  btn.addEventListener('click', e => { e.stopPropagation(); toggle(); });
-  vid.addEventListener('click', toggle);
-  vid.addEventListener('play', () => { btn.textContent = '❚❚ 暂停'; });
-  vid.addEventListener('pause', () => { btn.textContent = '▶ 播放混剪 43s'; });
+/* ---------- lightbox ---------- */
+const lightbox = document.getElementById('lightbox');
+const lbVideo = document.getElementById('lightboxVideo');
+const lbCap = document.getElementById('lightboxCap');
+
+function openLightbox(src, poster, cap) {
+  lbVideo.src = src;
+  lbVideo.poster = poster;
+  lbCap.textContent = cap || '';
+  lightbox.classList.add('open');
+  lightbox.setAttribute('aria-hidden', 'false');
+  lbVideo.currentTime = 0;
+  if (!reduced) lbVideo.play().catch(() => {});
 }
+
+function closeLightbox() {
+  lightbox.classList.remove('open');
+  lightbox.setAttribute('aria-hidden', 'true');
+  lbVideo.pause();
+}
+
+lightbox.addEventListener('click', e => {
+  if (e.target === lightbox) closeLightbox();
+});
+document.querySelector('.lightbox__close').addEventListener('click', closeLightbox);
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && lightbox.classList.contains('open')) closeLightbox();
+});
 
 /* ---------- 写作 ---------- */
 function renderPosts() {
   const list = document.getElementById('postList');
   const first = POSTS[0];
-  const count = document.getElementById('postCount');
-  if (count) count.textContent = `共 ${POSTS.length} 篇 · UPDATED 2026.08.26`;
-  const fTitle = document.getElementById('featuredTitle');
-  const fDate = document.getElementById('featuredDate');
-  const fChip = document.getElementById('featuredChip');
   if (first) {
-    if (fTitle) fTitle.textContent = first.title;
-    if (fDate) fDate.textContent = first.date;
-    if (fChip) fChip.textContent = first.tag;
+    document.getElementById('featuredTitle').textContent = first.title;
+    document.getElementById('featuredDate').textContent = first.date;
+    document.getElementById('featuredChip').textContent = first.tag;
   }
   list.innerHTML = POSTS.map(p =>
     `<a class="log__row" href="https://github.com/Jiatong-Wei" target="_blank" rel="noopener">` +
@@ -139,52 +143,55 @@ function renderAbout() {
   ).join('');
 }
 
-/* ---------- scroll-reveal ---------- */
-function initReveal() {
-  if (reduced) return;
-  const io = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); }
-    });
-  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
-  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+/* ---------- 面板切换(hash 同步) ---------- */
+function showPanel(name, fromHash) {
+  if (!PANELS.includes(name)) name = 'work';
+  const cur = document.querySelector('.pane.is-active');
+  const next = document.getElementById(`pane-${name}`);
+  if (cur === next) return;
+
+  if (cur) cur.classList.remove('is-active');
+  next.classList.add('is-active');
+  if (!reduced) {
+    next.classList.remove('fade-in');
+    void next.offsetWidth;            // 重启动画
+    next.classList.add('fade-in');
+  }
+  document.querySelectorAll('.rail__item').forEach(a =>
+    a.classList.toggle('is-active', a.dataset.panel === name)
+  );
+  if (!fromHash && location.hash !== `#${name}`) {
+    history.pushState(null, '', `#${name}`);
+  }
 }
 
-/* ---------- hero 统计计数 ---------- */
-function initCount() {
-  const els = document.querySelectorAll('.hstat__num[data-count]');
-  if (reduced) {
-    els.forEach(el => { el.textContent = el.dataset.count; });
-    return;
-  }
-  const animate = el => {
-    const target = parseFloat(el.dataset.count);
-    const dec = parseInt(el.dataset.decimals || '0', 10);
-    const dur = 1000;
-    const start = performance.now();
-    (function tick(now) {
-      const p = Math.min((now - start) / dur, 1);
-      const eased = 1 - Math.pow(1 - p, 3);
-      el.textContent = (target * eased).toFixed(dec);
-      if (p < 1) requestAnimationFrame(tick);
-      else el.textContent = target.toFixed(dec);
-    })(start);
-  };
-  const io = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) { animate(e.target); io.unobserve(e.target); }
-    });
-  }, { threshold: 0.4 });
-  els.forEach(el => io.observe(el));
+document.querySelectorAll('.rail__item').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    showPanel(a.dataset.panel);
+  });
+});
+
+window.addEventListener('hashchange', () => {
+  showPanel(location.hash.slice(1));
+});
+
+/* ---------- 状态栏时钟 ---------- */
+const clockEl = document.getElementById('clock');
+function tickClock() {
+  const now = new Date();
+  const p = n => String(n).padStart(2, '0');
+  clockEl.textContent = `${p(now.getHours())}:${p(now.getMinutes())}:${p(now.getSeconds())}`;
 }
+tickClock();
+setInterval(tickClock, 1000);
 
 /* ---------- init ---------- */
-renderProject('projIsaac', ISAAC_PROJECT);
-renderProject('projPush', PUSHT_PROJECT);
+renderProjectMeta();
+renderMetrics('projIsaacMetrics', ISAAC_PROJECT);
+renderMetrics('projPushMetrics', PUSHT_PROJECT);
 renderArc();
 renderWall();
 renderPosts();
 renderAbout();
-initHeroVideo();
-initReveal();
-initCount();
+showPanel(location.hash.slice(1), true);

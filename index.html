@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>LEO.WEI — Robotics Learner</title>
-<meta name="description" content="Leo Wei（@JIATONG-WEI）— 机器人学习方向本科生：Isaac Sim 采数、ACT 行为克隆、Sim-to-Real。" />
+<meta name="description" content="Leo Wei（@JIATONG-WEI）— 机器人学习方向：Isaac Sim 采数、ACT 行为克隆、Sim-to-Real。" />
 <meta name="theme-color" content="#FAFAF8" />
 <meta property="og:title" content="LEO.WEI" />
 <meta property="og:description" content="Robotics learner — imitation learning / sim2real / ACT." />
@@ -19,170 +19,134 @@
 </head>
 <body>
 
-<!-- ===== 顶部固定导航 ===== -->
-<header class="nav">
-  <div class="nav__inner">
-    <a class="nav__logo" href="#top">LEO.WEI</a>
-    <nav class="nav__links" aria-label="站点导航">
-      <a href="#work">工作</a>
-      <a href="#arc">实验弧</a>
-      <a href="#media">媒体</a>
-      <a href="#writing">写作</a>
-      <a href="#about">关于</a>
-    </nav>
-  </div>
+<!-- ===== 顶栏 ===== -->
+<header class="topbar">
+  <span class="topbar__logo">LEO.WEI</span>
+  <span class="topbar__sub">ROBOTICS LEARNER · XI'AN</span>
 </header>
 
-<main id="top">
+<div class="frame">
 
-  <!-- ===== Hero ===== -->
-  <section class="hero">
-    <p class="hero__eyebrow">JIATONG-WEI · ROBOTICS LEARNER · XI'AN</p>
-    <h1 class="hero__title">把机器人学习<br />当作一组可复现的实验。</h1>
-    <p class="hero__sub">Isaac Sim → LeRobot → ACT → 闭环评估。一个晚上跑通一条采数据管线；一个实验弧，用七档配置把失效模式逐环定位。</p>
+  <!-- ===== 左轨 ===== -->
+  <nav class="rail" aria-label="栏目导航">
+    <span class="rail__sect">NAV</span>
+    <a class="rail__item is-active" href="#work" data-panel="work"><i class="rail__dot"></i>01 项目</a>
+    <a class="rail__item" href="#arc" data-panel="arc"><i class="rail__dot"></i>02 实验弧</a>
+    <a class="rail__item" href="#media" data-panel="media"><i class="rail__dot"></i>03 媒体</a>
+    <a class="rail__item" href="#writing" data-panel="writing"><i class="rail__dot"></i>04 写作</a>
+    <a class="rail__item" href="#about" data-panel="about"><i class="rail__dot"></i>05 关于</a>
+    <span class="rail__spacer"></span>
+    <span class="rail__sect">LINKS</span>
+    <a class="rail__link" href="https://github.com/Jiatong-Wei" target="_blank" rel="noopener">GITHUB</a>
+    <a class="rail__link" href="mailto:joyetong58@gmail.com">EMAIL</a>
+  </nav>
 
-    <div class="hero__video">
-      <video id="heroVideo" muted loop playsinline preload="none"
-             poster="assets/media/posters/showcase_reel.jpg">
-        <source src="assets/media/showcase_reel.mp4" type="video/mp4" />
-      </video>
-      <button class="vbtn" id="heroVideoBtn" aria-label="播放/暂停 showcase reel">▶ 播放混剪 <span class="dim">43s</span></button>
-    </div>
+  <!-- ===== 面板区 ===== -->
+  <main class="panes">
 
-    <div class="hero__stats" id="heroStats">
-      <div class="hstat"><span class="hstat__num" data-count="35">35</span><span class="hstat__label">ROLLOUTS<br />闭环回合</span></div>
-      <div class="hstat"><span class="hstat__num" data-count="7">7</span><span class="hstat__label">CONFIGS<br />实验档位</span></div>
-      <div class="hstat"><span class="hstat__num" data-count="19">19</span><span class="hstat__label">BUGS<br />已记录</span></div>
-      <div class="hstat"><span class="hstat__num" data-count="0.129" data-decimals="3">0.129</span><span class="hstat__label">LIFT (M)<br />方块顶起</span></div>
-    </div>
-  </section>
+    <!-- 01 项目 -->
+    <section class="pane is-active" id="pane-work" data-panel="work">
+      <h2 class="pane__title">项目</h2>
 
-  <!-- ===== 实验弧 ===== -->
-  <section class="sect" id="arc">
-    <header class="sect__head">
-      <p class="sect__num mono">02</p>
-      <h2 class="sect__title">实验弧 · 七档闭环</h2>
-      <p class="sect__sub mono">12 → 37 DEMOS · 7 CONFIGS · 0/35</p>
-    </header>
-
-    <div class="timeline" id="arcTimeline"><!-- js/app.js 注入 --></div>
-
-    <div class="method">
-      <p class="method__label mono">诊断方法论</p>
-      <ol class="method__list" id="methodList"><!-- js/app.js 注入 --></ol>
-      <p class="method__conclusion" id="arcConclusion"></p>
-    </div>
-  </section>
-
-  <!-- ===== 工作 / 项目 ===== -->
-  <section class="sect" id="work">
-    <header class="sect__head">
-      <p class="sect__num mono">01</p>
-      <h2 class="sect__title">工作</h2>
-      <p class="sect__sub mono">ISAAC PIPELINE · PUSHT</p>
-    </header>
-
-    <!-- 旗舰项目卡 -->
-    <article class="projcard" id="projIsaac">
-      <div class="projcard__head">
-        <div>
-          <p class="mono projcard__tag">FLAGSHIP · ISAAC SIM × ACT</p>
-          <h3 class="projcard__title" id="projIsaacTitle"></h3>
-          <p class="projcard__sub" id="projIsaacSub"></p>
+      <div class="proj proj--isaac">
+        <div class="proj__left">
+          <p class="proj__tag">FLAGSHIP · ISAAC SIM × ACT</p>
+          <h3 class="proj__name" id="projIsaacTitle"></h3>
+          <p class="proj__sub" id="projIsaacSub"></p>
         </div>
-        <span class="projcard__idx mono">01</span>
-      </div>
-      <div class="projcard__metrics" id="projIsaacMetrics"><!-- js/app.js 注入 --></div>
-      <p class="projcard__note" id="projIsaacNote"></p>
-    </article>
-
-    <!-- PushT 项目卡 -->
-    <article class="projcard" id="projPush">
-      <div class="projcard__head">
-        <div>
-          <p class="mono projcard__tag">PUSHT · ACT 50K</p>
-          <h3 class="projcard__title" id="projPushTitle"></h3>
-          <p class="projcard__sub" id="projPushSub"></p>
+        <div class="proj__right">
+          <div class="metric" id="projIsaacMetrics"><!-- js/app.js 注入 --></div>
         </div>
-        <span class="projcard__idx mono">02</span>
       </div>
-      <div class="projcard__media">
-        <video muted loop playsinline preload="none"
-               poster="assets/media/posters/eval_progression.jpg">
-          <source src="assets/media/eval_progression.mp4" type="video/mp4" />
-        </video>
+
+      <div class="proj proj--pusht">
+        <div class="proj__left">
+          <div class="proj__video">
+            <video muted loop playsinline preload="none"
+                   poster="assets/media/posters/eval_progression.jpg">
+              <source src="assets/media/eval_progression.mp4" type="video/mp4" />
+            </video>
+            <button class="vbtn" aria-label="播放/暂停">▶ PLAY</button>
+          </div>
+          <p class="proj__tag">PUSHT · ACT 50K</p>
+          <h3 class="proj__name" id="projPushTitle"></h3>
+          <p class="proj__sub" id="projPushSub"></p>
+        </div>
+        <div class="proj__right">
+          <div class="metric" id="projPushMetrics"><!-- js/app.js 注入 --></div>
+        </div>
       </div>
-      <div class="projcard__metrics" id="projPushMetrics"><!-- js/app.js 注入 --></div>
-      <p class="projcard__note" id="projPushNote"></p>
-    </article>
-  </section>
+    </section>
 
-  <!-- ===== 媒体墙 ===== -->
-  <section class="sect" id="media">
-    <header class="sect__head">
-      <p class="sect__num mono">03</p>
-      <h2 class="sect__title">媒体</h2>
-      <p class="sect__sub mono">9 CLIPS · CLICK TO PLAY</p>
-    </header>
+    <!-- 02 实验弧 -->
+    <section class="pane" id="pane-arc" data-panel="arc">
+      <h2 class="pane__title">实验弧</h2>
+      <table class="arc-table">
+        <thead>
+          <tr><th class="col-no">№</th><th class="col-cfg">CONFIG</th><th class="col-loss">LOSS</th><th class="col-beh">现象</th><th class="col-take">定位 / TAKEAWAY</th></tr>
+        </thead>
+        <tbody id="arcBody"><!-- js/app.js 注入 --></tbody>
+      </table>
+      <p class="arc-conclusion" id="arcConclusion"></p>
+    </section>
 
-    <div class="wall__grid" id="wallGrid"><!-- js/app.js 注入 --></div>
-  </section>
+    <!-- 03 媒体 -->
+    <section class="pane" id="pane-media" data-panel="media">
+      <h2 class="pane__title">媒体</h2>
+      <div class="wall" id="wallGrid"><!-- js/app.js 注入 --></div>
+    </section>
 
-  <!-- ===== 写作 ===== -->
-  <section class="sect" id="writing">
-    <header class="sect__head">
-      <p class="sect__num mono">04</p>
-      <h2 class="sect__title">写作</h2>
-      <p class="sect__sub mono" id="postCount">共 8 篇</p>
-    </header>
+    <!-- 04 写作 -->
+    <section class="pane" id="pane-writing" data-panel="writing">
+      <h2 class="pane__title">写作</h2>
+      <a class="featured" href="https://github.com/Jiatong-Wei" target="_blank" rel="noopener">
+        <span class="featured__date mono" id="featuredDate">2026.08.25</span>
+        <span class="featured__title" id="featuredTitle"></span>
+        <span class="featured__chip mono" id="featuredChip">ACT</span>
+      </a>
+      <div class="postlist" id="postList"><!-- js/app.js 注入 --></div>
+    </section>
 
-    <a class="featured" href="https://github.com/Jiatong-Wei" target="_blank" rel="noopener">
-      <div class="featured__meta">
-        <p class="mono featured__date" id="featuredDate">2026.08.25</p>
-        <h3 id="featuredTitle">Isaac Sim 采数到 ACT 训练：一条管线跑通的记录</h3>
-        <p class="featured__sum">从程序化 oracle 采集 12 回合演示，到转 LeRobot 格式、ACT 训练 2k/10k 两档，再到闭环 eval 0/35 的诚实记录——完整记录一条数据管线的第一次闭环跑通，以及七档实验弧如何逐环定位失效模式。</p>
+    <!-- 05 关于 -->
+    <section class="pane" id="pane-about" data-panel="about">
+      <h2 class="pane__title">关于</h2>
+      <div class="about">
+        <div class="about__col">
+          <p class="about__label mono">EDU</p>
+          <p class="about__edu">西北工业大学 · 本科在读 <span class="mono about__years">2023 — NOW</span></p>
+          <p class="about__label mono">FOCUS</p>
+          <p class="about__text">机器人学习与具身智能：行为克隆（ACT）、仿真数据采集（Isaac Sim/LeRobot）、Sim-to-Real 迁移、VLA 模型。关注从仿真到真实世界的迁移，以及机器人在开放环境中的泛化能力。</p>
+          <p class="about__label mono">NOW</p>
+          <div class="tags" id="aboutTags"><!-- js/app.js 注入 --></div>
+        </div>
+        <div class="about__col">
+          <p class="about__label mono">TIMELINE</p>
+          <div class="tl" id="aboutTimeline"><!-- js/app.js 注入 --></div>
+          <blockquote class="quote">“Build, break, document — repeat.”<span class="mono quote__by">// 我的工程信条</span></blockquote>
+          <p class="about__label mono">LINKS</p>
+          <p class="about__links" id="aboutLinks"><!-- js/app.js 注入 --></p>
+        </div>
       </div>
-      <span class="mono featured__chip" id="featuredChip">ACT</span>
-    </a>
+    </section>
 
-    <div class="postlist" id="postList"><!-- js/app.js 注入 --></div>
-  </section>
+  </main>
+</div>
 
-  <!-- ===== 关于 ===== -->
-  <section class="sect" id="about">
-    <header class="sect__head">
-      <p class="sect__num mono">05</p>
-      <h2 class="sect__title">关于</h2>
-    </header>
-
-    <div class="about" id="aboutBody">
-      <div class="about__col">
-        <p class="about__label mono">EDU</p>
-        <p class="about__edu">西北工业大学 · 本科在读 <span class="mono dim">2023 — NOW</span></p>
-        <p class="about__label mono">FOCUS</p>
-        <p class="about__text">机器人学习与具身智能：行为克隆（ACT）、仿真数据采集（Isaac Sim/LeRobot）、Sim-to-Real 迁移、VLA 模型。关注从仿真到真实世界的迁移，以及机器人在开放环境中的泛化能力。</p>
-        <p class="about__label mono">NOW</p>
-        <div class="tags" id="aboutTags"><!-- js/app.js 注入 --></div>
-      </div>
-      <div class="about__col">
-        <p class="about__label mono">TIMELINE</p>
-        <div class="tl" id="aboutTimeline"><!-- js/app.js 注入 --></div>
-        <blockquote class="quote">“Build, break, document — repeat.”<span class="mono quote__by">// 我的工程信条</span></blockquote>
-        <p class="about__label mono">LINKS</p>
-        <p class="about__links" id="aboutLinks"><!-- js/app.js 注入 --></p>
-      </div>
-    </div>
-  </section>
-
-</main>
-
-<!-- ===== 页脚 ===== -->
-<footer class="foot">
-  <div class="foot__inner">
-    <span class="mono foot__left">© 2026 LEO.WEI · BUILT WITH PLAIN HTML/CSS/JS</span>
-    <span class="mono foot__right"><a href="https://github.com/Jiatong-Wei" target="_blank" rel="noopener">GITHUB</a> · <a href="mailto:joyetong58@gmail.com">EMAIL</a></span>
-  </div>
+<!-- ===== 状态栏 ===== -->
+<footer class="statusbar">
+  <span class="mono">© 2026 LEO.WEI</span>
+  <span class="mono statusbar__mid">35 ROLLOUTS · 7 CONFIGS · 19 BUGS</span>
+  <span class="mono" id="clock">--:--:--</span>
 </footer>
+
+<!-- 媒体 lightbox -->
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <div class="lightbox__inner">
+    <button class="lightbox__close" aria-label="关闭">✕</button>
+    <video id="lightboxVideo" muted loop playsinline controls preload="none"></video>
+    <p class="lightbox__cap mono" id="lightboxCap"></p>
+  </div>
+</div>
 
 <!-- 数据层 + 交互层 -->
 <script src="js/data.js"></script>
