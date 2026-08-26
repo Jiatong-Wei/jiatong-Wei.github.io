@@ -17,11 +17,11 @@ const ISAAC_PROJECT = {
     { k: '2000', v: 'ACT 训练步', sub: 'loss 5.759→0.860' },
   ],
   metrics: [
-    { name: '训练 loss', value: '5.759 → 0.860', note: '2000 步 · −85%' },
+    { name: '训练 loss', value: '5.759 → 0.860', note: '2k 步 · 加量至 10k 后 0.073' },
     { name: '峰值显存', value: '1.03 GB', note: '4060 8GB 仅占 1GB' },
-    { name: '闭环 eval', value: '0/5', note: '诚实记录 · 待改进' },
+    { name: '闭环 eval', value: '0/10', note: '2k+10k 两档 · 诚实记录与判读' },
   ],
-  note: '演示含相对 SE(3) 动作（3 平移 + 3 轴角 + 夹爪开度），对齐 UMI 表示；转换 LeRobot 格式后训练。',
+  note: '演示含相对 SE(3) 动作（3 平移 + 3 轴角 + 夹爪开度），对齐 UMI 表示；转换 LeRobot 格式后训练。闭环 2k 与 10k 均 0/5 未夹住——10k 动作幅度减半更静止，拟合改善但未解锁抓取行为，瓶颈在演示数量/多样性。',
 };
 
 /* ---------- 第二条线：PushT ACT 50k ---------- */
@@ -91,7 +91,17 @@ const MEDIA_WALL = [
     src: 'assets/media/closedloop_ep02.mp4',
     poster: 'assets/media/posters/closedloop_ep02.jpg',
     label: 'CLOSEDLOOP_EP02.mp4',
-    caption: '闭环 eval · 诚实记录 0/5',
+    caption: '闭环 eval 2k · 诚实记录 0/5',
+    tag: 'CLOSED LOOP',
+    color: 'm',
+    videoMode: 'click',
+  },
+  {
+    type: 'video',
+    src: 'assets/media/closedloop10k_ep00.mp4',
+    poster: 'assets/media/posters/closedloop10k_ep00.jpg',
+    label: 'CLOSEDLOOP10K_EP00.mp4',
+    caption: '闭环 eval 10k · 动作更静止 · 0/10',
     tag: 'CLOSED LOOP',
     color: 'm',
     videoMode: 'click',
@@ -146,7 +156,7 @@ const PROCESSES = [
 /* ---------- 日志（写作/记录） ---------- */
 const POSTS = [
   { date: '2026.08.25', title: 'Isaac Sim 采数到 ACT 训练：一条管线跑通的记录', tag: 'ACT' },
-  { date: '2026.08.25', title: '闭环 eval 0/5：我如何判读一次失败', tag: 'EVAL' },
+  { date: '2026.08.25', title: '闭环 eval 0/10：加量训练与一次诚实的失败判读', tag: 'EVAL' },
   { date: '2026.08.12', title: '高斯泼溅二三事：从论文到校园重建实践', tag: '3DGS' },
   { date: '2026.06.28', title: '强化学习入门：从策略梯度到 PPO', tag: 'RL' },
   { date: '2026.04.09', title: 'ROS2 通讯机制的工程实践笔记', tag: 'ROS2' },
