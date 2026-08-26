@@ -66,8 +66,8 @@ body {
 }
 body.no-zoom #stage { width: 100vw; min-height: 100vh; flex: none; }
 
-@supports not (zoom: 1px) {
-  #stage { transform-origin: top left; }
+@supports not (zoom: 1) {
+  #stage { transform-origin: center center; }
 }
 
 ::selection { background: var(--accent); color: #fff; }
@@ -147,6 +147,18 @@ a { color: var(--accent); text-decoration: none; }
   transition: color 0.12s;
 }
 .rail__link:hover { color: var(--accent); }
+
+/* boot：CSS class 驱动，终态回归默认 opacity:1 */
+.rail__item { opacity: 1; }
+body.is-booting .topbar { animation: boot-fade 0.2s var(--ease) both; animation-delay: 80ms; }
+body.is-booting .rail__item { animation: boot-fade 0.18s var(--ease) both; }
+body.is-booting .rail__item:nth-child(1 of .rail__item) { animation-delay: 120ms; }
+body.is-booting .rail__item:nth-child(2 of .rail__item) { animation-delay: 165ms; }
+body.is-booting .rail__item:nth-child(3 of .rail__item) { animation-delay: 210ms; }
+body.is-booting .rail__item:nth-child(4 of .rail__item) { animation-delay: 255ms; }
+body.is-booting .rail__item:nth-child(5 of .rail__item) { animation-delay: 300ms; }
+body.is-booting .rail__item:nth-child(6 of .rail__item) { animation-delay: 345ms; }
+@keyframes boot-fade { from { opacity: 0; } to { opacity: 1; } }
 
 /* ---------- 面板区 ---------- */
 .panes {
@@ -624,4 +636,5 @@ a { color: var(--accent); text-decoration: none; }
   .pane.is-entering > * { animation: none !important; }
   .rail-bar { transition: none !important; }
   .wall__item video, .wall__item img { transform: none !important; }
+  body.is-booting .topbar, body.is-booting .rail__item { animation: none !important; }
 }

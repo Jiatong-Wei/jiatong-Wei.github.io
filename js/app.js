@@ -22,19 +22,20 @@ function fit() {
   if (window.innerWidth <= 768) {
     stage.style.zoom = '';
     stage.style.transform = '';
-    stage.style.marginLeft = '';
     document.body.classList.add('no-zoom');
     return;
   }
   document.body.classList.remove('no-zoom');
   const s = Math.min(window.innerWidth / 1440, window.innerHeight / 900);
-  if (CSS.supports('zoom: 1px')) {
+  if (CSS.supports('zoom', '1')) {
+    // zoom 是布局级缩放，body flex 会自动按缩放后尺寸居中
     stage.style.zoom = s;
+    stage.style.transform = '';
   } else {
-    // 布局盒仍 1440×900;scale 后视觉以视口中心对齐
+    // fallback：flex 先把 1440×900 盒子居中，绕中心 scale 后仍居中
+    stage.style.zoom = '';
     stage.style.transform = `scale(${s})`;
-    stage.style.transformOrigin = 'top left';
-    stage.style.marginLeft = `calc(50% - ${720 * s}px)`;
+    stage.style.transformOrigin = 'center center';
   }
 }
 window.addEventListener('resize', fit);
@@ -270,22 +271,14 @@ function boot() {
     return;
   }
   sessionStorage.setItem('ip-booted', '1');
-  // 快速串联:顶栏 → 左轨逐项 → 面板级联(reuse 级联)
-  const topbar = document.querySelector('.topbar');
+  // 快速串联：顶栏 → 左轨逐项 → 面板级联（CSS class 驱动，终态不依赖 inline style）
   const railItems = document.querySelectorAll('.rail__item');
-  const pane = document.getElementById('pane-home');
-  document.querySelectorAll('.rail__item').forEach(a => a.classList.remove('is-active'));
-  if (!reduced) {
-    topbar.style.opacity = '0';
-    railItems.forEach((item, i) => { item.style.opacity = '0'; item.style.transition = 'opacity 0.15s'; });
-    setTimeout(() => { topbar.style.opacity = '1'; }, 80);
-    railItems.forEach((item, i) =>
-      setTimeout(() => { item.style.opacity = '1'; }, 120 + i * 45));
-  }
-  const hash = location.hash.slice(1);
-  const target = PANELS.includes(hash) ? hash : 'home';
+  railItems.forEach(a => a.classList.remove('is-active'));
+  document.body.classList.add('is-booting');
+  const target = PANELS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'home';
   setTimeout(() => {
-    showPanel(target === 'home' ? 'home' : target, true);
+    document.body.classList.remove('is-booting');
+    showPanel(target, true);
     railItems.forEach(a => a.classList.toggle('is-active', a.dataset.panel === target));
     moveRailBar(target);
   }, 480);
