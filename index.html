@@ -3,92 +3,90 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>魏加桐 Leo Wei — Robotics & Embodied AI</title>
-<meta name="description" content="魏加桐（Leo Wei）— 机器人学习方向：仿真数据采集、模仿学习（ACT）、DAgger。西北工业大学。" />
-<meta name="theme-color" content="#FAFAF8" />
-<meta property="og:title" content="Leo Wei · 魏加桐" />
+<title>魏佳桐 Leo Wei — Robotics & Embodied AI</title>
+<meta name="description" content="魏佳桐（Leo Wei）— 机器人学习方向：仿真数据采集、模仿学习（ACT）、DAgger。西北工业大学。" />
+<meta name="theme-color" content="#F7F4EC" />
+<meta property="og:title" content="Leo Wei · 魏佳桐" />
 <meta property="og:description" content="Robotics & embodied AI — imitation learning, sim data pipelines, DAgger." />
 <meta property="og:type" content="website" />
 <link rel="preload" href="assets/fonts/jbmono-wght.woff2" as="font" type="font/woff2" crossorigin />
 <link rel="preload" href="assets/fonts/spacegrotesk-latin.woff2" as="font" type="font/woff2" crossorigin />
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='2' y='2' width='20' height='20' fill='none' stroke='%23002FA7' stroke-width='1.6'/%3E%3Cline x1='7' y1='7' x2='17' y2='17' stroke='%23002FA7' stroke-width='2'/%3E%3C/svg%3E" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='2' y='2' width='20' height='20' rx='3' fill='none' stroke='%23BC3B22' stroke-width='1.6'/%3E%3Cline x1='7' y1='7' x2='17' y2='17' stroke='%23BC3B22' stroke-width='2'/%3E%3C/svg%3E" />
 <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
 
 <header class="top">
-  <div class="top__inner">
-    <a class="brand" href="#top">LEO<span class="brand__dot">·</span>WEI</a>
-    <nav class="top__nav">
-      <a href="#work" data-i18n="nav_work">项目</a>
-      <a href="#log" data-i18n="nav_log">动态</a>
-      <a href="#about" data-i18n="nav_about">关于</a>
-    </nav>
-    <div class="top__ctrl">
-      <button class="ctrl" id="langBtn" type="button" aria-label="language">EN</button>
-      <button class="ctrl" id="themeBtn" type="button" aria-label="theme">☾</button>
-    </div>
+  <a class="brand" href="#top">WEI<span class="brand__dot">·</span>JIA<span class="brand__dot">·</span>TONG</a>
+  <span class="top__mark mono" data-i18n="mark">魏佳桐 · 机器人学习</span>
+  <div class="top__ctrl">
+    <button class="ctrl" id="langBtn" type="button" aria-label="language">EN</button>
+    <button class="ctrl" id="themeBtn" type="button" aria-label="theme">☾</button>
   </div>
 </header>
 
-<main id="top">
+<main class="stage" id="top">
 
-  <!-- ═══ HERO · 人先于项目 ═══ -->
-  <section class="hero wrap">
+  <!-- ═══ 左列 · 身份（常驻） ═══ -->
+  <section class="id">
     <p class="kicker mono"><span data-i18n="hero_kicker">机器人学习 · 具身智能</span><span class="kicker__sep">/</span><span>2023 — NOW</span></p>
-    <h1 class="hero__name">魏加桐 <span class="hero__latin">Leo Wei</span></h1>
-    <p class="hero__line" data-i18n="hero_line">在仿真里较真：给机械臂的数据采集与模仿学习建管线、立门禁、跑证伪。</p>
+    <h1 class="id__name">魏佳桐<span class="id__latin">Leo Wei</span></h1>
+    <p class="id__line" data-i18n="hero_line">在仿真里较真：给机械臂的数据采集与模仿学习建管线、立门禁、跑证伪。</p>
     <div class="chips">
       <span class="chip" data-i18n="chip_1">模仿学习 · ACT / DAgger</span>
       <span class="chip" data-i18n="chip_2">仿真数据采集 · Isaac Sim / LeRobot</span>
       <span class="chip" data-i18n="chip_3">安卓应用 · Kotlin</span>
     </div>
-    <p class="hero__links mono">
+    <p class="id__links mono">
       <a href="https://github.com/Jiatong-Wei" target="_blank" rel="noopener">GITHUB ↗</a>
       <a href="mailto:joyetong58@gmail.com">EMAIL ↗</a>
-      <span class="hero__loc" data-i18n="hero_loc">西安 · 西北工业大学</span>
     </p>
+    <p class="id__loc mono" data-i18n="hero_loc">西安 · 西北工业大学</p>
+    <p class="id__foot mono">© 2026 Leo Wei<span data-i18n="foot"> · vanilla HTML/CSS/JS</span></p>
   </section>
 
-  <!-- ═══ 项目 ═══ -->
-  <section class="wrap section" id="work">
-    <h2 class="section__title"><span class="mono section__no">01</span><span data-i18n="sec_work">项目</span></h2>
+  <!-- ═══ 右列 · 面板（标签切换） ═══ -->
+  <section class="deck">
+    <nav class="tabs" role="tablist">
+      <button class="tab is-on" data-view="isaac" role="tab" type="button" data-i18n="tab_isaac">旗舰项目</button>
+      <button class="tab" data-view="arx" role="tab" type="button">arxiarxi</button>
+      <button class="tab" data-view="log" role="tab" type="button" data-i18n="tab_log">研究动态</button>
+      <button class="tab" data-view="about" role="tab" type="button" data-i18n="tab_about">关于</button>
+    </nav>
 
-    <!-- A · Isaac 旗舰卡 -->
-    <article class="card flagship">
-      <div class="media-frame">
-        <video class="media" autoplay muted loop playsinline preload="metadata"
-               poster="assets/media/posters/showcase_reel.jpg">
-          <source src="assets/media/showcase_reel.mp4" type="video/mp4" />
-        </video>
-        <span class="media__cap mono">Isaac Sim 4.5 · RTX 4060 · <span data-i18n="cap_reel">闭环评估实录</span></span>
-      </div>
-      <div class="card__body">
-        <h3 class="card__title" data-i18n="isaac_title">Isaac Sim 机械臂抓取研究管线</h3>
-        <p class="card__sub mono" data-i18n="isaac_sub">采集 → 转换 → 训练 → 门禁 → 闭环 · 全链路单卡可复现</p>
-        <p data-i18n="isaac_p1">建成 Franka 抓取的完整仿真研究管线：程序化 oracle 采集、LeRobot 数据集转换、ACT 训练、机器可读门禁与逐帧诊断工具链——每一步都有验收标准，每一个数字都可复算。</p>
-        <p data-i18n="isaac_p2">九代受控实验证伪了纯模仿路线并定位根因（下降动作与目标物的耦合丢失），随后转向 DAgger 数据聚合：四轮迭代将末端-方块距离从 0.21m 推进至 0.094m，并首次实现策略回合的物理接触。方法有效，仍在推进。</p>
-        <div class="stats">
-          <div class="stat"><span class="stat__n">4</span><span class="stat__l" data-i18n="st1">DAgger 迭代轮次</span></div>
-          <div class="stat"><span class="stat__n">0.094<span class="stat__u">m</span></span><span class="stat__l" data-i18n="st2">末端最佳逼近</span></div>
-          <div class="stat"><span class="stat__n">20+</span><span class="stat__l" data-i18n="st3">受控实验代</span></div>
-          <div class="stat"><span class="stat__n">100+</span><span class="stat__l" data-i18n="st4">闭环评估回合</span></div>
+    <div class="views">
+      <!-- A · Isaac -->
+      <article class="view is-on" id="v-isaac">
+        <div class="isaac">
+          <figure class="media-frame">
+            <video class="media" autoplay muted loop playsinline preload="metadata"
+                   poster="assets/media/posters/showcase_reel.jpg">
+              <source src="assets/media/showcase_reel.mp4" type="video/mp4" />
+            </video>
+            <figcaption class="media__cap mono">Isaac Sim 4.5 · RTX 4060 · <span data-i18n="cap_reel">闭环评估实录</span></figcaption>
+          </figure>
+          <div class="isaac__txt">
+            <h2 class="view__title" data-i18n="isaac_title">Isaac Sim 机械臂抓取研究管线</h2>
+            <p class="view__sub mono" data-i18n="isaac_sub">采集 → 转换 → 训练 → 门禁 → 闭环 · 全链路单卡可复现</p>
+            <p class="view__p" data-i18n="isaac_p1">建成 Franka 抓取的完整仿真研究管线：程序化 oracle 采集、LeRobot 转换、ACT 训练、机器可读门禁与逐帧诊断——每步有验收标准，每个数字可复算。</p>
+            <p class="view__p" data-i18n="isaac_p2">九代受控实验证伪纯模仿路线并定位根因后转向 DAgger：四轮将末端-方块距离从 0.21m 推进至 0.094m，策略回合首次物理接触。方法有效，仍在推进。</p>
+            <div class="stats">
+              <div class="stat"><span class="stat__n">4</span><span class="stat__l" data-i18n="st1">DAgger 迭代轮次</span></div>
+              <div class="stat"><span class="stat__n">0.094<span class="stat__u">m</span></span><span class="stat__l" data-i18n="st2">末端最佳逼近</span></div>
+              <div class="stat"><span class="stat__n">20+</span><span class="stat__l" data-i18n="st3">受控实验代</span></div>
+              <div class="stat"><span class="stat__n">100+</span><span class="stat__l" data-i18n="st4">闭环评估回合</span></div>
+            </div>
+          </div>
         </div>
-        <div class="chips chips--tight">
-          <span class="chip">Isaac Sim 4.5</span><span class="chip">LeRobot · ACT</span>
-          <span class="chip" data-i18n="chip_gate">三层质量门禁</span><span class="chip">DAgger</span>
-        </div>
-      </div>
-    </article>
+      </article>
 
-    <!-- B · arxiarxi -->
-    <article class="card side">
-      <div class="card__body">
+      <!-- B · arxiarxi -->
+      <article class="view" id="v-arx">
         <div class="side__head">
-          <h3 class="card__title">arxiarxi</h3>
+          <h2 class="view__title">arxiarxi</h2>
           <span class="badge" data-i18n="badge_dev">开发中</span>
         </div>
-        <p data-i18n="arx_p">学术会议助手 Android 应用（Kotlin）——会议信息聚合与浏览体验。正在打磨，本卡片将随版本更新。</p>
+        <p class="view__p" data-i18n="arx_p">学术会议助手 Android 应用（Kotlin）——会议信息聚合与浏览体验。正在打磨，本卡片将随版本更新。</p>
         <div class="venue">
           <img src="assets/img/venue_cvpr.png" alt="CVPR" loading="lazy" />
           <img src="assets/img/venue_neurips.png" alt="NeurIPS" loading="lazy" />
@@ -97,51 +95,46 @@
           <img src="assets/img/venue_rss.png" alt="RSS" loading="lazy" />
           <img src="assets/img/venue_eccv.png" alt="ECCV" loading="lazy" />
         </div>
-      </div>
-    </article>
-  </section>
+      </article>
 
-  <!-- ═══ 动态 ═══ -->
-  <section class="wrap section" id="log">
-    <h2 class="section__title"><span class="mono section__no">02</span><span data-i18n="sec_log">研究动态</span></h2>
-    <ol class="tl">
-      <li class="tl__item"><span class="tl__t mono">2026.08</span>
-        <span data-i18n="tl1">DAgger 弧四轮收官：最佳逼近 0.094m，策略回合首次物理接触</span></li>
-      <li class="tl__item"><span class="tl__t mono">2026.08</span>
-        <span data-i18n="tl2">三个 AI 代理经 git 协作协议完成一夜无人值守实验</span></li>
-      <li class="tl__item"><span class="tl__t mono">2026.08</span>
-        <span data-i18n="tl3">LeRobot × PushT 端到端交叉验证：排除评估链路暗缺陷</span></li>
-      <li class="tl__item"><span class="tl__t mono">2026.07</span>
-        <span data-i18n="tl4">九代受控实验弧收官，证伪纯模仿路线并定位耦合丢失根因</span></li>
-      <li class="tl__item"><span class="tl__t mono">2026.06</span>
-        <span data-i18n="tl5">arxiarxi 安卓应用立项开发</span></li>
-    </ol>
-  </section>
+      <!-- C · 动态 -->
+      <article class="view" id="v-log">
+        <h2 class="view__title" data-i18n="sec_log">研究动态</h2>
+        <ol class="tl">
+          <li class="tl__item"><span class="tl__t mono">2026.08</span>
+            <span data-i18n="tl1">DAgger 弧四轮收官：最佳逼近 0.094m，策略回合首次物理接触</span></li>
+          <li class="tl__item"><span class="tl__t mono">2026.08</span>
+            <span data-i18n="tl2">三个 AI 代理经 git 协作协议完成一夜无人值守实验</span></li>
+          <li class="tl__item"><span class="tl__t mono">2026.08</span>
+            <span data-i18n="tl3">LeRobot × PushT 端到端交叉验证：排除评估链路暗缺陷</span></li>
+          <li class="tl__item"><span class="tl__t mono">2026.07</span>
+            <span data-i18n="tl4">九代受控实验弧收官，证伪纯模仿路线并定位耦合丢失根因</span></li>
+          <li class="tl__item"><span class="tl__t mono">2026.06</span>
+            <span data-i18n="tl5">arxiarxi 安卓应用立项开发</span></li>
+        </ol>
+      </article>
 
-  <!-- ═══ 关于 ═══ -->
-  <section class="wrap section" id="about">
-    <h2 class="section__title"><span class="mono section__no">03</span><span data-i18n="sec_about">关于</span></h2>
-    <div class="about">
-      <div class="about__col">
-        <p class="label mono">EDU</p>
-        <p data-i18n="edu">西北工业大学 · 本科在读</p>
-        <p class="label mono">FOCUS</p>
-        <p data-i18n="focus">机器人学习与具身智能：行为克隆（ACT）、仿真数据采集（Isaac Sim / LeRobot）、Sim-to-Real 迁移、VLA 模型。关注从仿真到真实世界的迁移，以及机器人在开放环境中的泛化能力。</p>
-      </div>
-      <div class="about__col">
-        <p class="label mono">STACK</p>
-        <div class="chips chips--tight">
-          <span class="chip">Python</span><span class="chip">PyTorch</span><span class="chip">LeRobot</span>
-          <span class="chip">Isaac Sim</span><span class="chip">Kotlin</span><span class="chip">Git · Linux</span>
+      <!-- D · 关于 -->
+      <article class="view" id="v-about">
+        <h2 class="view__title" data-i18n="tab_about">关于</h2>
+        <div class="about">
+          <div class="about__col">
+            <p class="label mono">EDU</p>
+            <p class="view__p" data-i18n="edu">西北工业大学 · 本科在读</p>
+            <p class="label mono">FOCUS</p>
+            <p class="view__p" data-i18n="focus">机器人学习与具身智能：行为克隆（ACT）、仿真数据采集（Isaac Sim / LeRobot）、Sim-to-Real 迁移、VLA 模型。关注从仿真到真实世界的迁移，以及机器人在开放环境中的泛化能力。</p>
+          </div>
+          <div class="about__col">
+            <p class="label mono">STACK</p>
+            <div class="chips chips--tight">
+              <span class="chip">Python</span><span class="chip">PyTorch</span><span class="chip">LeRobot</span>
+              <span class="chip">Isaac Sim</span><span class="chip">Kotlin</span><span class="chip">Git · Linux</span>
+            </div>
+          </div>
         </div>
-      </div>
+      </article>
     </div>
   </section>
-
-  <footer class="foot wrap mono">
-    <span>© 2026 Leo Wei</span>
-    <span data-i18n="foot">vanilla HTML/CSS/JS · 影像来自 Isaac Sim 4.5 实验记录</span>
-  </footer>
 </main>
 
 <script src="js/app.js"></script>

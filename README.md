@@ -1,6 +1,6 @@
-# LEO.WEI // NIGHT CITY
+# 魏佳桐 LEO WEI — 个人主页
 
-Leo Wei（@JIATONG-WEI）的个人主页 —— 赛博朋克（Cyberpunk: Edgerunners）美学的单屏应用式站点，现为**机器人学习方向作品集**。
+魏佳桐 Leo Wei（@Jiatong-Wei）的个人主页 —— 单屏研究面板式站点：左列身份常驻，右列标签切换旗舰项目 / arxiarxi / 研究动态 / 关于；访客可切换中英文与深浅主题（暖象牙纸 × 朱砂红）。
 
 **零依赖、零构建**：纯 HTML/CSS/原生 JS，用任意静态服务器即可运行：
 
