@@ -1,17 +1,14 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="light">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>LEO.WEI — Robotics Learner</title>
-<meta name="description" content="Leo Wei（@JIATONG-WEI）— 机器人学习方向：Isaac Sim 采数、ACT 行为克隆、Sim-to-Real。" />
+<title>魏加桐 Leo Wei — Robotics & Embodied AI</title>
+<meta name="description" content="魏加桐（Leo Wei）— 机器人学习方向：仿真数据采集、模仿学习（ACT）、DAgger。西北工业大学。" />
 <meta name="theme-color" content="#FAFAF8" />
-<meta property="og:title" content="LEO.WEI" />
-<meta property="og:description" content="Robotics learner — imitation learning / sim2real / ACT." />
+<meta property="og:title" content="Leo Wei · 魏加桐" />
+<meta property="og:description" content="Robotics & embodied AI — imitation learning, sim data pipelines, DAgger." />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://jiatong-wei.github.io/" />
-<meta property="og:image" content="https://jiatong-wei.github.io/assets/img/act-day5-train-curve.png" />
-<meta name="twitter:card" content="summary" />
 <link rel="preload" href="assets/fonts/jbmono-wght.woff2" as="font" type="font/woff2" crossorigin />
 <link rel="preload" href="assets/fonts/spacegrotesk-latin.woff2" as="font" type="font/woff2" crossorigin />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='2' y='2' width='20' height='20' fill='none' stroke='%23002FA7' stroke-width='1.6'/%3E%3Cline x1='7' y1='7' x2='17' y2='17' stroke='%23002FA7' stroke-width='2'/%3E%3C/svg%3E" />
@@ -19,161 +16,134 @@
 </head>
 <body>
 
-<div id="stage">
-
-<!-- ===== 顶栏 ===== -->
-<header class="topbar">
-  <span class="topbar__logo">LEO.WEI</span>
-  <span class="topbar__sub">ROBOTICS LEARNER · XI'AN</span>
+<header class="top">
+  <div class="top__inner">
+    <a class="brand" href="#top">LEO<span class="brand__dot">·</span>WEI</a>
+    <nav class="top__nav">
+      <a href="#work" data-i18n="nav_work">项目</a>
+      <a href="#log" data-i18n="nav_log">动态</a>
+      <a href="#about" data-i18n="nav_about">关于</a>
+    </nav>
+    <div class="top__ctrl">
+      <button class="ctrl" id="langBtn" type="button" aria-label="language">EN</button>
+      <button class="ctrl" id="themeBtn" type="button" aria-label="theme">☾</button>
+    </div>
+  </div>
 </header>
 
-<div class="frame">
+<main id="top">
 
-  <!-- ===== 左轨 ===== -->
-  <nav class="rail" aria-label="栏目导航">
-    <span class="rail__sect">NAV</span>
-    <a class="rail__item is-active" href="#home" data-panel="home"><i class="rail__dot"></i>00 首页</a>
-    <a class="rail__item" href="#work" data-panel="work"><i class="rail__dot"></i>01 项目</a>
-    <a class="rail__item" href="#arc" data-panel="arc"><i class="rail__dot"></i>02 实验弧</a>
-    <a class="rail__item" href="#media" data-panel="media"><i class="rail__dot"></i>03 媒体</a>
-    <a class="rail__item" href="#writing" data-panel="writing"><i class="rail__dot"></i>04 写作</a>
-    <a class="rail__item" href="#about" data-panel="about"><i class="rail__dot"></i>05 关于</a>
-    <span class="rail__spacer"></span>
-    <span class="rail__sect">LINKS</span>
-    <a class="rail__link" href="https://github.com/Jiatong-Wei" target="_blank" rel="noopener">GITHUB</a>
-    <a class="rail__link" href="mailto:joyetong58@gmail.com">EMAIL</a>
-  </nav>
+  <!-- ═══ HERO · 人先于项目 ═══ -->
+  <section class="hero wrap">
+    <p class="kicker mono"><span data-i18n="hero_kicker">机器人学习 · 具身智能</span><span class="kicker__sep">/</span><span>2023 — NOW</span></p>
+    <h1 class="hero__name">魏加桐 <span class="hero__latin">Leo Wei</span></h1>
+    <p class="hero__line" data-i18n="hero_line">在仿真里较真：给机械臂的数据采集与模仿学习建管线、立门禁、跑证伪。</p>
+    <div class="chips">
+      <span class="chip" data-i18n="chip_1">模仿学习 · ACT / DAgger</span>
+      <span class="chip" data-i18n="chip_2">仿真数据采集 · Isaac Sim / LeRobot</span>
+      <span class="chip" data-i18n="chip_3">安卓应用 · Kotlin</span>
+    </div>
+    <p class="hero__links mono">
+      <a href="https://github.com/Jiatong-Wei" target="_blank" rel="noopener">GITHUB ↗</a>
+      <a href="mailto:joyetong58@gmail.com">EMAIL ↗</a>
+      <span class="hero__loc" data-i18n="hero_loc">西安 · 西北工业大学</span>
+    </p>
+  </section>
 
-  <!-- ===== 面板区 ===== -->
-  <main class="panes">
+  <!-- ═══ 项目 ═══ -->
+  <section class="wrap section" id="work">
+    <h2 class="section__title"><span class="mono section__no">01</span><span data-i18n="sec_work">项目</span></h2>
 
-    <!-- 00 首页 -->
-    <section class="pane is-active" id="pane-home" data-panel="home">
-      <h2 class="pane__title">首页</h2>
-      <div class="home">
-        <div class="home__left">
-          <p class="home__name">LEO WEI <span class="home__cn">魏加桐</span></p>
-          <p class="home__role mono">ROBOTICS LEARNER</p>
-          <p class="home__edu mono">西北工业大学 · 本科在读 <span class="dim">2023 — NOW</span></p>
-          <p class="home__focus" id="homeFocus"></p>
-          <div class="tags" id="homeTags"><!-- js/app.js 注入 --></div>
-          <p class="home__links" id="homeLinks"><!-- js/app.js 注入 --></p>
+    <!-- A · Isaac 旗舰卡 -->
+    <article class="card flagship">
+      <div class="media-frame">
+        <video class="media" autoplay muted loop playsinline preload="metadata"
+               poster="assets/media/posters/showcase_reel.jpg">
+          <source src="assets/media/showcase_reel.mp4" type="video/mp4" />
+        </video>
+        <span class="media__cap mono">Isaac Sim 4.5 · RTX 4060 · <span data-i18n="cap_reel">闭环评估实录</span></span>
+      </div>
+      <div class="card__body">
+        <h3 class="card__title" data-i18n="isaac_title">Isaac Sim 机械臂抓取研究管线</h3>
+        <p class="card__sub mono" data-i18n="isaac_sub">采集 → 转换 → 训练 → 门禁 → 闭环 · 全链路单卡可复现</p>
+        <p data-i18n="isaac_p1">建成 Franka 抓取的完整仿真研究管线：程序化 oracle 采集、LeRobot 数据集转换、ACT 训练、机器可读门禁与逐帧诊断工具链——每一步都有验收标准，每一个数字都可复算。</p>
+        <p data-i18n="isaac_p2">九代受控实验证伪了纯模仿路线并定位根因（下降动作与目标物的耦合丢失），随后转向 DAgger 数据聚合：四轮迭代将末端-方块距离从 0.21m 推进至 0.094m，并首次实现策略回合的物理接触。方法有效，仍在推进。</p>
+        <div class="stats">
+          <div class="stat"><span class="stat__n">4</span><span class="stat__l" data-i18n="st1">DAgger 迭代轮次</span></div>
+          <div class="stat"><span class="stat__n">0.094<span class="stat__u">m</span></span><span class="stat__l" data-i18n="st2">末端最佳逼近</span></div>
+          <div class="stat"><span class="stat__n">20+</span><span class="stat__l" data-i18n="st3">受控实验代</span></div>
+          <div class="stat"><span class="stat__n">100+</span><span class="stat__l" data-i18n="st4">闭环评估回合</span></div>
         </div>
-        <div class="home__right">
-          <p class="home__news-label mono">NEWS // 近期动态</p>
-          <div class="news" id="homeNews"><!-- js/app.js 注入 --></div>
+        <div class="chips chips--tight">
+          <span class="chip">Isaac Sim 4.5</span><span class="chip">LeRobot · ACT</span>
+          <span class="chip" data-i18n="chip_gate">三层质量门禁</span><span class="chip">DAgger</span>
         </div>
       </div>
-    </section>
+    </article>
 
-    <!-- 01 项目 -->
-    <section class="pane" id="pane-work" data-panel="work">
-      <h2 class="pane__title">项目</h2>
-
-      <div class="proj proj--isaac">
-        <div class="proj__left">
-          <p class="proj__tag">FLAGSHIP · ISAAC SIM × ACT</p>
-          <h3 class="proj__name" id="projIsaacTitle"></h3>
-          <p class="proj__sub" id="projIsaacSub"></p>
+    <!-- B · arxiarxi -->
+    <article class="card side">
+      <div class="card__body">
+        <div class="side__head">
+          <h3 class="card__title">arxiarxi</h3>
+          <span class="badge" data-i18n="badge_dev">开发中</span>
         </div>
-        <div class="proj__right">
-          <div class="metric" id="projIsaacMetrics"><!-- js/app.js 注入 --></div>
-        </div>
-      </div>
-
-      <div class="proj proj--pusht">
-        <div class="proj__left">
-          <div class="proj__video">
-            <video muted loop playsinline preload="none"
-                   poster="assets/media/posters/eval_progression.jpg">
-              <source src="assets/media/eval_progression.mp4" type="video/mp4" />
-            </video>
-            <button class="vbtn" aria-label="播放/暂停">▶ PLAY</button>
-          </div>
-          <p class="proj__tag">PUSHT · ACT 50K</p>
-          <h3 class="proj__name" id="projPushTitle"></h3>
-          <p class="proj__sub" id="projPushSub"></p>
-        </div>
-        <div class="proj__right">
-          <div class="metric" id="projPushMetrics"><!-- js/app.js 注入 --></div>
+        <p data-i18n="arx_p">学术会议助手 Android 应用（Kotlin）——会议信息聚合与浏览体验。正在打磨，本卡片将随版本更新。</p>
+        <div class="venue">
+          <img src="assets/img/venue_cvpr.png" alt="CVPR" loading="lazy" />
+          <img src="assets/img/venue_neurips.png" alt="NeurIPS" loading="lazy" />
+          <img src="assets/img/venue_icra.png" alt="ICRA" loading="lazy" />
+          <img src="assets/img/venue_corl.png" alt="CoRL" loading="lazy" />
+          <img src="assets/img/venue_rss.png" alt="RSS" loading="lazy" />
+          <img src="assets/img/venue_eccv.png" alt="ECCV" loading="lazy" />
         </div>
       </div>
-    </section>
+    </article>
+  </section>
 
-    <!-- 02 实验弧 -->
-    <section class="pane" id="pane-arc" data-panel="arc">
-      <h2 class="pane__title">实验弧</h2>
-      <table class="arc-table">
-        <thead>
-          <tr><th class="col-no">№</th><th class="col-cfg">CONFIG</th><th class="col-loss">LOSS</th><th class="col-beh">现象</th><th class="col-take">定位 / TAKEAWAY</th></tr>
-        </thead>
-        <tbody id="arcBody"><!-- js/app.js 注入 --></tbody>
-      </table>
-      <p class="arc-conclusion" id="arcConclusion"></p>
-    </section>
+  <!-- ═══ 动态 ═══ -->
+  <section class="wrap section" id="log">
+    <h2 class="section__title"><span class="mono section__no">02</span><span data-i18n="sec_log">研究动态</span></h2>
+    <ol class="tl">
+      <li class="tl__item"><span class="tl__t mono">2026.08</span>
+        <span data-i18n="tl1">DAgger 弧四轮收官：最佳逼近 0.094m，策略回合首次物理接触</span></li>
+      <li class="tl__item"><span class="tl__t mono">2026.08</span>
+        <span data-i18n="tl2">三个 AI 代理经 git 协作协议完成一夜无人值守实验</span></li>
+      <li class="tl__item"><span class="tl__t mono">2026.08</span>
+        <span data-i18n="tl3">LeRobot × PushT 端到端交叉验证：排除评估链路暗缺陷</span></li>
+      <li class="tl__item"><span class="tl__t mono">2026.07</span>
+        <span data-i18n="tl4">九代受控实验弧收官，证伪纯模仿路线并定位耦合丢失根因</span></li>
+      <li class="tl__item"><span class="tl__t mono">2026.06</span>
+        <span data-i18n="tl5">arxiarxi 安卓应用立项开发</span></li>
+    </ol>
+  </section>
 
-    <!-- 03 媒体 -->
-    <section class="pane" id="pane-media" data-panel="media">
-      <h2 class="pane__title">媒体</h2>
-      <div class="wall" id="wallGrid"><!-- js/app.js 注入 --></div>
-    </section>
-
-    <!-- 04 写作 -->
-    <section class="pane" id="pane-writing" data-panel="writing">
-      <h2 class="pane__title">写作</h2>
-      <a class="featured" href="https://github.com/Jiatong-Wei" target="_blank" rel="noopener">
-        <span class="featured__date mono" id="featuredDate">2026.08.25</span>
-        <span class="featured__title" id="featuredTitle"></span>
-        <span class="featured__chip mono" id="featuredChip">ACT</span>
-      </a>
-      <div class="postlist" id="postList"><!-- js/app.js 注入 --></div>
-    </section>
-
-    <!-- 05 关于 -->
-    <section class="pane" id="pane-about" data-panel="about">
-      <h2 class="pane__title">关于</h2>
-      <div class="about">
-        <div class="about__col">
-          <p class="about__label mono">EDU</p>
-          <p class="about__edu">西北工业大学 · 本科在读 <span class="mono about__years">2023 — NOW</span></p>
-          <p class="about__label mono">FOCUS</p>
-          <p class="about__text">机器人学习与具身智能：行为克隆（ACT）、仿真数据采集（Isaac Sim/LeRobot）、Sim-to-Real 迁移、VLA 模型。关注从仿真到真实世界的迁移，以及机器人在开放环境中的泛化能力。</p>
-          <p class="about__label mono">NOW</p>
-          <div class="tags" id="aboutTags"><!-- js/app.js 注入 --></div>
-        </div>
-        <div class="about__col">
-          <p class="about__label mono">TIMELINE</p>
-          <div class="tl" id="aboutTimeline"><!-- js/app.js 注入 --></div>
-          <blockquote class="quote">“Build, break, document — repeat.”<span class="mono quote__by">// 我的工程信条</span></blockquote>
-          <p class="about__label mono">LINKS</p>
-          <p class="about__links" id="aboutLinks"><!-- js/app.js 注入 --></p>
+  <!-- ═══ 关于 ═══ -->
+  <section class="wrap section" id="about">
+    <h2 class="section__title"><span class="mono section__no">03</span><span data-i18n="sec_about">关于</span></h2>
+    <div class="about">
+      <div class="about__col">
+        <p class="label mono">EDU</p>
+        <p data-i18n="edu">西北工业大学 · 本科在读</p>
+        <p class="label mono">FOCUS</p>
+        <p data-i18n="focus">机器人学习与具身智能：行为克隆（ACT）、仿真数据采集（Isaac Sim / LeRobot）、Sim-to-Real 迁移、VLA 模型。关注从仿真到真实世界的迁移，以及机器人在开放环境中的泛化能力。</p>
+      </div>
+      <div class="about__col">
+        <p class="label mono">STACK</p>
+        <div class="chips chips--tight">
+          <span class="chip">Python</span><span class="chip">PyTorch</span><span class="chip">LeRobot</span>
+          <span class="chip">Isaac Sim</span><span class="chip">Kotlin</span><span class="chip">Git · Linux</span>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-  </main>
-</div>
+  <footer class="foot wrap mono">
+    <span>© 2026 Leo Wei</span>
+    <span data-i18n="foot">vanilla HTML/CSS/JS · 影像来自 Isaac Sim 4.5 实验记录</span>
+  </footer>
+</main>
 
-<!-- ===== 状态栏 ===== -->
-<footer class="statusbar">
-  <span class="mono">© 2026 LEO.WEI</span>
-  <span class="mono statusbar__mid">35 ROLLOUTS · 7 CONFIGS · 19 BUGS</span>
-  <span class="mono" id="clock">--:--:--</span><i class="cursor-box" aria-hidden="true"></i>
-</footer>
-
-<!-- 媒体 lightbox（#stage 内,随缩放同步） -->
-<div class="lightbox" id="lightbox" aria-hidden="true">
-  <div class="lightbox__inner">
-    <button class="lightbox__close" aria-label="关闭">✕</button>
-    <video id="lightboxVideo" muted loop playsinline controls preload="none"></video>
-    <p class="lightbox__cap mono" id="lightboxCap"></p>
-  </div>
-</div>
-
-</div><!-- /#stage -->
-
-<!-- 数据层 + 交互层 -->
-<script src="js/data.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

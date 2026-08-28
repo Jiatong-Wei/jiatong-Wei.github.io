@@ -1,297 +1,104 @@
 /* ============================================================
-   LEO.WEI // Instrument Panel — 交互层 v7
-   1. 数据渲染(Home/指标/实验弧/媒体墙/写作/关于)
-   2. 面板切换 hash 同步 + 逐行级联(≤400ms)
-   3. 左轨指示条 FLIP 滑动
-   4. #stage 等比缩放 fit()(1440×900 画布)
-   5. 首次加载 boot(≤600ms, session 内一次)
-   6. 媒体 lightbox / 状态栏时钟 + 光标
-   全部 respect prefers-reduced-motion
+   LEO.WEI · Research Dossier — 交互层
+   1. i18n:中英切换(data-i18n 字典注入,localStorage 持久)
+   2. 主题:浅/深切换(localStorage 持久,浅色默认)
+   零依赖 · vanilla JS
    ============================================================ */
+(function () {
+  "use strict";
 
-const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-const PANELS = ['home', 'work', 'arc', 'media', 'writing', 'about'];
-const stage = document.getElementById('stage');
-
-function esc(s) {
-  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
-
-/* ---------- #stage 等比缩放 ---------- */
-function fit() {
-  if (window.innerWidth <= 768) {
-    stage.style.zoom = '';
-    stage.style.transform = '';
-    document.body.classList.add('no-zoom');
-    return;
-  }
-  document.body.classList.remove('no-zoom');
-  const s = Math.min(window.innerWidth / 1440, window.innerHeight / 900);
-  if (CSS.supports('zoom', '1')) {
-    // zoom 是布局级缩放，body flex 会自动按缩放后尺寸居中
-    stage.style.zoom = s;
-    stage.style.transform = '';
-  } else {
-    // fallback：flex 先把 1440×900 盒子居中，绕中心 scale 后仍居中
-    stage.style.zoom = '';
-    stage.style.transform = `scale(${s})`;
-    stage.style.transformOrigin = 'center center';
-  }
-}
-window.addEventListener('resize', fit);
-window.addEventListener('orientationchange', fit);
-
-/* ---------- Home 渲染 ---------- */
-function renderHome() {
-  const focus = document.getElementById('homeFocus');
-  if (focus) {
-    const aboutText = document.querySelector('.about__text');
-    focus.textContent = aboutText ? aboutText.textContent.trim() : '';
-  }
-  const tags = document.getElementById('homeTags');
-  if (tags) tags.innerHTML = TAGS.map(t => `<span class="tag">${esc(t)}</span>`).join('');
-  const links = document.getElementById('homeLinks');
-  if (links) links.innerHTML = LINKS.map(l =>
-    `<a href="${l.href}" target="_blank" rel="noopener">${esc(l.label)}</a>`
-  ).join('');
-  // NEWS: 从 TIMELINE + POSTS 派生密集日志行（日期 desc，取 6 条）
-  const news = document.getElementById('homeNews');
-  const timelineRows = (TIMELINE || []).map(t => ({ date: `${t.year}.00`, sort: `${t.year}.00`, evt: t.event, tag: 'TL' }));
-  const postRows = (POSTS || []).map(p => ({ date: p.date, sort: p.date, evt: p.title, tag: p.tag }));
-  const rows = [...timelineRows, ...postRows]
-    .sort((a, b) => (a.sort < b.sort ? 1 : -1))
-    .slice(0, 6);
-  news.innerHTML = rows.map(r =>
-    `<div class="news__row"><span class="news__date">${esc(r.date)}</span>` +
-    `<span class="news__evt">${esc(r.evt)}</span>` +
-    `<span class="news__tag">${esc(r.tag)}</span></div>`
-  ).join('');
-}
-
-/* ---------- 指标表 ---------- */
-function renderMetrics(elId, data) {
-  const el = document.getElementById(elId);
-  if (!el || !data) return;
-  el.innerHTML = data.metrics.map(m =>
-    `<div class="metric-row"><span class="metric-row__name">${esc(m.name)}</span>` +
-    `<span class="metric-row__value">${esc(m.value)}</span>` +
-    `<span class="metric-row__note">${esc(m.note)}</span></div>`
-  ).join('');
-}
-
-/* ---------- 项目卡左信息 ---------- */
-function renderProjectMeta() {
-  if (ISAAC_PROJECT) {
-    document.getElementById('projIsaacTitle').textContent = ISAAC_PROJECT.title;
-    document.getElementById('projIsaacSub').textContent = ISAAC_PROJECT.subtitle;
-  }
-  if (PUSHT_PROJECT) {
-    document.getElementById('projPushTitle').textContent = PUSHT_PROJECT.title;
-    document.getElementById('projPushSub').textContent = PUSHT_PROJECT.subtitle;
-  }
-}
-
-/* ---------- 实验弧表格 ---------- */
-function renderArc() {
-  const tbody = document.getElementById('arcBody');
-  if (!tbody || !EXPERIMENT_ARC) return;
-  tbody.innerHTML = EXPERIMENT_ARC.rows.map((r, i) => {
-    let dot = '', badge = '';
-    if (i === 6)      { dot = '<i class="arc-dot dot-blue"></i>';   badge = '<span class="arc-badge badge-best">最近</span>'; }
-    else if (i === 5) { dot = '<i class="arc-dot dot-green"></i>';  badge = '<span class="arc-badge badge-good">进展</span>'; }
-    else if (i === 4) { dot = '<i class="arc-dot dot-red"></i>';    badge = '<span class="arc-badge badge-fail">失效</span>'; }
-    return `<tr>` +
-      `<td class="arc-no">${String(i + 1).padStart(2, '0')}</td>` +
-      `<td class="arc-cfg">${dot}${esc(r.cfg)}${badge}</td>` +
-      `<td class="arc-loss">${esc(r.loss)}</td>` +
-      `<td class="arc-beh">${esc(r.behavior)}</td>` +
-      `<td class="arc-take">${esc(r.takeaway)}</td></tr>`;
-  }).join('');
-  document.getElementById('arcConclusion').textContent = '结论：' + EXPERIMENT_ARC.conclusion;
-}
-
-/* ---------- 媒体墙 ---------- */
-function renderWall() {
-  const grid = document.getElementById('wallGrid');
-  grid.innerHTML = MEDIA_WALL.map((m, i) => {
-    const span = (i === MEDIA_WALL.length - 1) ? ' wall__item--span' : '';
-    if (m.type === 'image') {
-      return `<figure class="wall__item wall__item--img${span}" data-kind="img">` +
-        `<img src="${m.src}" alt="${esc(m.label)}" loading="lazy" />` +
-        `<figcaption class="wall__cap"><span class="wall__tag">${esc(m.tag)}</span><span class="wall__label mono">${esc(m.label)}</span></figcaption>` +
-        `<p class="wall__note">${esc(m.caption)}</p></figure>`;
+  var I18N = {
+    zh: {
+      nav_work: "项目", nav_log: "动态", nav_about: "关于",
+      hero_kicker: "机器人学习 · 具身智能",
+      hero_line: "在仿真里较真：给机械臂的数据采集与模仿学习建管线、立门禁、跑证伪。",
+      chip_1: "模仿学习 · ACT / DAgger",
+      chip_2: "仿真数据采集 · Isaac Sim / LeRobot",
+      chip_3: "安卓应用 · Kotlin",
+      hero_loc: "西安 · 西北工业大学",
+      sec_work: "项目", sec_log: "研究动态", sec_about: "关于",
+      cap_reel: "闭环评估实录",
+      isaac_title: "Isaac Sim 机械臂抓取研究管线",
+      isaac_sub: "采集 → 转换 → 训练 → 门禁 → 闭环 · 全链路单卡可复现",
+      isaac_p1: "建成 Franka 抓取的完整仿真研究管线：程序化 oracle 采集、LeRobot 数据集转换、ACT 训练、机器可读门禁与逐帧诊断工具链——每一步都有验收标准，每一个数字都可复算。",
+      isaac_p2: "九代受控实验证伪了纯模仿路线并定位根因（下降动作与目标物的耦合丢失），随后转向 DAgger 数据聚合：四轮迭代将末端-方块距离从 0.21m 推进至 0.094m，并首次实现策略回合的物理接触。方法有效，仍在推进。",
+      st1: "DAgger 迭代轮次", st2: "末端最佳逼近", st3: "受控实验代", st4: "闭环评估回合",
+      chip_gate: "三层质量门禁",
+      badge_dev: "开发中",
+      arx_p: "学术会议助手 Android 应用（Kotlin）——会议信息聚合与浏览体验。正在打磨，本卡片将随版本更新。",
+      tl1: "DAgger 弧四轮收官：最佳逼近 0.094m，策略回合首次物理接触",
+      tl2: "三个 AI 代理经 git 协作协议完成一夜无人值守实验",
+      tl3: "LeRobot × PushT 端到端交叉验证：排除评估链路暗缺陷",
+      tl4: "九代受控实验弧收官，证伪纯模仿路线并定位耦合丢失根因",
+      tl5: "arxiarxi 安卓应用立项开发",
+      edu: "西北工业大学 · 本科在读",
+      focus: "机器人学习与具身智能：行为克隆（ACT）、仿真数据采集（Isaac Sim / LeRobot）、Sim-to-Real 迁移、VLA 模型。关注从仿真到真实世界的迁移，以及机器人在开放环境中的泛化能力。",
+      foot: "vanilla HTML/CSS/JS · 影像来自 Isaac Sim 4.5 实验记录"
+    },
+    en: {
+      nav_work: "Work", nav_log: "Log", nav_about: "About",
+      hero_kicker: "Robotics · Embodied AI",
+      hero_line: "Rigorous in simulation: building pipelines, gates, and falsification runs for robot data collection and imitation learning.",
+      chip_1: "Imitation Learning · ACT / DAgger",
+      chip_2: "Sim Data · Isaac Sim / LeRobot",
+      chip_3: "Android · Kotlin",
+      hero_loc: "Xi'an · Northwestern Polytechnical University",
+      sec_work: "Selected Work", sec_log: "Research Log", sec_about: "About",
+      cap_reel: "closed-loop evaluation footage",
+      isaac_title: "Isaac Sim Manipulation Research Pipeline",
+      isaac_sub: "collect → convert → train → gate → closed-loop · reproducible on one GPU",
+      isaac_p1: "Built a complete simulation research pipeline for Franka grasping: programmatic-oracle data collection, LeRobot dataset conversion, ACT training, and a machine-readable gating & per-frame diagnostics toolkit — every step has acceptance criteria, every number is recomputable.",
+      isaac_p2: "Nine generations of controlled experiments falsified pure imitation and isolated the root cause (loss of coupling between descent and the target object), motivating a pivot to DAgger aggregation: four rounds pushed best end-effector approach from 0.21m to 0.094m and achieved the first physical contact by a policy rollout. The method works; the work continues.",
+      st1: "DAgger iterations", st2: "best approach", st3: "controlled exp. gens", st4: "closed-loop rollouts",
+      chip_gate: "3-layer QA gates",
+      badge_dev: "IN DEVELOPMENT",
+      arx_p: "Academic conference companion app for Android (Kotlin) — venue info aggregation and reading experience. Being polished; this card will update with releases.",
+      tl1: "DAgger arc wrapped in four rounds: best approach 0.094m, first physical contact by a policy rollout",
+      tl2: "Three AI agents ran an unsupervised overnight experiment via a git-based collaboration protocol",
+      tl3: "LeRobot × PushT end-to-end cross-validation: ruled out hidden defects in the eval harness",
+      tl4: "Nine-generation experiment arc concluded; falsified pure imitation, isolated the coupling-loss root cause",
+      tl5: "arxiarxi Android app project started",
+      edu: "Northwestern Polytechnical University · undergraduate",
+      focus: "Robot learning & embodied AI: behavior cloning (ACT), sim data collection (Isaac Sim / LeRobot), sim-to-real transfer, VLA models. Interested in transferring from simulation to the real world and generalization in open environments.",
+      foot: "vanilla HTML/CSS/JS · footage from Isaac Sim 4.5 experiment logs"
     }
-    return `<figure class="wall__item wall__item--vid${span}" data-src="${m.src}" data-cap="${esc(m.caption)}" data-poster="${m.poster}" role="button" tabindex="0">` +
-      `<video muted loop playsinline preload="none" poster="${m.poster}">` +
-      `<source src="${m.src}" type="video/mp4" /></video>` +
-      `<button class="vbtn--mini" aria-label="播放 ${esc(m.label)}">▶</button>` +
-      `<figcaption class="wall__cap"><span class="wall__tag">${esc(m.tag)}</span><span class="wall__label mono">${esc(m.label)}</span></figcaption>` +
-      `<p class="wall__note">${esc(m.caption)}</p></figure>`;
-  }).join('');
+  };
 
-  grid.querySelectorAll('.wall__item--vid').forEach(item => {
-    const open = () => openLightbox(item.dataset.src, item.dataset.poster, item.dataset.cap);
-    item.addEventListener('click', open);
-    item.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') open(); });
+  var root = document.documentElement;
+  var langBtn = document.getElementById("langBtn");
+  var themeBtn = document.getElementById("themeBtn");
+
+  /* ── i18n ─────────────────────────────── */
+  function applyLang(lang) {
+    var dict = I18N[lang] || I18N.zh;
+    var nodes = document.querySelectorAll("[data-i18n]");
+    for (var i = 0; i < nodes.length; i++) {
+      var key = nodes[i].getAttribute("data-i18n");
+      if (dict[key] != null) nodes[i].textContent = dict[key];
+    }
+    root.setAttribute("lang", lang === "en" ? "en" : "zh-CN");
+    langBtn.textContent = lang === "en" ? "中" : "EN";
+    try { localStorage.setItem("leo.lang", lang); } catch (e) {}
+  }
+  var savedLang = "zh";
+  try { savedLang = localStorage.getItem("leo.lang") || "zh"; } catch (e) {}
+  applyLang(savedLang);
+  langBtn.addEventListener("click", function () {
+    applyLang(root.getAttribute("lang") === "en" ? "zh" : "en");
   });
-}
 
-/* ---------- lightbox ---------- */
-function openLightbox(src, poster, cap) {
-  const lbVideo = document.getElementById('lightboxVideo');
-  const lb = document.getElementById('lightbox');
-  lbVideo.src = src;
-  lbVideo.poster = poster;
-  document.getElementById('lightboxCap').textContent = cap || '';
-  lb.classList.add('open');
-  lb.setAttribute('aria-hidden', 'false');
-  lbVideo.currentTime = 0;
-  if (!reduced) lbVideo.play().catch(() => {});
-}
-function closeLightbox() {
-  const lb = document.getElementById('lightbox');
-  lb.classList.remove('open');
-  lb.setAttribute('aria-hidden', 'true');
-  document.getElementById('lightboxVideo').pause();
-}
-document.getElementById('lightbox').addEventListener('click', e => {
-  if (e.target === document.getElementById('lightbox')) closeLightbox();
-});
-document.querySelector('.lightbox__close').addEventListener('click', closeLightbox);
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape' && document.getElementById('lightbox').classList.contains('open')) closeLightbox();
-});
-
-/* ---------- 写作 ---------- */
-function renderPosts() {
-  const list = document.getElementById('postList');
-  const first = POSTS[0];
-  if (first) {
-    document.getElementById('featuredTitle').textContent = first.title;
-    document.getElementById('featuredDate').textContent = first.date;
-    document.getElementById('featuredChip').textContent = first.tag;
+  /* ── 主题 ─────────────────────────────── */
+  function applyTheme(t) {
+    root.setAttribute("data-theme", t);
+    themeBtn.textContent = t === "dark" ? "☀" : "☾";
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute("content", t === "dark" ? "#131417" : "#FAFAF8");
+    try { localStorage.setItem("leo.theme", t); } catch (e) {}
   }
-  list.innerHTML = POSTS.slice(1).map(p =>
-    `<a class="log__row" href="https://github.com/Jiatong-Wei" target="_blank" rel="noopener">` +
-    `<span class="log__date">${p.date}</span>` +
-    `<span class="log__title">${esc(p.title)}</span>` +
-    `<span class="log__tag">${p.tag}</span></a>`
-  ).join('');
-}
-
-/* ---------- 关于 ---------- */
-function renderAbout() {
-  const tags = document.getElementById('aboutTags');
-  if (tags) tags.innerHTML = TAGS.map(t => `<span class="tag">${esc(t)}</span>`).join('');
-  const tl = document.getElementById('aboutTimeline');
-  if (tl) tl.innerHTML = TIMELINE.map(t =>
-    `<div class="tl__row"><span class="tl__year">${t.year}</span>` +
-    `<span class="tl__event">${esc(t.event)}</span></div>`
-  ).join('');
-  const links = document.getElementById('aboutLinks');
-  if (links) links.innerHTML = LINKS.map(l =>
-    `<a href="${l.href}" target="_blank" rel="noopener">${esc(l.label)}</a>`
-  ).join('');
-}
-
-/* ---------- 面板切换(hash + 级联) ---------- */
-function showPanel(name, fromInit) {
-  if (!PANELS.includes(name)) name = 'home';
-  const cur = document.querySelector('.pane.is-active');
-  const next = document.getElementById(`pane-${name}`);
-  if (cur === next) return;
-
-  if (cur) {
-    cur.classList.remove('is-active');
-    if (!reduced) { cur.classList.add('is-leaving'); setTimeout(() => cur.classList.remove('is-leaving'), 90); }
-  }
-  next.classList.add('is-active');
-
-  // 级联:给面板子元素加 cascade + stagger delay
-  if (!reduced) {
-    next.classList.remove('is-entering');
-    void next.offsetWidth;
-    next.classList.add('is-entering');
-    const rows = next.querySelectorAll('.pane__title, .metric-row, .arc-table tbody tr, .log__row, .wall__item, .news__row, .tl__row, .featured, .proj, .about__col, .tags, .home__left, .home__right');
-    rows.forEach((r, i) => {
-      r.classList.remove('cascade', 'c-on');
-      void r.offsetWidth;
-      r.classList.add('cascade');
-      r.style.setProperty('--cd', `${i * 25}ms`);
-    });
-    setTimeout(() => {
-      rows.forEach(r => r.classList.add('c-on'));
-      setTimeout(() => {
-        rows.forEach(r => r.classList.remove('cascade', 'c-on'));
-        next.classList.remove('is-entering');
-      }, 420);
-    }, 10);
-  }
-
-  document.querySelectorAll('.rail__item').forEach(a =>
-    a.classList.toggle('is-active', a.dataset.panel === name)
-  );
-  moveRailBar(name);
-  if (!fromInit && location.hash !== `#${name}`) history.pushState(null, '', `#${name}`);
-}
-
-/* ---------- 左轨指示条 FLIP ---------- */
-function moveRailBar(name) {
-  const item = document.querySelector(`.rail__item[data-panel="${name}"]`);
-  if (!item || reduced) return;
-  let bar = document.querySelector('.rail-bar');
-  if (!bar) { bar = document.createElement('i'); bar.className = 'rail-bar'; document.querySelector('.rail').appendChild(bar); }
-  bar.style.top = `${item.offsetTop}px`;
-  bar.style.height = `${item.offsetHeight}px`;
-}
-
-/* ---------- 面板事件 ---------- */
-document.querySelectorAll('.rail__item').forEach(a => {
-  a.addEventListener('click', e => {
-    e.preventDefault();
-    showPanel(a.dataset.panel);
+  var savedTheme = "light";
+  try { savedTheme = localStorage.getItem("leo.theme") || "light"; } catch (e) {}
+  applyTheme(savedTheme);
+  themeBtn.addEventListener("click", function () {
+    applyTheme(root.getAttribute("data-theme") === "dark" ? "light" : "dark");
   });
-});
-window.addEventListener('hashchange', () => showPanel(location.hash.slice(1)));
-
-/* ---------- 状态栏时钟 + 光标 ---------- */
-const clockEl = document.getElementById('clock');
-function tickClock() {
-  const now = new Date();
-  const p = n => String(n).padStart(2, '0');
-  clockEl.textContent = `${p(now.getHours())}:${p(now.getMinutes())}:${p(now.getSeconds())}`;
-}
-tickClock();
-setInterval(tickClock, 1000);
-
-/* ---------- boot(session 内一次, ≤600ms) ---------- */
-function boot() {
-  if (reduced || sessionStorage.getItem('ip-booted')) {
-    showPanel(location.hash.slice(1) || 'home', true);
-    return;
-  }
-  sessionStorage.setItem('ip-booted', '1');
-  // 快速串联：顶栏 → 左轨逐项 → 面板级联（CSS class 驱动，终态不依赖 inline style）
-  const railItems = document.querySelectorAll('.rail__item');
-  railItems.forEach(a => a.classList.remove('is-active'));
-  document.body.classList.add('is-booting');
-  const target = PANELS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'home';
-  setTimeout(() => {
-    document.body.classList.remove('is-booting');
-    showPanel(target, true);
-    railItems.forEach(a => a.classList.toggle('is-active', a.dataset.panel === target));
-    moveRailBar(target);
-  }, 480);
-}
-
-/* ---------- init ---------- */
-renderHome();
-renderProjectMeta();
-renderMetrics('projIsaacMetrics', ISAAC_PROJECT);
-renderMetrics('projPushMetrics', PUSHT_PROJECT);
-renderArc();
-renderWall();
-renderPosts();
-renderAbout();
-fit();
-boot();
+})();
