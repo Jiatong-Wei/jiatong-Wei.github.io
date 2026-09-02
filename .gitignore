@@ -1,7 +1,10 @@
+node_modules/
+dist/
+src/generated/
 _site/
-push.sh
-.DS_Store
 .jekyll-cache/
-.jekyll-metadata
+.jekyll-metadata/
 .bundle/
 vendor/
+push.sh
+.DS_Store

@@ -15,12 +15,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/configure-pages@v5
-      - uses: actions/jekyll-build-pages@v1
+      - uses: actions/setup-node@v4
         with:
-          source: ./
-          destination: ./_site
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      # build first: its vite buildStart hook generates src/generated/content.ts, which tsc needs
+      - run: npm run build
+      - run: npm run typecheck
+      - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
   deploy:
     needs: build
     environment:

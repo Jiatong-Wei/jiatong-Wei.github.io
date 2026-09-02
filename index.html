@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>~wei@nwpu</title>
+  <meta name="description" content="魏佳桐（Leo Wei）· 西北工业大学水声工程本科 · robotics / manipulation / mobile robots。一个假装成终端的个人主页。" />
+  <meta name="theme-color" content="#100c0a" />
+  <meta property="og:title" content="~wei@nwpu" />
+  <meta property="og:description" content="魏佳桐（Leo Wei）· robotics · 在仿真里较真" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://jiatong-wei.github.io/" />
+  <link rel="icon" href="./images/favicon.ico" />
+  <link rel="apple-touch-icon" href="./images/apple-touch-icon.png" />
+  <style>
+    :root {
+      --bg: #100c0a;
+      --fg: #e6dcc8;
+      --accent: #d64538;
+      --dim: #7a6f5d;
+      --bar: #171210;
+      --line: #2a221c;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0; background: var(--bg); color: var(--fg);
+      font-family: "Cascadia Mono", "JetBrains Mono", Menlo, Consolas, "Sarasa Mono SC",
+        "Noto Sans Mono CJK SC", "Source Han Mono SC", "Microsoft YaHei Mono", monospace;
+      overflow: hidden;
+    }
+    #app { display: flex; flex-direction: column; height: 100dvh; }
+    header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 14px; height: 42px; flex: none;
+      background: var(--bar); border-bottom: 1px solid var(--line);
+      font-size: 13px; color: var(--dim); user-select: none;
+    }
+    header .dot { color: var(--accent); }
+    header a { color: var(--dim); text-decoration: none; }
+    header a:hover { color: var(--fg); }
+    #btnbar {
+      display: flex; gap: 8px; padding: 8px 12px; flex: none;
+      overflow-x: auto; background: var(--bar); border-bottom: 1px solid var(--line);
+      scrollbar-width: none; user-select: none;
+    }
+    #btnbar::-webkit-scrollbar { display: none; }
+    #btnbar button {
+      flex: none; font: inherit; font-size: 12.5px; cursor: pointer;
+      color: var(--fg); background: transparent;
+      border: 1px solid var(--line); border-radius: 6px; padding: 5px 12px;
+    }
+    #btnbar button:hover { border-color: var(--accent); color: var(--accent); }
+    #btnbar button:active { transform: translateY(1px); }
+    #term-wrap { flex: 1; min-height: 0; padding: 6px 8px 10px; }
+    #term, #term .xterm { height: 100%; }
+    #overlay {
+      position: fixed; inset: 0; z-index: 50; display: none;
+      background: rgba(8, 6, 5, 0.88); backdrop-filter: blur(2px);
+      align-items: center; justify-content: center; padding: 24px;
+    }
+    #overlay.show { display: flex; }
+    #overlay img { max-width: 92vw; max-height: 86vh; border: 1px solid var(--line); }
+    #overlay .cap {
+      position: absolute; bottom: 18px; left: 0; right: 0; text-align: center;
+      color: var(--dim); font-size: 13px;
+    }
+    #overlay .close {
+      position: absolute; top: 14px; right: 18px; font-size: 22px; cursor: pointer;
+      color: var(--dim); background: none; border: none;
+    }
+    #overlay .close:hover { color: var(--accent); }
+    @media (max-width: 480px) {
+      header { font-size: 12px; }
+      #btnbar button { padding: 6px 10px; }
+      #term-wrap { padding: 4px 2px 8px; }
+    }
+    noscript div { max-width: 640px; margin: 12vh auto; padding: 0 20px; line-height: 1.8; font-size: 14px; }
+    noscript a { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <header>
+      <span><span class="dot">●</span> ~wei@nwpu — 魏佳桐 · robotics</span>
+      <a href="https://github.com/Jiatong-Wei" target="_blank" rel="noopener">github ↗</a>
+    </header>
+    <nav id="btnbar" aria-label="快捷命令"></nav>
+    <div id="term-wrap"><div id="term"></div></div>
+  </div>
+  <div id="overlay" role="dialog" aria-modal="true">
+    <button class="close" aria-label="关闭">✕</button>
+    <img id="overlay-img" alt="" />
+    <div class="cap" id="overlay-cap"></div>
+  </div>
+  <noscript>
+    <div>
+      <h1>魏佳桐（Leo Wei）</h1>
+      <p>西北工业大学水声工程本科（2023–2027），西安。方向：robotics —— manipulation、mobile robots、imitation learning。</p>
+      <p>本站是一个假装成终端的交互应用，需要启用 JavaScript 才能体验。核心信息：</p>
+      <ul>
+        <li>邮箱：<a href="mailto:joyetong58@gmail.com">joyetong58@gmail.com</a></li>
+        <li>GitHub：<a href="https://github.com/Jiatong-Wei">github.com/Jiatong-Wei</a></li>
+        <li>研究记录：Isaac Sim 抓取管线、DAgger 四轮迭代（0.54 m → 0.094 m）、九代受控实验、LeRobot × PushT 交叉验证</li>
+        <li>竞赛：工创赛智能物流搬运陕西省一等奖、海洋航行器全国特等奖、机器人及 AI 大赛全国二等奖等</li>
+      </ul>
+    </div>
+  </noscript>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
