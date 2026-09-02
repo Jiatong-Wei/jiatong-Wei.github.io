@@ -1,0 +1,6 @@
+<script src="{{ '/assets/js/main.min.js' | relative_url }}"></script>
+
+{% include analytics.html %}
+{% if site.author.googlescholar %}
+{% include fetch_google_scholar_stats.html %}
+{% endif %}

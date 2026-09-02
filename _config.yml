@@ -1,0 +1,158 @@
+# Site Settings
+title                    : "魏佳桐"
+description              : "西北工业大学本科生。方向：robotics，manipulation，移动底盘，学习与控制。"
+repository               : "Jiatong-Wei/jiatong-Wei.github.io"
+url                      : "https://jiatong-wei.github.io"
+baseurl                  : ""
+google_scholar_stats_use_cdn : true
+
+# google analytics
+google_analytics_id      :  # get google_analytics_id from https://analytics.google.com/analytics/
+
+# SEO Related
+google_site_verification :  # get google_site_verification from https://search.google.com/search-console/about
+bing_site_verification   :  # get bing_site_verification from https://www.bing.com/webmasters/about
+baidu_site_verification  :  # get baidu_site_verification from https://ziyuan.baidu.com/login/index?u=/site/index
+
+# Site Author
+author:
+  name             : "魏佳桐"
+  avatar           :
+  bio              : "西北工业大学"
+  location         : "西安"
+  employer         : "西北工业大学"
+  pubmed           :
+  googlescholar    :
+  email            : "joyetong58@gmail.com"
+  researchgate     :
+  uri              :
+  bitbucket        :
+  codepen          :
+  dribbble         :
+  flickr           :
+  facebook         :
+  foursquare       :
+  github           : "Jiatong-Wei"
+  google_plus      :
+  keybase          :
+  instagram        :
+  impactstory      :
+  lastfm           :
+  linkedin         :
+  dblp             :
+  orcid            :
+  pinterest        :
+  soundcloud       :
+  stackoverflow    :
+  steam            :
+  tumblr           :
+  twitter          :
+  vine             :
+  weibo            :
+  xing             :
+  youtube          :
+  wikipedia        :
+
+
+# Reading Files
+include:
+  - .htaccess
+  - _pages
+  - files
+exclude:
+  - docs
+  - google_scholar_crawler
+  - "*.sublime-project"
+  - "*.sublime-workspace"
+  - .asset-cache
+  - .bundle
+  - .jekyll-assets-cache
+  - .sass-cache
+  - .github
+  - CHANGELOG
+  - Capfile
+  - Gemfile
+  - Gruntfile.js
+  - LICENSE
+  - README
+  - README.md
+  - Rakefile
+  - assets/js/_main.js
+  - assets/js/plugins
+  - assets/js/vendor
+  - config
+  - gulpfile.js
+  - log
+  - node_modules
+  - package.json
+  - tmp
+  - vendor
+keep_files:
+  - .git
+  - .svn
+encoding: "utf-8"
+markdown_ext: "markdown,mkdown,mkdn,mkd,md"
+
+
+# Conversion
+markdown: kramdown
+highlighter: rouge
+lsi: false
+excerpt_separator: "\n\n"
+incremental: false
+
+
+# Markdown Processing
+kramdown:
+  input: GFM
+  hard_wrap: false
+  auto_ids: true
+  footnote_nr: 1
+  entity_output: as_char
+  toc_levels: 1..6
+  smart_quotes: lsquo,rsquo,ldquo,rdquo
+  enable_coderay: false
+
+# Defaults
+defaults:
+  # _pages
+  - scope:
+      path: ""
+      type: pages
+    values:
+      layout: default
+      author_profile: true
+
+
+# Sass/SCSS
+sass:
+  sass_dir: _sass
+  style: compressed
+
+
+# Outputting
+permalink: /:categories/:title/
+timezone: Asia/Shanghai
+
+
+# Plugins
+plugins:
+  - jekyll-paginate
+  - jekyll-sitemap
+  - jekyll-gist
+  - jekyll-feed
+  - jekyll-redirect-from
+# mimic GitHub Pages with --safe
+whitelist:
+  - jekyll-paginate
+  - jekyll-sitemap
+  - jekyll-gist
+  - jekyll-feed
+  - jemoji
+
+
+# HTML Compression
+compress_html:
+  clippings: all
+  ignore:
+    envs: development
