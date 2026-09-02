@@ -278,7 +278,7 @@ export function profileScreen(cols: number): string[] {
   );
   lines.push(dim('─'.repeat(Math.max(0, Math.min(cols - 4, 44)))));
   lines.push('');
-  for (const row of art) lines.push(`${C.accent}${row}${R}`);
+  for (const row of art) lines.push(`${C.green}${row}${R}`);
   lines.push('');
   lines.push(
     `${bold('Undergraduate')}${C.dim} · ${R}Underwater Acoustics Engineering`,
