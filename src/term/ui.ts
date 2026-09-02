@@ -1,6 +1,9 @@
-// Terminal surface: xterm creation/theme, overlay lightbox, quick-command buttons.
+// Terminal surface: xterm creation, dark/light themes, command-link provider,
+// overlay lightbox. Palette-index SGR codes in the output stream get re-colored
+// here by swapping the theme.
 
 import { Terminal } from '@xterm/xterm';
+import type { IBufferLine, ILink } from '@xterm/xterm';
 import { FitAddon } from '@xterm/addon-fit';
 import '@xterm/xterm/css/xterm.css';
 
@@ -8,64 +11,159 @@ export const FONT_STACK =
   '"Cascadia Mono", "JetBrains Mono", Menlo, Consolas, "Sarasa Mono SC", ' +
   '"Noto Sans Mono CJK SC", "Source Han Mono SC", "Microsoft YaHei Mono", monospace';
 
-export const THEME = {
-  background: '#100c0a',
-  foreground: '#e6dcc8',
-  cursor: '#d64538',
-  cursorAccent: '#100c0a',
-  selectionBackground: '#5a211c',
-  black: '#100c0a',
+// Green phosphor on near-black — the classic terminal.
+const DARK = {
+  background: '#0a0d0b',
+  foreground: '#c9d6c9',
+  cursor: '#3fd968',
+  cursorAccent: '#0a0d0b',
+  selectionBackground: '#1d3a26',
+  black: '#0a0d0b',
   red: '#e0524a',
-  green: '#8aa872',
-  yellow: '#d9a441',
-  blue: '#7a9cc4',
-  magenta: '#b07aa8',
-  cyan: '#6aa8a8',
-  white: '#e6dcc8',
-  brightBlack: '#7a6f5d',
+  green: '#3fd968',
+  yellow: '#d9c84a',
+  blue: '#5aa0d0',
+  magenta: '#b078c8',
+  cyan: '#4ac0c0',
+  white: '#c9d6c9',
+  brightBlack: '#5c6b5c',
   brightRed: '#ff6b5e',
-  brightGreen: '#a3c585',
-  brightYellow: '#f0bd5e',
-  brightBlue: '#93b4dc',
-  brightMagenta: '#cf97c5',
-  brightCyan: '#83c4c4',
-  brightWhite: '#f5eee0',
+  brightGreen: '#6bff8f',
+  brightYellow: '#f0e06e',
+  brightBlue: '#7db8e8',
+  brightMagenta: '#cf9ae0',
+  brightCyan: '#6adddd',
+  brightWhite: '#e8f2e8',
 };
+
+// Paper white with dark ink — the printed-terminal look.
+const LIGHT = {
+  background: '#f7f6f2',
+  foreground: '#20241f',
+  cursor: '#0b7d2e',
+  cursorAccent: '#f7f6f2',
+  selectionBackground: '#cfe8d4',
+  black: '#20241f',
+  red: '#b3261e',
+  green: '#0b7d2e',
+  yellow: '#8a6d00',
+  blue: '#2456d0',
+  magenta: '#8a2ba0',
+  cyan: '#0a7a7a',
+  white: '#20241f',
+  brightBlack: '#6b706b',
+  brightRed: '#c93a30',
+  brightGreen: '#0a8f33',
+  brightYellow: '#967800',
+  brightBlue: '#2f62e0',
+  brightMagenta: '#9a3bb0',
+  brightCyan: '#0a8a8a',
+  brightWhite: '#3a3f3a',
+};
+
+const THEME_KEY = 'weijiatong.term.theme';
+export type ThemeName = 'dark' | 'light';
+
+function initialTheme(): ThemeName {
+  try {
+    const saved = localStorage.getItem(THEME_KEY);
+    if (saved === 'dark' || saved === 'light') return saved;
+  } catch {
+    /* private mode */
+  }
+  return 'dark';
+}
 
 export interface Ui {
   term: Terminal;
   fit: FitAddon;
+  themeName(): ThemeName;
+  toggleTheme(): ThemeName;
   clear(): void;
   openImage(url: string, caption: string): void;
   openUrl(url: string): void;
   note(text: string): void;
 }
 
-export function createUi(): Ui {
-  const isSmall = window.matchMedia('(max-width: 480px)').matches;
-  const term = new Terminal({
-    convertEol: true,
-    cursorBlink: true,
-    fontSize: isSmall ? 13 : 15,
-    lineHeight: 1.25,
-    fontFamily: FONT_STACK,
-    theme: THEME,
-    scrollback: 5000,
-  });
-  const fit = new FitAddon();
-  term.loadAddon(fit);
-  term.open(document.getElementById('term')!);
-  fit.fit();
-  const ro = new ResizeObserver(() => {
-    try {
-      fit.fit();
-    } catch {
-      /* transient layout states can throw during fit */
-    }
-  });
-  ro.observe(document.getElementById('term')!);
+// --- clickable command words in terminal output (jyy-style inject-on-click) ---
 
-  // --- overlay lightbox ---
+let commandHandler: ((cmd: string) => void) | null = null;
+
+export function setCommandLinkHandler(fn: (cmd: string) => void): void {
+  commandHandler = fn;
+}
+
+const CMD_MAP: Record<string, string> = {
+  about: 'cat about',
+  awards: 'cat awards',
+  news: 'cat news',
+  links: 'cat links',
+  help: 'help',
+  neofetch: 'neofetch',
+  whoami: 'whoami',
+  joints: 'joints',
+  boot: 'boot',
+  tree: 'tree',
+  github: 'open github',
+  splat: 'open splat',
+};
+
+const CMD_RE = /\b(?:about|awards|news|links|help|neofetch|whoami|joints|boot|tree|github|splat)\b|wiki\/[a-z0-9-]+/gi;
+
+function registerCommandLinks(term: Terminal): void {
+  const workingCell = term.buffer.active.getNullCell();
+  /**
+   * Map a UTF-16 string offset to a buffer cell x. m.index is a string offset,
+   * but ILink ranges are in cells — CJK chars are 1 unit / 2 cells, emoji 2 / 2,
+   * so the two only coincide on pure-ASCII prefixes. Walk the actual buffer.
+   */
+  const cellOfStringIndex = (line: IBufferLine, target: number): number => {
+    let x = 0;
+    let units = 0;
+    for (let guard = 0; guard < 2000 && units < target; guard++) {
+      line.getCell(x, workingCell);
+      const width = workingCell.getWidth();
+      if (width === 0) {
+        x += 1; // wide-char continuation cell — never a token start
+        continue;
+      }
+      units += Math.max(1, workingCell.getChars().length);
+      x += width;
+    }
+    return x;
+  };
+  term.registerLinkProvider({
+    provideLinks(lineNumber, callback) {
+      const line = term.buffer.active.getLine(lineNumber);
+      if (!line) {
+        callback([]);
+        return;
+      }
+      const text = line.translateToString(true);
+      const links: ILink[] = [];
+      for (const m of text.matchAll(CMD_RE)) {
+        const token = m[0];
+        const lower = token.toLowerCase();
+        const cmd = CMD_MAP[lower] ?? (lower.startsWith('wiki/') ? `cat ${lower}` : null);
+        if (!cmd) continue;
+        const cellX = cellOfStringIndex(line, m.index);
+        links.push({
+          range: {
+            start: { x: cellX, y: lineNumber },
+            end: { x: cellX + token.length, y: lineNumber }, // tokens are pure ASCII
+          },
+          text: token,
+          activate: () => commandHandler?.(cmd),
+        });
+      }
+      callback(links);
+    },
+  });
+}
+
+// --- overlay lightbox ---
+
+function initOverlay(): Pick<Ui, 'openImage' | 'openUrl' | 'note'> {
   const overlay = document.getElementById('overlay')!;
   const overlayImg = document.getElementById('overlay-img') as HTMLImageElement;
   const overlayCap = document.getElementById('overlay-cap')!;
@@ -89,12 +187,6 @@ export function createUi(): Ui {
   );
 
   return {
-    term,
-    fit,
-    clear: () => {
-      term.clear();
-      term.write('\x1b[2J\x1b[H');
-    },
     openImage: (url, caption) => {
       overlayImg.style.display = '';
       overlayImg.src = url;
@@ -110,25 +202,59 @@ export function createUi(): Ui {
   };
 }
 
-// --- quick-command buttons ---
+// --- terminal + theme ---
 
-const BUTTONS: Array<[string, string]> = [
-  ['whoami', 'whoami'],
-  ['about', 'cat about'],
-  ['awards', 'cat awards'],
-  ['news', 'cat news'],
-  ['wiki', 'wiki'],
-  ['links', 'cat links'],
-  ['neofetch', 'neofetch'],
-];
+export function createUi(): Ui {
+  const isSmall = window.matchMedia('(max-width: 480px)').matches;
+  const term = new Terminal({
+    convertEol: true,
+    cursorBlink: true,
+    fontSize: isSmall ? 13 : 15,
+    lineHeight: 1.3,
+    fontFamily: FONT_STACK,
+    theme: initialTheme() === 'light' ? LIGHT : DARK,
+    scrollback: 5000,
+  });
+  const fit = new FitAddon();
+  term.loadAddon(fit);
+  term.open(document.getElementById('term')!);
+  fit.fit();
+  const ro = new ResizeObserver(() => {
+    try {
+      fit.fit();
+    } catch {
+      /* transient layout states can throw during fit */
+    }
+  });
+  ro.observe(document.getElementById('term')!);
+  registerCommandLinks(term);
 
-export function initButtons(inject: (line: string) => void): void {
-  const bar = document.getElementById('btnbar')!;
-  for (const [label, cmd] of BUTTONS) {
-    const b = document.createElement('button');
-    b.textContent = label;
-    b.type = 'button';
-    b.addEventListener('click', () => inject(cmd));
-    bar.appendChild(b);
-  }
+  const applyTheme = (name: ThemeName): void => {
+    term.options.theme = name === 'light' ? LIGHT : DARK;
+    document.documentElement.dataset.theme = name;
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', name === 'light' ? '#f7f6f2' : '#0a0d0b');
+    try {
+      localStorage.setItem(THEME_KEY, name);
+    } catch {
+      /* non-persistent is fine */
+    }
+  };
+  applyTheme(initialTheme());
+
+  const overlay = initOverlay();
+  return {
+    term,
+    fit,
+    themeName: () => (document.documentElement.dataset.theme === 'light' ? 'light' : 'dark'),
+    toggleTheme: () => {
+      const next: ThemeName = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+      applyTheme(next);
+      return next;
+    },
+    clear: () => {
+      term.clear();
+      term.write('\x1b[2J\x1b[H');
+    },
+    ...overlay,
+  };
 }

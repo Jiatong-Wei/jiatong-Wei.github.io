@@ -63,6 +63,7 @@ export function generateContent(): void {
     `  path: string; name: string; title: string; summary: string; date: string;\n` +
     `  cert: 'human' | 'hitl' | null; tokens: unknown[];\n` +
     `}\n\n` +
+    `export const GENERATED_AT = '${new Date().toISOString()}';\n\n` +
     `export const DOCS: DocMeta[] = ${JSON.stringify(docs, null, 1)};\n`;
   fs.mkdirSync(path.dirname(OUT_FILE), { recursive: true });
   fs.writeFileSync(OUT_FILE, banner);

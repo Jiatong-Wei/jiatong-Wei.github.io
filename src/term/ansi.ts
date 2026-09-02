@@ -1,16 +1,16 @@
-// ANSI / SGR helpers. Truecolor, matched to the xterm theme in term.ts.
-
-const fg = (r: number, g: number, b: number) => `\x1b[38;2;${r};${g};${b}m`;
+// ANSI / SGR helpers. Palette-index colors (not truecolor) so switching the
+// xterm theme re-colors every emitted line at once.
 
 export const C = {
-  accent: fg(214, 69, 56), // 朱砂
-  green: fg(138, 168, 114),
-  yellow: fg(217, 164, 65),
-  blue: fg(122, 156, 196),
-  cyan: fg(106, 168, 168),
-  magenta: fg(176, 122, 168),
-  red: fg(224, 82, 74),
-  dim: fg(122, 111, 93),
+  accent: '\x1b[92m', // bright green — prompt / headers / badges
+  green: '\x1b[32m',
+  yellow: '\x1b[33m',
+  blue: '\x1b[34m',
+  magenta: '\x1b[35m',
+  cyan: '\x1b[36m',
+  red: '\x1b[31m',
+  dim: '\x1b[90m',
+  codeBg: '\x1b[100m', // bright black background for code spans/blocks
 };
 
 export const R = '\x1b[0m';

@@ -40,7 +40,7 @@ function inlineTok(t: Tok, plain: boolean): string {
     }
     case 'codespan': {
       const s = t.text ?? '';
-      return plain ? s : `\x1b[48;2;36;28;23m${C.accent}${s}${R}`;
+      return plain ? s : `${C.codeBg}${C.accent}${s}${R}`;
     }
     case 'link': {
       const inner = renderInline(t.tokens, plain) || t.text || t.href;
@@ -89,7 +89,7 @@ function blockLines(t: Tok, plain: boolean): string[] {
       return [renderInline(t.tokens, plain), ''];
     case 'code': {
       const body = String(t.text ?? '').replace(/\n$/, '').split('\n');
-      return ['', ...body.map((l) => (plain ? l : `\x1b[48;2;26;21;17m\x1b[38;2;201;185;154m ${l}${R}`)), ''];
+      return ['', ...body.map((l) => (plain ? l : `${C.codeBg}${C.green} ${l}${R}`)), ''];
     }
     case 'blockquote': {
       const inner: string[] = [];

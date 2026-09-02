@@ -53,6 +53,11 @@ export class Readline {
     if (this.active) this.onData(data);
   }
 
+  /** True while the prompt is up and the user hasn't typed anything yet. */
+  isIdle(): boolean {
+    return this.active && this.buf.length === 0;
+  }
+
   private dataDisposable: { dispose(): void } | null = null;
 
   /** Prompt without the leading newline — for in-place redraws. */

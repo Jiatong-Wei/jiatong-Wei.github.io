@@ -5,7 +5,8 @@
 
 ## 1. 这个站是什么
 
-- **假终端**：整站是一个 xterm.js 终端，访客敲命令或点顶部按钮浏览内容；`help` 看全部命令
+- **假终端**：整站是一个 xterm.js 终端；首屏是 jyy 式 profile（ASCII 大名 + 可点击的命令链接行，点词即执行命令），往下敲命令继续逛；`help` 看全部命令
+- **主题**：右上角 `☀ / ☾` 或 `theme` 命令切换深浅色；默认深色绿磷光，浅色纸白墨绿
 - **灵感与架构致敬**：[jiangyy.github.io](https://jiangyy.github.io/)（jyy）
 - **托管**：GitHub Pages，`push main` → Actions 自动 `npm run build` → 发 Pages，约 1 分钟
 - 线上：<https://jiatong-wei.github.io>
@@ -41,11 +42,12 @@ self-website/ (= GitHub 上的 jiatong-Wei.github.io 仓库)
 | 首页 News（3–5 条带 emoji） | `content/news.md` |
 | 友链与名言 | `content/links.md` |
 | 研究记录 | `content/wiki/*.md` |
-| 开机日志 / help 文案 | `src/apps/builtins.ts`（`BOOT_LINES`、`help`） |
+| 首屏（ASCII 大名 / 链接行 / Last update） | `src/apps/builtins.ts`（`profileScreen`、`ART_*`） |
+| bring-up 日志（`boot` 命令） | `src/apps/builtins.ts`（`BOOT_LINES`） |
 | neofetch 身份卡 / rostopic / 彩蛋 | `src/apps/fun.ts` |
-| 配色（朱砂 accent 在这） | `src/term/ui.ts` 的 `THEME`、`src/term/ansi.ts` 的 `C` |
-| 顶部按钮 | `src/term/ui.ts` 的 `BUTTONS` |
-| open 命令目标 | `src/apps/env.ts` 的 `OPEN_TARGETS` |
+| 深浅主题配色 | `src/term/ui.ts` 的 `DARK` / `LIGHT` |
+| 首屏可点击的命令词 | `src/term/ui.ts` 的 `CMD_MAP` |
+| `open` 命令目标 | `src/apps/env.ts` 的 `OPEN_TARGETS` |
 
 ## 4. 文章的元数据与标识
 
@@ -86,6 +88,7 @@ npm run build && npm run preview   # 产物预览 http://localhost:4173
 
 - 手机端：按钮是主导航；点终端区域可唤起软键盘直接敲命令
 - 窄屏上敲超长单行命令时，视觉重绘可能残留上一行幽灵字符（xterm 行回绕限制）；按 Enter 或 `clear` 即恢复，不影响命令执行
+- 窗口大幅缩放后，首屏 ASCII 大字会因终端重排错乱，刷新页面即恢复
 - 中文 IME：主流浏览器（Chrome/Edge/Safari）实测路径正常；若某输入法组合异常，用按钮或英文命令可绕过
 - `drive` 遥控小车命令是预留的 stretch goal，尚未实装
 - emoji 宽度未做特殊处理：news 里的 emoji 显示正常，但未来若把 emoji 加进需要对齐的表格，列宽会歪

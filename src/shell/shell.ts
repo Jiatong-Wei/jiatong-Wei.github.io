@@ -28,7 +28,7 @@ function saveHist(hist: string[]): void {
 }
 
 export function promptString(): string {
-  return `\r\n${C.accent}wei${R}@${C.cyan}nwpu${R} ${C.dim}~${R} ${C.accent}❯${R} `;
+  return `\r\n${C.accent}wei${R}${C.dim}:/${R}$ `;
 }
 
 export class Shell {
@@ -62,9 +62,10 @@ export class Shell {
     }
   }
 
-  /** Button entrypoint: echo the command into the prompt, then run it. */
+  /** Button entrypoint: echo the command into the prompt, then run it.
+   *  Ignored while busy or when the user has half-typed a command. */
   inject(line: string): void {
-    if (!this.started || this.busy || this.injectTimer !== null) return;
+    if (!this.started || this.busy || this.injectTimer !== null || !this.rl.isIdle()) return;
     this.rl.feed(line);
     this.injectTimer = window.setTimeout(() => {
       this.injectTimer = null;

@@ -1,7 +1,8 @@
-// Built-in commands: filesystem views, rendering, system flavor.
+// Built-in commands: first-screen profile, filesystem views, system flavor.
 
-import { C, R, bold, dim, link, padEnd, strWidth } from '../term/ansi';
+import { C, R, bold, dim, italic, link, padEnd, strWidth } from '../term/ansi';
 import { renderDoc } from '../term/mdansi';
+import { GENERATED_AT } from '../generated/content';
 import { Command, Ctx, docByName, GC_ASSETS, REPORT, topDocs, wikiDocs, OPEN_TARGETS } from './env';
 
 const OK = `${C.green}[  OK  ]${R}`;
@@ -20,8 +21,8 @@ export const help: Command = {
     rows.push(['wc [-l] <doc>', '数行数，支持管道 cat about | wc -l']);
     rows.push(['neofetch', '我是谁，我的机器是什么']);
     rows.push(['rostopic', 'ROS 惯急了的可以试这个']);
-    rows.push(['whoami / joints / sudo', '彩蛋三件套']);
-    rows.push(['clear / history / echo', '老三样']);
+    rows.push(['whoami / joints / boot', '彩蛋三件套']);
+    rows.push(['theme / clear / history / echo', '老四样']);
     const w = Math.max(...rows.map(([a]) => strWidth(a)));
     return [
       `${C.accent}${bold('help')} ${C.dim}— 可用命令${R}`,
@@ -222,30 +223,113 @@ export const uname: Command = {
   run: () => 'RoboStation 6.0 nwpu-xian franka/gnu ROS2 Humble — 在仿真里较真',
 };
 
-export const BOOT_LINES: Array<{ kind: 'ok' | 'warn'; text: string; delay: number }> = [
-  { kind: 'ok', text: 'mcu: STM32 angle-loop @ 200Hz — 麦轮底盘听话了（wiki/gc-logistics）', delay: 90 },
-  { kind: 'ok', text: 'sim: Isaac Sim 6.0 · Franka Panda loaded — reach 0.855 m', delay: 90 },
-  { kind: 'ok', text: 'policy: DAgger ×4 · best approach 0.094 m', delay: 90 },
-  { kind: 'warn', text: 'grasp success: 0/5 — 只报真数字（wiki/nine-generations）', delay: 110 },
-  { kind: 'ok', text: 'net: joyetong58@gmail.com · github.com/Jiatong-Wei', delay: 80 },
-  { kind: 'ok', text: 'operator: 魏佳桐 (Leo Wei) online — 在仿真里较真', delay: 120 },
+// --- first screen (jyy-style profile) ---
+
+// ansi_shadow, one line — desktop
+const ART_FULL = [
+  '     ██╗██╗ █████╗ ████████╗ ██████╗ ███╗   ██╗ ██████╗     ██╗    ██╗███████╗██╗',
+  '     ██║██║██╔══██╗╚══██╔══╝██╔═══██╗████╗  ██║██╔════╝     ██║    ██║██╔════╝██║',
+  '     ██║██║███████║   ██║   ██║   ██║██╔██╗ ██║██║  ███╗    ██║ █╗ ██║█████╗  ██║',
+  '██   ██║██║██╔══██║   ██║   ██║   ██║██║╚██╗██║██║   ██║    ██║███╗██║██╔══╝  ██║',
+  '╚█████╔╝██║██║  ██║   ██║   ╚██████╔╝██║ ╚████║╚██████╔╝    ╚███╔███╔╝███████╗██║',
+  ' ╚════╝ ╚═╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝      ╚══╝╚══╝ ╚══════╝╚═╝',
+];
+// ansi_shadow, stacked — mid width
+const ART_STACKED = [
+  '     ██╗██╗ █████╗ ████████╗ ██████╗ ███╗   ██╗ ██████╗',
+  '     ██║██║██╔══██╗╚══██╔══╝██╔═══██╗████╗  ██║██╔════╝',
+  '     ██║██║███████║   ██║   ██║   ██║██╔██╗ ██║██║  ███╗',
+  '██   ██║██║██╔══██║   ██║   ██║   ██║██║╚██╗██║██║   ██║',
+  '╚█████╔╝██║██║  ██║   ██║   ╚██████╔╝██║ ╚████║╚██████╔╝',
+  ' ╚════╝ ╚═╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝',
+  '',
+  '██╗    ██╗███████╗██╗',
+  '██║    ██║██╔════╝██║',
+  '██║ █╗ ██║█████╗  ██║',
+  '██║███╗██║██╔══╝  ██║',
+  '╚███╔███╔╝███████╗██║',
+  ' ╚══╝╚══╝ ╚══════╝╚═╝',
+];
+// figlet shadow, compact — phones
+const ART_SMALL = [
+  '     |_)       |',
+  "     | |  _` | __|  _ \\  __ \\   _` |",
+  ' \\   | | (   | |   (   | |   | (   |',
+  '\\___/ _|\\__,_|\\__|\\___/ _|  _|\\__, |',
+  '                              |___/',
+  '\\ \\        /   _)',
+  ' \\ \\  \\   / _ \\ |',
+  '  \\ \\  \\ /  __/ |',
+  '   \\_/\\_/ \\___|_|',
 ];
 
-export function bootLog(): string[] {
-  return [
-    `${C.dim}RoboStation bios 2026.09 — jiangyy.github.io 风格，抄作业声明见 help${R}`,
-    ...BOOT_LINES.map(({ kind, text }) => `${kind === 'ok' ? OK : WARN} ${text}`),
-    '',
-    `${C.dim}type 'help' 看命令 · 点上面的按钮也行 · 彩蛋在 neofetch / rostopic${R}`,
-  ];
+function lastUpdate(): string {
+  const d = new Date(GENERATED_AT);
+  const M = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const W = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  return `${W[d.getDay()]} ${M[d.getMonth()]} ${d.getDate()} ${d.getFullYear()}`;
 }
 
-export const banner: Command = {
-  name: 'banner',
-  summary: '重放开机日志',
-  run: () => bootLog().join('\n'),
+export function profileScreen(cols: number): string[] {
+  const art = cols >= 86 ? ART_FULL : cols >= 58 ? ART_STACKED : ART_SMALL;
+  const lines: string[] = [''];
+  lines.push(
+    `${C.accent}${bold('# 魏佳桐')}${R}  ${link(`${C.blue}joyetong58@gmail.com${R}`, 'mailto:joyetong58@gmail.com')}`,
+  );
+  lines.push(dim('─'.repeat(Math.max(0, Math.min(cols - 4, 44)))));
+  lines.push('');
+  for (const row of art) lines.push(`${C.accent}${row}${R}`);
+  lines.push('');
+  lines.push(
+    `${bold('Undergraduate')}${C.dim} · ${R}Underwater Acoustics Engineering`,
+  );
+  lines.push(
+    `${link(`${C.blue}Northwestern Polytechnical University${R}`, 'https://www.nwpu.edu.cn/')}${C.dim} · ${R}西安`,
+  );
+  lines.push(`${bold('Robotics')}${C.dim} — ${R}manipulation · mobile robots · learning & control`);
+  lines.push('');
+  lines.push(`${C.dim}│${R} 🤖 ${C.accent}About${R}${C.dim} · ${R}🏅 ${C.accent}Awards${R}${C.dim} · ${R}📰 ${C.accent}News${R}`);
+  lines.push(`${C.dim}│${R} 📖 ${C.accent}Wiki${R}${C.dim} · ${R}🔗 ${C.accent}Links${R}${C.dim} · ${R}🐙 ${C.accent}GitHub${R}`);
+  lines.push(`${C.dim}│${R}`);
+  lines.push(`${C.dim}│${R} mail   ${link(`${C.cyan}joyetong58@gmail.com${R}`, 'mailto:joyetong58@gmail.com')}`);
+  lines.push(`${C.dim}│${R} github ${link(`${C.cyan}github.com/Jiatong-Wei${R}`, 'https://github.com/Jiatong-Wei')}`);
+  lines.push('');
+  lines.push(`${italic('把实车上调过的控制环，和仿真里拆过的抓取任务，接到同一条研究路上。')}`);
+  lines.push('');
+  lines.push(`${C.accent}•${R} 本页同时是一个 shell。`);
+  lines.push(`  试试：${C.accent}help${R}${C.dim}、${R}${C.accent}neofetch${R}${C.dim}、${R}${C.accent}cat about | wc -l${R}${C.dim}。${R}`);
+  lines.push('');
+  lines.push(dim(`Last update: ${lastUpdate()}`));
+  lines.push('');
+  return lines;
+}
+
+export const BOOT_LINES: Array<{ kind: 'ok' | 'warn'; text: string; delay?: number }> = [
+  { kind: 'ok', text: 'mcu: STM32 angle-loop @ 200Hz — 麦轮底盘听话了（wiki/gc-logistics）' },
+  { kind: 'ok', text: 'sim: Isaac Sim 6.0 · Franka Panda loaded — reach 0.855 m' },
+  { kind: 'ok', text: 'policy: DAgger ×4 · best approach 0.094 m' },
+  { kind: 'warn', text: 'grasp success: 0/5 — 只报真数字（wiki/nine-generations）' },
+  { kind: 'ok', text: 'net: joyetong58@gmail.com · github.com/Jiatong-Wei' },
+  { kind: 'ok', text: 'operator: 魏佳桐 (Jiatong Wei) online — 在仿真里较真' },
+];
+
+export const boot: Command = {
+  name: 'boot',
+  summary: '重放机器人 bring-up 日志',
+  run: () =>
+    [
+      dim('RoboStation bios 2026.09'),
+      ...BOOT_LINES.map(({ kind, text }) => `${kind === 'ok' ? OK : WARN} ${text}`),
+      '',
+    ].join('\n'),
+};
+
+export const theme: Command = {
+  name: 'theme',
+  summary: '切换深浅色主题',
+  run: ({ api }) => `theme → ${api.toggleTheme()}`,
 };
 
 export const builtins: Command[] = [
-  help, ls, wiki, cat, tree, wc, open, clear, echo, history, whoami, pwd, date, uname, banner,
+  help, ls, wiki, cat, tree, wc, open, clear, echo, history, whoami, pwd, date, uname, boot, theme,
 ];

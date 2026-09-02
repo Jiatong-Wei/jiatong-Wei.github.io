@@ -4,22 +4,30 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>~wei@nwpu</title>
-  <meta name="description" content="魏佳桐（Leo Wei）· 西北工业大学水声工程本科 · robotics / manipulation / mobile robots。一个假装成终端的个人主页。" />
-  <meta name="theme-color" content="#100c0a" />
+  <meta name="description" content="魏佳桐（Jiatong Wei）· 西北工业大学水声工程本科 · robotics / manipulation / mobile robots。一个假装成终端的个人主页。" />
+  <meta name="theme-color" content="#0a0d0b" />
   <meta property="og:title" content="~wei@nwpu" />
-  <meta property="og:description" content="魏佳桐（Leo Wei）· robotics · 在仿真里较真" />
+  <meta property="og:description" content="魏佳桐（Jiatong Wei）· robotics · 在仿真里较真" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://jiatong-wei.github.io/" />
   <link rel="icon" href="./images/favicon.ico" />
   <link rel="apple-touch-icon" href="./images/apple-touch-icon.png" />
   <style>
     :root {
-      --bg: #100c0a;
-      --fg: #e6dcc8;
-      --accent: #d64538;
-      --dim: #7a6f5d;
-      --bar: #171210;
-      --line: #2a221c;
+      --bg: #0a0d0b;
+      --fg: #c9d6c9;
+      --accent: #6bff8f;
+      --dim: #5c6b5c;
+      --bar: #0d110e;
+      --line: #1c2620;
+    }
+    :root[data-theme='light'] {
+      --bg: #f7f6f2;
+      --fg: #20241f;
+      --accent: #0a8f33;
+      --dim: #6b706b;
+      --bar: #efede7;
+      --line: #d9d7cf;
     }
     * { box-sizing: border-box; }
     html, body { height: 100%; }
@@ -36,27 +44,26 @@
       background: var(--bar); border-bottom: 1px solid var(--line);
       font-size: 13px; color: var(--dim); user-select: none;
     }
-    header .dot { color: var(--accent); }
-    header a { color: var(--dim); text-decoration: none; }
-    header a:hover { color: var(--fg); }
-    #btnbar {
-      display: flex; gap: 8px; padding: 8px 12px; flex: none;
-      overflow-x: auto; background: var(--bar); border-bottom: 1px solid var(--line);
-      scrollbar-width: none; user-select: none;
+    header .status { display: inline-flex; align-items: center; gap: 8px; }
+    .dot {
+      color: var(--accent); font-size: 11px; line-height: 1;
+      animation: pulse 2.2s ease-in-out infinite;
     }
-    #btnbar::-webkit-scrollbar { display: none; }
-    #btnbar button {
-      flex: none; font: inherit; font-size: 12.5px; cursor: pointer;
-      color: var(--fg); background: transparent;
-      border: 1px solid var(--line); border-radius: 6px; padding: 5px 12px;
+    @keyframes pulse {
+      0%, 100% { opacity: 1; text-shadow: 0 0 4px currentColor; transform: scale(1); }
+      50% { opacity: 0.45; text-shadow: 0 0 10px currentColor; transform: scale(0.82); }
     }
-    #btnbar button:hover { border-color: var(--accent); color: var(--accent); }
-    #btnbar button:active { transform: translateY(1px); }
-    #term-wrap { flex: 1; min-height: 0; padding: 6px 8px 10px; }
+    header .right { display: inline-flex; align-items: center; gap: 14px; }
+    header a, header button {
+      color: var(--dim); text-decoration: none; background: none; border: none;
+      font: inherit; cursor: pointer; padding: 0;
+    }
+    header a:hover, header button:hover { color: var(--accent); }
+    #term-wrap { flex: 1; min-height: 0; padding: 8px 10px 12px; }
     #term, #term .xterm { height: 100%; }
     #overlay {
       position: fixed; inset: 0; z-index: 50; display: none;
-      background: rgba(8, 6, 5, 0.88); backdrop-filter: blur(2px);
+      background: color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter: blur(2px);
       align-items: center; justify-content: center; padding: 24px;
     }
     #overlay.show { display: flex; }
@@ -72,7 +79,6 @@
     #overlay .close:hover { color: var(--accent); }
     @media (max-width: 480px) {
       header { font-size: 12px; }
-      #btnbar button { padding: 6px 10px; }
       #term-wrap { padding: 4px 2px 8px; }
     }
     noscript div { max-width: 640px; margin: 12vh auto; padding: 0 20px; line-height: 1.8; font-size: 14px; }
@@ -82,10 +88,12 @@
 <body>
   <div id="app">
     <header>
-      <span><span class="dot">●</span> ~wei@nwpu — 魏佳桐 · robotics</span>
-      <a href="https://github.com/Jiatong-Wei" target="_blank" rel="noopener">github ↗</a>
+      <span class="status"><span class="dot">●</span> ~wei@nwpu — 魏佳桐 · robotics</span>
+      <span class="right">
+        <button id="theme-btn" type="button" aria-label="切换深浅色主题">☀ / ☾</button>
+        <a href="https://github.com/Jiatong-Wei" target="_blank" rel="noopener">github ↗</a>
+      </span>
     </header>
-    <nav id="btnbar" aria-label="快捷命令"></nav>
     <div id="term-wrap"><div id="term"></div></div>
   </div>
   <div id="overlay" role="dialog" aria-modal="true">
@@ -95,7 +103,7 @@
   </div>
   <noscript>
     <div>
-      <h1>魏佳桐（Leo Wei）</h1>
+      <h1>魏佳桐（Jiatong Wei）</h1>
       <p>西北工业大学水声工程本科（2023–2027），西安。方向：robotics —— manipulation、mobile robots、imitation learning。</p>
       <p>本站是一个假装成终端的交互应用，需要启用 JavaScript 才能体验。核心信息：</p>
       <ul>
