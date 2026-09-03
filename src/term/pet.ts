@@ -29,9 +29,10 @@ let sleepTimer: number | null = null;
 
 const seg = (cls: string, text: string) => `<i class="${cls}">${text}</i>`;
 
-// ALL FACE — the whole pet is a dog head, 18 cells × 8 rows.
-// Chars: E ear, H head, Y eye (rendered 2 cells wide), M muzzle, N nose/mouth, . blank.
-// Verified: every row renders exactly 18 cells.
+// ALL FACE — the whole pet is a dog head, 20 cells × 8 rows, ears flanking the
+// head down both sides (true front view).
+// Chars: E ear, H head, Y eye (rendered 2 cells wide), M muzzle, N nose/mouth, T tongue, . blank.
+// Verified: every row renders exactly 20 cells.
 const PALETTE: Record<string, string> = {
   E: 'pc-ear',
   H: 'pc-head',
@@ -41,14 +42,14 @@ const PALETTE: Record<string, string> = {
 };
 
 const HEAD_BASE: string[] = [
-  'EE..............EE', // ears: 2+14+2
-  'EEE............EEE', // ears: 3+12+3
-  'HHHHHHHHHHHHHHHHHH',
-  'HHHHYHHHHHHHYHHHH', // eyes: 4+2+6+2+4
-  'HHHHHHHHHHHHHHHHHH',
-  'HHHHHMMMMMMMMHHHHH', // muzzle: 5+8+5
-  'HHHHHMMNNNNMMHHHHH', // nose: 5+2+4+2+5
-  'HHHHHMMMMMMMMHHHHH', // chin / tongue row when happy
+  'EE................EE', // ear tips: 2+16+2
+  'EEE..............EEE', // ears: 3+14+3
+  'EEEHHHHHHHHHHHHHHEEE', // ears hug the head sides: 3+14+3
+  'EEEHHHYHHHHYHHHEEE', // eyes: ears 3+3 + head 12 (renders 14) + ears 3 → 20
+  'EEEHHHHHHHHHHHHHHEEE',
+  'EEEHHMMMMMMMMMMHHEEE', // muzzle: 3+2+10+2+3
+  'EEEHHMMMNNNNMMMHHEEE', // nose: 3+2+3+4+3+2+3
+  'EEEHHMMMMMMMMMMHHEEE', // chin / tongue row when happy
 ];
 
 type PetState = 'open' | 'happy' | 'blink' | 'sleep';
@@ -58,7 +59,7 @@ function sprite(state: PetState): string {
   const eyeCls = state === 'happy' ? 'pc-eyeH' : 'pc-eye';
   const base =
     state === 'happy'
-      ? HEAD_BASE.map((r, i) => (i === 7 ? 'HHHHHMMTTTTMMHHHHH' : r)) // tongue out
+      ? HEAD_BASE.map((r, i) => (i === 7 ? 'EEEHHMMTTTTTTMMHHEEE' : r)) // tongue out
       : HEAD_BASE;
   return base
     .map((row) =>
