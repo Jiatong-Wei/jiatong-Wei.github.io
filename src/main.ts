@@ -10,7 +10,10 @@ async function main(): Promise<void> {
   const shell = new Shell(ui);
   const pet = initPet({ isBlankRect: (x, y, w, h) => ui.isBlankRect(x, y, w, h) });
   setCommandLinkHandler((cmd) => shell.inject(cmd));
-  shell.onDone = () => pet.notify();
+  shell.onDone = (cmd, ok) => {
+    pet.notify();
+    pet.react(cmd, ok);
+  };
 
   document.getElementById('theme-btn')?.addEventListener('click', () => ui.toggleTheme());
   document.getElementById('term-wrap')?.addEventListener('click', () => ui.term.focus());

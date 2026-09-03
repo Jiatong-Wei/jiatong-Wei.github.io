@@ -38,7 +38,7 @@ export class Shell {
   private started = false;
   private injectTimer: number | null = null;
   /** Fired after each command finishes (pet reacts). */
-  onDone: (() => void) | null = null;
+  onDone: ((cmd: string, ok: boolean) => void) | null = null;
 
   constructor(private ui: Ui) {
     this.rl = new Readline(
@@ -81,6 +81,8 @@ export class Shell {
 
   private async exec(line: string): Promise<void> {
     this.busy = true;
+    let firstName = line.trim().split(/\s+/)[0] ?? '';
+    let ok = true;
     try {
       const pipeline = parseLine(line);
       if (!pipeline) return;
@@ -92,16 +94,19 @@ export class Shell {
         const cmd = registry.get(name);
         if (!cmd) {
           this.writeErr(`command not found: ${bold(name)} ${C.dim}(试试 help)${R}`);
+          ok = false;
           return;
         }
         if (argv.length - 1 < (cmd.minArgs ?? 0)) {
           this.writeErr(`${name}: ${cmd.usage ?? '缺参数'}`);
+          ok = false;
           return;
         }
         try {
           result = await cmd.run({ argv: argv.slice(1), stdin, api: this.ui, piped: i > 0 });
         } catch (e) {
           this.writeErr(`${name}: ${e instanceof Error ? e.message : String(e)}`);
+          ok = false;
           return;
         }
         stdin = result;
@@ -109,7 +114,7 @@ export class Shell {
       if (result) this.ui.term.write(result.endsWith('\n') ? result : `${result}\r\n`);
     } finally {
       this.busy = false;
-      this.onDone?.();
+      this.onDone?.(firstName, ok);
     }
   }
 }

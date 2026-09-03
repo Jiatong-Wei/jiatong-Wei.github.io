@@ -136,4 +136,21 @@ export const pet: Command = {
   run: ({ argv }) => getPet().run(argv[0] ?? 'pet'),
 };
 
-export const funCommands: Command[] = [neofetch, rostopic, joints, sudo, pet];
+export const fetchCmd: Command = {
+  name: 'fetch',
+  summary: '让优米去叼那颗红方块',
+  run: () => getPet().fetchCube(),
+};
+
+export const walkCmd: Command = {
+  name: 'walk',
+  summary: '撒绳散步（全屏空白处自己跑）',
+  usage: 'walk umi',
+  run: ({ argv }) => {
+    if (argv[0] !== 'umi') return `walk: 用法 walk umi — 撒开优米让她自己跑`;
+    const on = getPet().toggleRoam();
+    return on ? `${C.accent}优米${R} 撒绳了，全屏乱跑中（再敲一次 walk umi 召回）` : `${C.accent}优米${R} 被召回，回到岗哨`;
+  },
+};
+
+export const funCommands: Command[] = [neofetch, rostopic, joints, sudo, pet, fetchCmd, walkCmd];

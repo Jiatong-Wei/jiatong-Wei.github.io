@@ -9,8 +9,14 @@ import { C, R } from './ansi';
 export interface PetApi {
   /** Called after every command run — the dog hops. */
   notify(): void;
+  /** Called with the command line + success flag so UMI can react to it. */
+  react(cmd: string, ok: boolean): void;
   /** Run a pet action by name: pet | sit | spin | sleep | wake | on | off. Returns status text. */
   run(action: string): string;
+  /** UMI sprints to screen center, picks up the red cube, carries it home. */
+  fetchCube(): string;
+  /** Toggle off-leash roaming (whole-screen blank spots, faster pace). */
+  toggleRoam(): boolean;
   visible(): boolean;
 }
 
@@ -22,6 +28,11 @@ let sitting = false;
 let happyUntil = 0;
 let blinkUntil = 0;
 let walking = false;
+let fetching = false;
+let roamMode = false;
+let gaze: 'left' | 'center' | 'right' = 'center';
+let gazeTimer: number | null = null;
+let lastReactBubble = 0;
 let lastInteraction = Date.now();
 let renderTimer: number | null = null;
 let behaviorTimer: number | null = null;
@@ -47,22 +58,27 @@ const HEAD_BASE: string[] = [
   ' EEE          EEE ', // ears: 1+3+10+3+1
   'EEEEE        EEEEE', // ear bases: 5+8+5
   'HHHHHHHHHHHHHHHHHH', // head top, full face width — both ears sit on its ends
-  'HHHHHYHHHHYHHHHH', // eyes: 5 + eye2 + 4 + eye2 + 5 = 18 cells
+  'HHHHHYHHHHYHHHHH', // eyes center: 5 + eye2 + 4 + eye2 + 5 = 18 cells
   'HHHHHHHHHHHHHHHHHH',
   'HHHHHMMMMMMMMHHHHH', // muzzle: 5+8+5
   'HHHHHMMNNNNMMHHHHH', // nose: 5+2+4+2+5
   'HHHHHMMMMMMMMHHHHH', // chin / tongue row when happy
 ];
+// gaze variants of the eye row (eyes shift one cell; all render 18 cells)
+const EYES_LEFT = 'HHHHYHHHYHHHHHHH'; // eyes 4-5 / 10-11: 4+2+3+2+7 = 18
+const EYES_RIGHT = 'HHHHHHYHHHYHHHHH'; // eyes 6-7 / 12-13: 6+2+3+2+5 = 18
+// fetching: red cube carried in the mouth
+const MOUTH_CUBE = 'HHHHHMMQQQQMMHHHHH'; // 5+2+4+2+5 = 18
 
 type PetState = 'open' | 'happy' | 'blink' | 'sleep';
 
 function sprite(state: PetState): string {
   const eyeGlyph = state === 'sleep' || state === 'blink' ? '▄▄' : '██';
   const eyeCls = state === 'happy' ? 'pc-eyeH' : 'pc-eye';
-  const base =
-    state === 'happy'
-      ? HEAD_BASE.map((r, i) => (i === 8 ? 'HHHHHMMTTTTMMHHHHH' : r)) // tongue out
-      : HEAD_BASE;
+  let base = HEAD_BASE;
+  if (state === 'happy') base = base.map((r, i) => (i === 8 ? 'HHHHHMMTTTTMMHHHHH' : r)); // tongue out
+  else if (fetching) base = base.map((r, i) => (i === 7 ? MOUTH_CUBE : r)); // cube in mouth
+  else if (gaze !== 'center') base = base.map((r, i) => (i === 4 ? (gaze === 'left' ? EYES_LEFT : EYES_RIGHT) : r));
   return base
     .map((row) =>
       [...row]
@@ -72,6 +88,7 @@ function sprite(state: PetState): string {
           // shifts everything after a gap — measured as 15px vs 30px at 30px font
           if (ch === '.' || ch === ' ') return seg('pc-gap', '█');
           if (ch === 'Y') return seg(eyeCls, eyeGlyph);
+          if (ch === 'Q') return seg('pc-cube', '█'); // the fetched cube, in red
           return seg(PALETTE[ch] ?? 'pc-head', '█');
         })
         .join(''),
@@ -172,7 +189,11 @@ function walk(): void {
   let nextY = rect.top;
   let ok = false;
   for (let attempt = 0; attempt < 6 && !ok; attempt++) {
-    if (Math.random() < 0.35) {
+    if (roamMode) {
+      // off-leash: sample the whole screen (below the header), blank spots only
+      nextX = margin + Math.random() * Math.max(40, maxX - margin);
+      nextY = Math.min(Math.max(70 + Math.random() * (window.innerHeight - 90 - rect.height), margin + 60), maxY);
+    } else if (Math.random() < 0.35) {
       nextX = Math.max(maxX - 60 - Math.random() * 100, margin);
       nextY = Math.min(Math.max(70 + Math.random() * (window.innerHeight * 0.55), margin + 60), maxY);
     } else {
@@ -205,12 +226,119 @@ function sniff(): void {
   window.setTimeout(hop, 260);
 }
 
+// --- gaze: eyes follow the pointer while it's nearby ---
+
+function onPointerMove(e: MouseEvent): void {
+  const el = container;
+  if (!el || sleeping) return;
+  const r = el.getBoundingClientRect();
+  const cx = r.left + r.width / 2;
+  const next: typeof gaze = e.clientX < cx - r.width ? 'left' : e.clientX > cx + r.width ? 'right' : 'center';
+  if (next !== gaze) {
+    gaze = next;
+    render();
+  }
+  if (gazeTimer !== null) window.clearTimeout(gazeTimer);
+  gazeTimer = window.setTimeout(() => {
+    gaze = 'center';
+    render();
+  }, 3000);
+}
+
+// --- reactions to shell commands ---
+
+function react(cmd: string, ok: boolean): void {
+  if (hidden) return;
+  markInteraction();
+  const now = Date.now();
+  const say = (text: string, ms = 1600) => {
+    if (now - lastReactBubble > 5000) {
+      bubble(text, ms);
+      lastReactBubble = now;
+    }
+  };
+  if (!ok) {
+    tiltFor(1200);
+    say('汪？');
+    return;
+  }
+  if (cmd === 'sudo') {
+    say('（假装没看见 sudo）', 1800);
+    hop();
+    return;
+  }
+  if (cmd.includes('nine-generations')) {
+    say('（陪你叹气）0/5…', 2200);
+    return;
+  }
+  if (cmd === 'theme') {
+    blinkUntil = Date.now() + 350;
+    render();
+    say('（眨眼适应灯光）');
+    return;
+  }
+  hop(); // plain commands: just the usual happy hop
+}
+
+// --- fetch: sprint to center, grab the cube, carry it home ---
+
+function glideTo(x: number, y: number, ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    const el = container;
+    if (!el) return resolve();
+    walking = true;
+    el.classList.add('walk');
+    el.style.transitionDuration = `${ms}ms`;
+    el.style.left = `${Math.round(x)}px`;
+    el.style.top = `${Math.round(y)}px`;
+    el.style.right = 'auto';
+    el.style.bottom = 'auto';
+    window.setTimeout(() => {
+      walking = false;
+      el.classList.remove('walk');
+      el.style.transitionDuration = '';
+      resolve();
+    }, ms + 60);
+  });
+}
+
+function fetchCubeInternal(): void {
+  const el = container;
+  if (!el || hidden) return;
+  const r = el.getBoundingClientRect();
+  const midX = Math.max(8, window.innerWidth / 2 - r.width / 2);
+  const midY = Math.max(70, window.innerHeight / 2 - r.height / 2);
+  void (async () => {
+    await glideTo(midX, midY, 900);
+    fetching = true;
+    render();
+    bubble('叼到了！', 1200);
+    await new Promise((res) => window.setTimeout(res, 700));
+    await glideTo(window.innerWidth - r.width - 18, window.innerHeight - r.height - 6, 1100);
+    fetching = false;
+    render();
+    hop();
+    bubble('（cube 已送达狗窝 · 本站唯一一次成功抓取）', 2600);
+  })();
+}
+
+// --- off-leash roaming ---
+
+function toggleRoamInternal(): boolean {
+  roamMode = !roamMode;
+  bubble(roamMode ? '撒绳啦！自己跑一会儿 🐾' : '回来了，拴绳', 1800);
+  if (roamMode) sniff();
+  scheduleBehavior(); // re-arm with the new pace
+  return roamMode;
+}
+
 function scheduleBehavior(): void {
   if (behaviorTimer !== null) window.clearTimeout(behaviorTimer);
+  const interval = () => (roamMode ? 1300 + Math.random() * 1800 : 3500 + Math.random() * 6000);
   behaviorTimer = window.setTimeout(() => {
-    if (!hidden && !sleeping && !walking) {
+    if (!hidden && !sleeping && !walking && !fetching) {
       const roll = Math.random();
-      if (roll < 0.55) walk();
+      if (roll < (roamMode ? 0.85 : 0.55)) walk();
       else if (roll < 0.7) {
         blinkUntil = Date.now() + 220;
         render();
@@ -221,7 +349,7 @@ function scheduleBehavior(): void {
       }
     }
     scheduleBehavior();
-  }, 3500 + Math.random() * 6000);
+  }, interval());
 }
 
 function scheduleSleep(): void {
@@ -284,6 +412,7 @@ function mount(): void {
   });
 
   renderTimer = window.setInterval(render, 1100); // idle blink/eye refresh
+  window.addEventListener('mousemove', onPointerMove, { passive: true });
   scheduleBehavior();
   scheduleSleep();
 }
@@ -301,7 +430,6 @@ export function initPet(deps: PetDeps = {}): PetApi {
     notify: () => {
       markInteraction();
       hop();
-      // fresh output may now run under UMI — duck to a blank corner if covered
       const el = container;
       if (el && blankRect) {
         const r = el.getBoundingClientRect();
@@ -317,6 +445,15 @@ export function initPet(deps: PetDeps = {}): PetApi {
         }
       }
     },
+    react: (cmd: string, ok: boolean) => react(cmd, ok),
+    fetchCube: () => {
+      if (hidden) return '优米已躲起来 — pet on 唤回';
+      if (fetching) return '优米 正在叼方块，别催';
+      markInteraction();
+      fetchCubeInternal();
+      return `${C.accent}优米${R} 冲出去叼方块了…`;
+    },
+    toggleRoam: () => toggleRoamInternal(),
     run: (action: string): string => {
       switch (action) {
         case 'pet':

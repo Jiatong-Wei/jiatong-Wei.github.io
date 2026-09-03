@@ -23,6 +23,7 @@ export const help: Command = {
     rows.push(['rostopic', 'ROS 惯急了的可以试这个']);
     rows.push(['whoami / joints / boot', '彩蛋三件套']);
     rows.push(['pet', '桌宠优米（UMI）：会遛弯会歪头，点它汪']);
+    rows.push(['fetch / walk umi', '叼红方块 / 撒绳全屏散步']);
     rows.push(['theme / clear / history / echo', '老四样']);
     const w = Math.max(...rows.map(([a]) => strWidth(a)));
     return [
