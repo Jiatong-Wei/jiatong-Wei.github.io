@@ -67,7 +67,10 @@ function sprite(state: PetState): string {
     .map((row) =>
       [...row]
         .map((ch) => {
-          if (ch === '.' || ch === ' ') return ' '; // gaps show the page background
+          // gaps render as transparent blocks, NOT spaces: the space glyph can
+          // have a different advance than █ (per-glyph font fallback), which
+          // shifts everything after a gap — measured as 15px vs 30px at 30px font
+          if (ch === '.' || ch === ' ') return seg('pc-gap', '█');
           if (ch === 'Y') return seg(eyeCls, eyeGlyph);
           return seg(PALETTE[ch] ?? 'pc-head', '█');
         })
