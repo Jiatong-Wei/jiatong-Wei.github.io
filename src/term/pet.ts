@@ -187,11 +187,17 @@ function walk(): void {
   // occasionally — right off the edge of the screen for a breather; when
   // she's already out there, the next stroll must bring her back
   const offscreen = rect.right < 0 || rect.left > window.innerWidth;
+  // grace period after load: stay near the bottom-right corner so every
+  // visitor meets UMI on refresh; no lane climbs, no off-screen exits
+  const grace = Date.now() - mountTime < 12000;
   let nextX = rect.left;
   let nextY = rect.top;
   let ok = false;
   for (let attempt = 0; attempt < 6 && !ok; attempt++) {
-    if (offscreen) {
+    if (grace) {
+      nextX = Math.max(maxX - 420 - Math.random() * 120, margin);
+      nextY = maxY;
+    } else if (offscreen) {
       // coming home: blank spot inside the screen
       nextX = margin + Math.random() * Math.max(40, maxX - margin);
       nextY = Math.min(Math.max(70 + Math.random() * (window.innerHeight - 90 - rect.height), margin + 60), maxY);
@@ -240,6 +246,7 @@ function sniff(): void {
 // --- gaze: eyes follow the pointer while it's nearby ---
 
 let shyCooldown = 0;
+let mountTime = 0;
 
 function onPointerMove(e: MouseEvent): void {
   const el = container;
@@ -405,6 +412,7 @@ function scheduleSleep(): void {
 }
 
 function mount(): void {
+  mountTime = Date.now();
   container = document.createElement('div');
   container.id = 'pet';
   container.title = '优米 UMI — 点我会有汪';
