@@ -32,22 +32,16 @@
       --pet-head: #00838f;
       --pet-eye: #b8860b;
       --pet-eyeH: #c93a30;
-      --pet-body: #0a8f33;
-      --pet-led: #b8860b;
-      --pet-legF: #2456d0;
-      --pet-legR: #0b7d2e;
-      --pet-paw: #6b706b;
+      --pet-muzzle: #d8c9a3;
+      --pet-nose: #3b2a10;
     }
     :root {
       --pet-ear: #c792ea;
       --pet-head: #4dd0e1;
       --pet-eye: #ffd166;
       --pet-eyeH: #ff6b6b;
-      --pet-body: #57e389;
-      --pet-led: #ffd166;
-      --pet-legF: #6aa6ff;
-      --pet-legR: #3ccf6d;
-      --pet-paw: #5c6b5c;
+      --pet-muzzle: #2f8a96;
+      --pet-nose: #0d1f1c;
     }
     * { box-sizing: border-box; }
     html, body { height: 100%; }
@@ -100,8 +94,11 @@
     #pet {
       position: fixed; bottom: 6px; right: 18px; z-index: 40;
       cursor: grab; user-select: none; touch-action: none;
-      transition: left 1s ease-in-out;
+      transition: left 1s ease-in-out, transform .3s ease;
     }
+    #pet.sit { transform: rotate(-8deg); }
+    #pet.walk pre { animation: pet-bob .45s ease-in-out infinite; }
+    @keyframes pet-bob { 50% { transform: translateY(2px); } }
     #pet:active { cursor: grabbing; }
     #pet pre {
       margin: 0; font-family: inherit; font-size: 12px; line-height: 1.2;
@@ -111,11 +108,8 @@
     #pet .pc-head { color: var(--pet-head); }
     #pet .pc-eye  { color: var(--pet-eye); }
     #pet .pc-eyeH { color: var(--pet-eyeH); }
-    #pet .pc-body { color: var(--pet-body); }
-    #pet .pc-led  { color: var(--pet-led); }
-    #pet .pc-legF { color: var(--pet-legF); }
-    #pet .pc-legR { color: var(--pet-legR); }
-    #pet .pc-paw  { color: var(--pet-paw); }
+    #pet .pc-muzzle { color: var(--pet-muzzle); }
+    #pet .pc-nose { color: var(--pet-nose); }
     #pet .pet-bubble {
       position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
       margin-bottom: 4px; white-space: nowrap;

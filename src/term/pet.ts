@@ -1,8 +1,8 @@
-// robo — the terminal desktop pet. A front-facing quadruped robot dog
-// (四足机器狗), built from solid color blocks like a terminal logo: cyan head,
-// yellow eyes, green body with a chest LED, blue front legs and green rear
-// legs. Walks with a two-frame leg gait, blinks, sits, wags, sleeps when
-// ignored, barks on click and hops whenever the shell runs a command.
+// robo — the terminal desktop pet. Like Claude Code's octopus, robo is ALL FACE: a big
+// front-view robot-dog head built from solid color blocks — magenta sensor ears, cyan
+// head, yellow block eyes, darker muzzle with nose and mouth. It wanders along the
+// bottom edge with a head-bob, blinks, tilts when curious, sleeps when ignored, barks
+// on click and hops whenever the shell runs a command.
 
 import { C, R } from './ansi';
 
@@ -21,7 +21,6 @@ let sleeping = false;
 let sitting = false;
 let happyUntil = 0;
 let blinkUntil = 0;
-let gait = 0; // 0|1 — walk frame
 let walking = false;
 let lastInteraction = Date.now();
 let renderTimer: number | null = null;
@@ -30,69 +29,61 @@ let sleepTimer: number | null = null;
 
 const seg = (cls: string, text: string) => `<i class="${cls}">${text}</i>`;
 
-/** Front-view block dog. eyes: 'open'|'blink'|'sleep'|'happy'; gait picks leg spread. */
-function sprite(eyes: string, gaitFrame: 0 | 1, sit: boolean, lying: boolean): string {
-  const earL = seg('pc-ear', '██');
-  const earR = seg('pc-ear', '██');
-  const headL = seg('pc-head', '███');
-  const headR = seg('pc-head', '███');
-  const headTop = seg('pc-head', '█████████████');
-  const jaw = seg('pc-head', '█████████████');
+// ALL FACE — the whole pet is a dog head, 18 cells × 8 rows.
+// Chars: E ear, H head, Y eye (rendered 2 cells wide), M muzzle, N nose/mouth, . blank.
+// Verified: every row renders exactly 18 cells.
+const PALETTE: Record<string, string> = {
+  E: 'pc-ear',
+  H: 'pc-head',
+  M: 'pc-muzzle',
+  N: 'pc-nose',
+  T: 'pc-eyeH', // tongue shares the happy-pink
+};
 
-  let face: string;
-  if (lying) face = seg('pc-head', '███') + seg('pc-eye', ' ▄▄ ▄▄ ') + seg('pc-head', '███');
-  else if (eyes === 'open') face = headL + seg('pc-eye', '██') + seg('pc-head', ' ') + seg('pc-eye', '██') + headR;
-  else if (eyes === 'happy') face = headL + seg('pc-eyeH', '██') + seg('pc-head', ' ') + seg('pc-eyeH', '██') + headR;
-  else face = seg('pc-head', '███████████████'); // blink/sleep: eyes shut, solid face
+const HEAD_BASE: string[] = [
+  'EE..............EE', // ears: 2+14+2
+  'EEE............EEE', // ears: 3+12+3
+  'HHHHHHHHHHHHHHHHHH',
+  'HHHHYHHHHHHHYHHHH', // eyes: 4+2+6+2+4
+  'HHHHHHHHHHHHHHHHHH',
+  'HHHHHMMMMMMMMHHHHH', // muzzle: 5+8+5
+  'HHHHHMMNNNNMMHHHHH', // nose: 5+2+4+2+5
+  'HHHHHMMMMMMMMHHHHH', // chin / tongue row when happy
+];
 
-  const legsA =
-    seg('pc-legF', '██') + '  ' + seg('pc-legR', '██') + '  ' + seg('pc-legR', '██') + '  ' + seg('pc-legF', '██');
-  const legsB =
-    seg('pc-legF', ' ██') + ' ' + seg('pc-legR', '████') + ' ' + seg('pc-legF', '██ ');
-  const pawsA =
-    seg('pc-paw', '▄▄') + '  ' + seg('pc-paw', '▄▄') + '  ' + seg('pc-paw', '▄▄') + '  ' + seg('pc-paw', '▄▄');
-  const pawsB =
-    seg('pc-paw', ' ▄▄') + ' ' + seg('pc-paw', '▄▄▄▄') + ' ' + seg('pc-paw', '▄▄ ');
+type PetState = 'open' | 'happy' | 'blink' | 'sleep';
 
-  if (lying) {
-    return [
-      seg('pc-ear', ' ██   ██ '),
-      seg('pc-head', '█████████████'),
-      face,
-      seg('pc-body', '███████████████'),
-      seg('pc-paw', '▀▀▀▀▀▀▀▀▀▀▀▀▀▀'),
-    ].join('\n');
-  }
-  if (sit) {
-    return [
-      seg('pc-ear', ' ██       ██ ') + (eyes === 'happy' ? seg('pc-eyeH', ' ♥') : ''),
-      seg('pc-head', '███████████████'),
-      face,
-      jaw,
-      seg('pc-body', '███████████████'),
-      seg('pc-legF', '███') + '     ' + seg('pc-legF', '███'),
-      seg('pc-paw', '▄▄▄') + '   ' + seg('pc-paw', '▄▄▄') + seg('pc-legR', '  ▄▄▄▄▄▄▄'),
-    ].join('\n');
-  }
-  const legs = gaitFrame === 0 ? legsA : legsB;
-  const paws = gaitFrame === 0 ? pawsA : pawsB;
-  const chest = seg('pc-body', '█████') + seg('pc-led', '▄▄') + seg('pc-body', '████████');
-  return [
-    earL + '       ' + earR,
-    headTop,
-    face,
-    jaw,
-    chest,
-    legs,
-    paws,
-  ].join('\n');
+function sprite(state: PetState): string {
+  const eyeGlyph = state === 'sleep' || state === 'blink' ? '▄▄' : '██';
+  const eyeCls = state === 'happy' ? 'pc-eyeH' : 'pc-eye';
+  const base =
+    state === 'happy'
+      ? HEAD_BASE.map((r, i) => (i === 7 ? 'HHHHHMMTTTTMMHHHHH' : r)) // tongue out
+      : HEAD_BASE;
+  return base
+    .map((row) =>
+      [...row]
+        .map((ch) => {
+          if (ch === '.') return ' ';
+          if (ch === 'Y') return seg(eyeCls, eyeGlyph);
+          return seg(PALETTE[ch] ?? 'pc-head', '█');
+        })
+        .join(''),
+    )
+    .join('\n');
 }
 
 function render(): void {
   if (!container || hidden) return;
   const pre = container.querySelector('pre')!;
-  const eyes = sleeping ? 'sleep' : happyUntil > Date.now() ? 'happy' : blinkUntil > Date.now() ? 'blink' : 'open';
-  pre.innerHTML = sprite(eyes, gait as 0 | 1, sitting, sleeping);
+  const state: PetState = sleeping
+    ? 'sleep'
+    : happyUntil > Date.now()
+      ? 'happy'
+      : blinkUntil > Date.now()
+        ? 'blink'
+        : 'open';
+  pre.innerHTML = sprite(state);
 }
 
 function bubble(text: string, ms = 1400): void {
@@ -136,9 +127,15 @@ function spin(): void {
   bubble('（原地转圈）', 1200);
 }
 
+function setTilt(on: boolean): void {
+  sitting = on;
+  if (container) container.classList.toggle('sit', on);
+}
+
 function walk(): void {
-  if (!container || hidden || sleeping || sitting) return;
-  const rect = container.getBoundingClientRect();
+  const el = container;
+  if (!el || hidden || sleeping || sitting) return;
+  const rect = el.getBoundingClientRect();
   const minX = 8;
   const maxX = window.innerWidth - rect.width - 8;
   let next = rect.left + (Math.random() < 0.5 ? -1 : 1) * (60 + Math.random() * 150);
@@ -147,17 +144,13 @@ function walk(): void {
   const dist = Math.abs(next - rect.left);
   if (dist < 12) return;
   walking = true;
-  container.style.transitionDuration = `${Math.max(700, Math.round(dist * 5))}ms`;
-  container.style.left = `${Math.round(next)}px`;
-  container.style.right = 'auto'; // left+right together would stretch the fixed box
-  const step = window.setInterval(() => {
-    gait = gait ? 0 : 1;
-    render();
-  }, 150);
+  el.classList.add('walk'); // head bob while strolling
+  el.style.transitionDuration = `${Math.max(700, Math.round(dist * 5))}ms`;
+  el.style.left = `${Math.round(next)}px`;
+  el.style.right = 'auto'; // left+right together would stretch the fixed box
   window.setTimeout(() => {
-    window.clearInterval(step);
     walking = false;
-    render();
+    el.classList.remove('walk');
   }, Math.max(700, Math.round(dist * 5)) + 80);
 }
 
@@ -170,20 +163,9 @@ function scheduleBehavior(): void {
       else if (roll < 0.78) {
         blinkUntil = Date.now() + 220;
         render();
-      } else if (roll < 0.9 && !sitting) {
-        sitting = true;
-        render();
-        window.setTimeout(() => {
-          sitting = false;
-          render();
-        }, 4000 + Math.random() * 4000);
       } else {
-        sitting = true;
-        render();
-        window.setTimeout(() => {
-          sitting = false;
-          render();
-        }, 3000);
+        setTilt(true); // curious head tilt
+        window.setTimeout(() => setTilt(false), 2500 + Math.random() * 3000);
       }
     }
     scheduleBehavior();
@@ -240,7 +222,7 @@ function mount(): void {
     el.addEventListener('pointerup', up);
   });
 
-  renderTimer = window.setInterval(render, 1100); // idle blink refresh
+  renderTimer = window.setInterval(render, 1100); // idle blink/eye refresh
   scheduleBehavior();
   scheduleSleep();
 }
@@ -258,13 +240,13 @@ export function initPet(): PetApi {
         case 'pet':
           if (hidden) return 'robo 已隐藏 — pet on 唤回';
           bark();
-          return `${C.accent}robo${R} 摇着尾巴蹭了蹭你`;
+          return `${C.accent}robo${R} 开心地蹭了蹭你`;
         case 'sit':
           if (hidden) return 'robo 已隐藏 — pet on 唤回';
           markInteraction();
-          sitting = true;
-          render();
-          return `${C.accent}robo${R} 坐下了（等指令）`;
+          setTilt(true);
+          window.setTimeout(() => setTilt(false), 3000);
+          return `${C.accent}robo${R} 歪了歪头（等指令）`;
         case 'spin':
           if (hidden) return 'robo 已隐藏 — pet on 唤回';
           spin();
@@ -275,7 +257,7 @@ export function initPet(): PetApi {
           return `${C.accent}robo${R} 趴下睡了`;
         case 'wake':
           markInteraction();
-          return `${C.accent}robo${R} 一个激灵站起来`;
+          return `${C.accent}robo${R} 一个激灵精神了`;
         case 'off':
           hidden = true;
           if (container) container.style.display = 'none';
