@@ -65,5 +65,6 @@ export const OPEN_TARGETS: Record<string, { url: string; desc: string }> = {
   report: { url: 'files/Isaac_Grasping_Research_Report.pdf', desc: 'Isaac 抓取技术报告（PDF，28 页）' },
   splat: { url: 'https://3d.explorerglobal.cn/collection/web/5vxjmwx8', desc: '高斯泼溅作品（外链）' },
   github: { url: 'https://github.com/Jiatong-Wei', desc: 'GitHub @Jiatong-Wei（外链）' },
+  wiki: { url: 'https://jiatong-wei.github.io/wiki/', desc: 'Wiki 站：全文 + 图表 + PDF（外链）' },
   email: { url: 'mailto:joyetong58@gmail.com', desc: '发邮件' },
 };

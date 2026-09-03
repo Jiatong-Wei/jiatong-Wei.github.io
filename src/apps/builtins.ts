@@ -79,7 +79,7 @@ function wikiLs(): string {
     const cert = d.cert === 'hitl' ? `${C.yellow}[HITL]${R}` : d.cert === 'human' ? `${C.green}[H]${R}` : '     ';
     return `  ${padEnd(cert, 10)}${C.cyan}${padEnd(d.name.replace('wiki/', ''), 24)}${R}${C.dim}${d.summary}${R}`;
   });
-  return [`${C.dim}wiki/ — Human in the loop = 用了生成式AI并由我 review；[H] = 纯手工${R}`, ...lines, ''].join('\n');
+  return [`${C.dim}wiki/ — Human in the loop = 用了生成式AI并由我 review；[H] = 纯手工${R}`, ...lines, `${C.dim}全文带图表版：${R}${link(`${C.cyan}jiatong-wei.github.io/wiki${R}`, 'https://jiatong-wei.github.io/wiki/')}${C.dim}（open wiki）${R}`, ''].join('\n');
 }
 
 export const wiki: Command = {
