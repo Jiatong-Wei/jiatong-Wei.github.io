@@ -21,7 +21,6 @@ const ART = [
   arm('  ██████'), // base taper
   arm('██████████████'), // pedestal
   cube('              ▄██▄'), // the cube. still on the table.
-  cube('              ▀▀▀▀'),
 ];
 
 const INFO: Array<[string, string]> = [

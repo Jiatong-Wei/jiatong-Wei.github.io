@@ -8,7 +8,7 @@ import { profileScreen } from './apps/builtins';
 async function main(): Promise<void> {
   const ui = createUi();
   const shell = new Shell(ui);
-  const pet = initPet();
+  const pet = initPet({ isBlankRect: (x, y, w, h) => ui.isBlankRect(x, y, w, h) });
   setCommandLinkHandler((cmd) => shell.inject(cmd));
   shell.onDone = () => pet.notify();
 

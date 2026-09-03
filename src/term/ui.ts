@@ -84,6 +84,8 @@ export interface Ui {
   openImage(url: string, caption: string): void;
   openUrl(url: string): void;
   note(text: string): void;
+  /** True when the screen rectangle (viewport px) covers no terminal text. */
+  isBlankRect(x: number, y: number, w: number, h: number): boolean;
 }
 
 // --- clickable command words in terminal output (jyy-style inject-on-click) ---
@@ -244,6 +246,31 @@ export function createUi(): Ui {
   applyTheme(initialTheme());
 
   const overlay = initOverlay();
+
+  // Map a viewport-pixel rectangle onto terminal cells and scan the buffer:
+  // blank means the pet can sit there without covering any text.
+  const isBlankRect = (x: number, y: number, w: number, h: number): boolean => {
+    const el = term.element;
+    if (!el) return false;
+    const rect = el.getBoundingClientRect();
+    const cellW = rect.width / term.cols;
+    const cellH = rect.height / term.rows;
+    const c0 = Math.floor((x - rect.left) / cellW);
+    const c1 = Math.ceil((x + w - rect.left) / cellW) - 1;
+    const r0 = Math.floor((y - rect.top) / cellH);
+    const r1 = Math.ceil((y + h - rect.top) / cellH) - 1;
+    if (c1 < 0 || r1 < 0 || c0 >= term.cols) return true; // outside the terminal entirely
+    const buf = term.buffer.active;
+    for (let row = Math.max(r0, 0); row <= Math.min(r1, term.rows - 1); row++) {
+      const line = buf.getLine(buf.viewportY + row);
+      const text = line?.translateToString(true) ?? '';
+      for (let c = Math.max(c0, 0); c <= Math.min(c1, term.cols - 1); c++) {
+        if (text[c] && text[c] !== ' ') return false;
+      }
+    }
+    return true;
+  };
+
   return {
     term,
     fit,
@@ -258,5 +285,6 @@ export function createUi(): Ui {
       term.write('\x1b[2J\x1b[H');
     },
     ...overlay,
+    isBlankRect,
   };
 }

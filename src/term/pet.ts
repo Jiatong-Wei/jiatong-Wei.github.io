@@ -107,6 +107,7 @@ function bubble(text: string, ms = 1400): void {
 let bubbleTimer: number | null = null;
 let tiltTimer: number | null = null;
 let suppressBark = false;
+let blankRect: ((x: number, y: number, w: number, h: number) => boolean) | null = null;
 
 function markInteraction(): void {
   lastInteraction = Date.now();
@@ -165,19 +166,23 @@ function walk(): void {
   const margin = 8;
   const maxX = window.innerWidth - rect.width - margin;
   const maxY = window.innerHeight - rect.height - margin;
-  // idle wandering: mostly strolls along the bottom band; ~30% of the time
-  // UMI explores the right-side lane (usually blank terminal margin)
+  // pick a blank spot: bottom-band strolls or a lane up the right side —
+  // candidates are rejected when they would cover terminal text
   let nextX = rect.left;
   let nextY = rect.top;
-  if (Math.random() < 0.3) {
-    nextX = Math.max(maxX - 60 - Math.random() * 100, margin);
-    nextY = Math.max(70 + Math.random() * (window.innerHeight * 0.55), margin + 60);
-    nextY = Math.min(nextY, maxY);
-  } else {
-    nextX = margin + Math.random() * Math.max(40, maxX - margin);
-    nextY = maxY;
+  let ok = false;
+  for (let attempt = 0; attempt < 6 && !ok; attempt++) {
+    if (Math.random() < 0.35) {
+      nextX = Math.max(maxX - 60 - Math.random() * 100, margin);
+      nextY = Math.min(Math.max(70 + Math.random() * (window.innerHeight * 0.55), margin + 60), maxY);
+    } else {
+      nextX = margin + Math.random() * Math.max(40, maxX - margin);
+      nextY = maxY;
+    }
+    nextX = Math.min(maxX, Math.max(margin, nextX));
+    ok = !blankRect || blankRect(nextX, nextY, rect.width, rect.height);
   }
-  nextX = Math.min(maxX, Math.max(margin, nextX));
+  if (!ok) return; // every candidate would cover text — stay put
   const dist = Math.hypot(nextX - rect.left, nextY - rect.top);
   if (dist < 24) return;
   walking = true;
@@ -283,13 +288,34 @@ function mount(): void {
   scheduleSleep();
 }
 
-export function initPet(): PetApi {
+export interface PetDeps {
+  /** True when the screen rectangle (viewport px) covers no terminal text. */
+  isBlankRect?: (x: number, y: number, w: number, h: number) => boolean;
+}
+
+export function initPet(deps: PetDeps = {}): PetApi {
   if (api) return api;
+  blankRect = deps.isBlankRect ?? null;
   mount();
   api = {
     notify: () => {
       markInteraction();
       hop();
+      // fresh output may now run under UMI — duck to a blank corner if covered
+      const el = container;
+      if (el && blankRect) {
+        const r = el.getBoundingClientRect();
+        if (!blankRect(r.left, r.top, r.width, r.height)) {
+          el.style.transitionDuration = '600ms';
+          el.style.left = `${Math.round(window.innerWidth - r.width - 18)}px`;
+          el.style.top = `${Math.round(window.innerHeight - r.height - 6)}px`;
+          el.style.right = 'auto';
+          el.style.bottom = 'auto';
+          window.setTimeout(() => {
+            el.style.transitionDuration = '';
+          }, 650);
+        }
+      }
     },
     run: (action: string): string => {
       switch (action) {
