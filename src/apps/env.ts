@@ -62,8 +62,6 @@ export const OPEN_TARGETS: Record<string, { url: string; desc: string }> = {
   'gc-1': { url: 'images/gc/grasp.jpg', desc: '省赛夹取实况（图）' },
   'gc-2': { url: 'images/gc/prototype.jpg', desc: '备赛原型机（图）' },
   'gc-3': { url: 'images/gc/venue.jpg', desc: '省赛决赛场地（图）' },
-  'curve-act': { url: 'images/wiki/act-train-curve.png', desc: 'ACT 训练损失曲线（day5）' },
-  'curve-push': { url: 'images/wiki/learning-curve.png', desc: 'PushT 训练曲线（LeRobot）' },
   report: { url: 'files/Isaac_Grasping_Research_Report.pdf', desc: 'Isaac 抓取技术报告（PDF，28 页）' },
   splat: { url: 'https://3d.explorerglobal.cn/collection/web/5vxjmwx8', desc: '高斯泼溅作品（外链）' },
   github: { url: 'https://github.com/Jiatong-Wei', desc: 'GitHub @Jiatong-Wei（外链）' },
