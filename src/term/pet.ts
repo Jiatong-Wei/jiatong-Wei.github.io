@@ -29,10 +29,11 @@ let sleepTimer: number | null = null;
 
 const seg = (cls: string, text: string) => `<i class="${cls}">${text}</i>`;
 
-// ALL FACE — the whole pet is a dog head, 20 cells × 8 rows, ears flanking the
-// head down both sides (true front view).
+// ALL FACE — the whole pet is a dog head, 18 cells × 9 rows. Ears are two
+// isosceles triangles pointing up, seated on the head's top-left and top-right
+// corners (tip 1 cell → 3 → 5, each centered on its own axis — no direction).
 // Chars: E ear, H head, Y eye (rendered 2 cells wide), M muzzle, N nose/mouth, T tongue, . blank.
-// Verified: every row renders exactly 20 cells.
+// Verified: every row renders exactly 18 cells.
 const PALETTE: Record<string, string> = {
   E: 'pc-ear',
   H: 'pc-head',
@@ -42,14 +43,15 @@ const PALETTE: Record<string, string> = {
 };
 
 const HEAD_BASE: string[] = [
-  'EE................EE', // ear tips: 2+16+2
-  'EEE..............EEE', // ears: 3+14+3
-  'EEEHHHHHHHHHHHHHHEEE', // ears hug the head sides: 3+14+3
-  'EEEHHHYHHHHYHHHEEE', // eyes: ears 3+3 + head 12 (renders 14) + ears 3 → 20
-  'EEEHHHHHHHHHHHHHHEEE',
-  'EEEHHMMMMMMMMMMHHEEE', // muzzle: 3+2+10+2+3
-  'EEEHHMMMNNNNMMMHHEEE', // nose: 3+2+3+4+3+2+3
-  'EEEHHMMMMMMMMMMHHEEE', // chin / tongue row when happy
+  '  E            E  ', // ear tips (axis col 2 / col 15): 2sp+1+12sp+1+2sp
+  ' EEE          EEE ', // ears: 1+3+10+3+1
+  'EEEEE        EEEEE', // ear bases merge into head top: 5+8+5
+  'HHHHHHHHHHHHHHHHHH',
+  'HHHHHYHHHHYHHHHH', // eyes: 5 + eye2 + 4 + eye2 + 5 = 18 cells
+  'HHHHHHHHHHHHHHHHHH',
+  'HHHHHMMMMMMMMHHHHH', // muzzle: 5+8+5
+  'HHHHHMMNNNNMMHHHHH', // nose: 5+2+4+2+5
+  'HHHHHMMMMMMMMHHHHH', // chin / tongue row when happy
 ];
 
 type PetState = 'open' | 'happy' | 'blink' | 'sleep';
@@ -59,7 +61,7 @@ function sprite(state: PetState): string {
   const eyeCls = state === 'happy' ? 'pc-eyeH' : 'pc-eye';
   const base =
     state === 'happy'
-      ? HEAD_BASE.map((r, i) => (i === 7 ? 'EEEHHMMTTTTTTMMHHEEE' : r)) // tongue out
+      ? HEAD_BASE.map((r, i) => (i === 8 ? 'HHHHHMMTTTTMMHHHHH' : r)) // tongue out
       : HEAD_BASE;
   return base
     .map((row) =>
