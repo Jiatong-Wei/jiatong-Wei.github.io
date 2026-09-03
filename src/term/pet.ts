@@ -371,6 +371,15 @@ function mount(): void {
   container.innerHTML = '<div class="pet-bubble"></div><pre></pre>';
   document.body.appendChild(container);
 
+  // freeze the CSS-anchored (right/bottom) start position into explicit px:
+  // a transition from left/top:auto to pixels is NOT interpolable — the very
+  // first stroll would teleport instead of glide
+  const start = container.getBoundingClientRect();
+  container.style.left = `${Math.round(start.left)}px`;
+  container.style.top = `${Math.round(start.top)}px`;
+  container.style.right = 'auto';
+  container.style.bottom = 'auto';
+
   container.addEventListener('click', () => {
     if (suppressBark) {
       suppressBark = false; // that pointer sequence was a drag, not a pat
