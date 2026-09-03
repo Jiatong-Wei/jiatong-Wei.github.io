@@ -5,23 +5,23 @@ import { renderDoc } from '../term/mdansi';
 import { getPet } from '../term/pet';
 import { Command, docByName, wikiDocs } from './env';
 
-// neofetch art: Franka-style arm reaching over the 5 cm cube — which is still
-// on the table (grasp 0/5). Arm in accent, cube in red, like the sim.
+// neofetch art: classic industrial arm silhouette — pedestal, column, boom,
+// forearm reaching down, open two-finger gripper — hovering over the red
+// 5 cm cube, which is still on the table (grasp 0/5).
 const arm = (s: string) => `${C.accent}${s}${R}`;
 const cube = (s: string) => `${C.red}${s}${R}`;
 const ART = [
-  arm('            ██  ██'), // open gripper
   arm('            ██████'), // hand
-  arm('             ███'), // wrist
-  arm('            ███'),
-  arm('          ████'), // elbow
-  arm('        ████'),
-  arm('      ████'),
-  arm('    ████'), // shoulder
-  arm('  ██████'),
-  arm('████████████'), // base
-  cube('          ▄██▄'), // the cube. still on the table.
-  cube('          ▀▀▀▀'),
+  arm('            ██  ██'), // open fingers
+  arm('              ███'), // wrist
+  arm('              ███'), // forearm
+  arm('    ████████████'), // boom + elbow
+  arm('    ███'), // column
+  arm('    ███'),
+  arm('  ██████'), // base taper
+  arm('██████████████'), // pedestal
+  cube('              ▄██▄'), // the cube. still on the table.
+  cube('              ▀▀▀▀'),
 ];
 
 const INFO: Array<[string, string]> = [
