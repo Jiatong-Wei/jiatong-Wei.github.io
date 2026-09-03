@@ -37,6 +37,8 @@ export class Shell {
   private busy = false;
   private started = false;
   private injectTimer: number | null = null;
+  /** Fired after each command finishes (pet reacts). */
+  onDone: (() => void) | null = null;
 
   constructor(private ui: Ui) {
     this.rl = new Readline(
@@ -107,6 +109,7 @@ export class Shell {
       if (result) this.ui.term.write(result.endsWith('\n') ? result : `${result}\r\n`);
     } finally {
       this.busy = false;
+      this.onDone?.();
     }
   }
 }

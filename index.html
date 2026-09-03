@@ -77,6 +77,33 @@
       color: var(--dim); background: none; border: none;
     }
     #overlay .close:hover { color: var(--accent); }
+    #pet {
+      position: fixed; bottom: 6px; right: 18px; z-index: 40;
+      cursor: grab; user-select: none; touch-action: none;
+      transition: left 1s ease-in-out;
+    }
+    #pet:active { cursor: grabbing; }
+    #pet pre {
+      margin: 0; font-family: inherit; font-size: 12px; line-height: 1.2;
+      color: var(--accent);
+      text-shadow: 0 0 6px color-mix(in srgb, var(--accent) 40%, transparent);
+    }
+    #pet .pet-bubble {
+      position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
+      margin-bottom: 4px; white-space: nowrap;
+      background: var(--bar); border: 1px solid var(--line); border-radius: 6px;
+      padding: 2px 7px; font-size: 11px; color: var(--fg);
+      opacity: 0; transition: opacity .2s; pointer-events: none;
+    }
+    #pet .pet-bubble.show { opacity: 1; }
+    #pet.hop { animation: pet-hop .45s ease; }
+    @keyframes pet-hop {
+      30% { transform: translateY(-7px); }
+      60% { transform: translateY(0); }
+      80% { transform: translateY(-3px); }
+    }
+    #pet.spin pre { animation: pet-spin .9s ease; transform-origin: 50% 60%; }
+    @keyframes pet-spin { to { transform: rotate(360deg); } }
     @media (max-width: 480px) {
       header { font-size: 12px; }
       #term-wrap { padding: 4px 2px 8px; }

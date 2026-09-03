@@ -22,6 +22,7 @@ export const help: Command = {
     rows.push(['neofetch', '我是谁，我的机器是什么']);
     rows.push(['rostopic', 'ROS 惯急了的可以试这个']);
     rows.push(['whoami / joints / boot', '彩蛋三件套']);
+    rows.push(['pet', '桌宠 robo：会溜达会睡觉，点它转圈']);
     rows.push(['theme / clear / history / echo', '老四样']);
     const w = Math.max(...rows.map(([a]) => strWidth(a)));
     return [
