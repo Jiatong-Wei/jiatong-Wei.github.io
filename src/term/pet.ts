@@ -97,8 +97,16 @@ function bubble(text: string, ms = 1400): void {
   const el = container.querySelector('.pet-bubble') as HTMLDivElement;
   el.textContent = text;
   el.classList.add('show');
-  window.setTimeout(() => el.classList.remove('show'), ms);
+  if (bubbleTimer !== null) window.clearTimeout(bubbleTimer); // a short bubble must not kill a longer one early
+  bubbleTimer = window.setTimeout(() => {
+    el.classList.remove('show');
+    bubbleTimer = null;
+  }, ms);
 }
+
+let bubbleTimer: number | null = null;
+let tiltTimer: number | null = null;
+let suppressBark = false;
 
 function markInteraction(): void {
   lastInteraction = Date.now();
@@ -136,6 +144,18 @@ function spin(): void {
 function setTilt(on: boolean): void {
   sitting = on;
   if (container) container.classList.toggle('sit', on);
+  if (tiltTimer !== null) {
+    window.clearTimeout(tiltTimer);
+    tiltTimer = null;
+  }
+}
+
+function tiltFor(ms: number): void {
+  setTilt(true);
+  tiltTimer = window.setTimeout(() => {
+    setTilt(false);
+    tiltTimer = null;
+  }, ms);
 }
 
 function walk(): void {
@@ -157,6 +177,7 @@ function walk(): void {
   window.setTimeout(() => {
     walking = false;
     el.classList.remove('walk');
+    el.style.transitionDuration = ''; // or every later sit-tilt inherits the walk duration
   }, Math.max(700, Math.round(dist * 5)) + 80);
 }
 
@@ -170,8 +191,7 @@ function scheduleBehavior(): void {
         blinkUntil = Date.now() + 220;
         render();
       } else {
-        setTilt(true); // curious head tilt
-        window.setTimeout(() => setTilt(false), 2500 + Math.random() * 3000);
+        tiltFor(2500 + Math.random() * 3000); // curious head tilt
       }
     }
     scheduleBehavior();
@@ -197,8 +217,11 @@ function mount(): void {
   container.innerHTML = '<div class="pet-bubble"></div><pre></pre>';
   document.body.appendChild(container);
 
-  container.addEventListener('click', (e) => {
-    e.stopPropagation();
+  container.addEventListener('click', () => {
+    if (suppressBark) {
+      suppressBark = false; // that pointer sequence was a drag, not a pat
+      return;
+    }
     bark();
   });
   container.addEventListener('pointerdown', (e) => {
@@ -212,7 +235,11 @@ function mount(): void {
     const originLeft = rect.left;
     const originTop = rect.top;
     el.setPointerCapture(e.pointerId);
-    const move = (ev: PointerEvent) => {
+    el.classList.add('dragging'); // kill the left-transition so the pet tracks the pointer
+    // assignment (not addEventListener) so a new pointerdown replaces any
+    // dangling pair, and cancel is handled alongside up — no listener leaks
+    el.onpointermove = (ev: PointerEvent) => {
+      if (Math.abs(ev.clientX - startX) + Math.abs(ev.clientY - startY) > 6) suppressBark = true;
       const left = Math.min(window.innerWidth - rect.width - 4, Math.max(4, originLeft + ev.clientX - startX));
       const top = Math.min(window.innerHeight - rect.height - 4, Math.max(30, originTop + ev.clientY - startY));
       el.style.left = `${Math.round(left)}px`;
@@ -220,12 +247,14 @@ function mount(): void {
       el.style.right = 'auto';
       el.style.bottom = 'auto';
     };
-    const up = () => {
-      el.removeEventListener('pointermove', move);
-      el.removeEventListener('pointerup', up);
+    const release = () => {
+      el.onpointermove = null;
+      el.onpointerup = null;
+      el.onpointercancel = null;
+      el.classList.remove('dragging');
     };
-    el.addEventListener('pointermove', move);
-    el.addEventListener('pointerup', up);
+    el.onpointerup = release;
+    el.onpointercancel = release;
   });
 
   renderTimer = window.setInterval(render, 1100); // idle blink/eye refresh
@@ -250,8 +279,7 @@ export function initPet(): PetApi {
         case 'sit':
           if (hidden) return 'robo 已隐藏 — pet on 唤回';
           markInteraction();
-          setTilt(true);
-          window.setTimeout(() => setTilt(false), 3000);
+          tiltFor(3000);
           return `${C.accent}robo${R} 歪了歪头（等指令）`;
         case 'spin':
           if (hidden) return 'robo 已隐藏 — pet on 唤回';

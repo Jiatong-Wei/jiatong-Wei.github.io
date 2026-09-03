@@ -309,7 +309,9 @@ function lastUpdate(): string {
   const d = new Date(GENERATED_AT);
   const M = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const W = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  return `${W[d.getDay()]} ${M[d.getMonth()]} ${d.getDate()} ${d.getFullYear()}`;
+  // GENERATED_AT is a UTC ISO string — read it back with UTC getters so the
+  // date doesn't drift a day for visitors west of Greenwich
+  return `${W[d.getUTCDay()]} ${M[d.getUTCMonth()]} ${d.getUTCDate()} ${d.getUTCFullYear()}`;
 }
 
 export function profileScreen(cols: number): string[] {

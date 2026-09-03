@@ -100,6 +100,7 @@
     #pet.walk pre { animation: pet-bob .45s ease-in-out infinite; }
     @keyframes pet-bob { 50% { transform: translateY(2px); } }
     #pet:active { cursor: grabbing; }
+    #pet.dragging { transition: none; }
     #pet pre {
       margin: 0; font-family: inherit; font-size: 12px; line-height: 1.2;
       color: var(--fg);

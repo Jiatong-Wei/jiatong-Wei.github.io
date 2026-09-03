@@ -30,6 +30,8 @@ npm run dev        # http://localhost:5173，改 content/ 热更新
 npm run build      # 产物在 dist/
 ```
 
+注：`src/generated/content.ts` 是构建产物（已 gitignore）。直接跑 `npm run typecheck` 前需先执行过一次 `npm run build` 或 `npm run dev`，否则 tsc 找不到 content 模块（CI 里 build 在 typecheck 之前，无需关心）。
+
 ## 上线
 
 `git push` 到 `main`，GitHub Actions 自动 `npm run build` 并发布 Pages，约 1 分钟。

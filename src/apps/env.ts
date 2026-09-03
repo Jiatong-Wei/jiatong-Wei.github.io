@@ -56,12 +56,6 @@ export const REPORT: Asset = {
   cap: '技术报告 · 28 页 · 2026-08-29 封版',
 };
 
-/** gc-N shorthand -> GC_ASSETS index (gc-1 = grasp, gc-2 = prototype, gc-3 = venue). */
-export const gcAsset = (n: string): Asset | undefined => {
-  const i = { 'gc-1': 0, 'gc-2': 1, 'gc-3': 2 }[n];
-  return i === undefined ? undefined : GC_ASSETS[i];
-};
-
 export const OPEN_TARGETS: Record<string, { url: string; desc: string }> = {
   'gc-1': { url: 'images/gc/grasp.jpg', desc: '省赛夹取实况（图）' },
   'gc-2': { url: 'images/gc/prototype.jpg', desc: '备赛原型机（图）' },
