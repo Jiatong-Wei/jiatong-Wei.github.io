@@ -1,12 +1,10 @@
-// robo — the terminal desktop pet. A little quadruped robot dog (四足机器狗)
-// living on the bottom edge of the terminal: walks with a two-frame gait,
-// sits when idle, lies down when ignored, wags its tail, barks on click and
-// hops whenever the shell runs a command. Rendered as monospace glyphs in the
-// theme accent color; faces the direction it walks.
+// robo — the terminal desktop pet. A front-facing quadruped robot dog
+// (四足机器狗), built from solid color blocks like a terminal logo: cyan head,
+// yellow eyes, green body with a chest LED, blue front legs and green rear
+// legs. Walks with a two-frame leg gait, blinks, sits, wags, sleeps when
+// ignored, barks on click and hops whenever the shell runs a command.
 
 import { C, R } from './ansi';
-
-const EYES = { open: '▪', blink: '─', sleep: '▄', happy: '♥' };
 
 export interface PetApi {
   /** Called after every command run — the dog hops. */
@@ -24,60 +22,77 @@ let sitting = false;
 let happyUntil = 0;
 let blinkUntil = 0;
 let gait = 0; // 0|1 — walk frame
-let wag = 0; // 0|1 — tail frame
-let dir: -1 | 1 = -1; // -1 faces left (toward the terminal work)
 let walking = false;
 let lastInteraction = Date.now();
 let renderTimer: number | null = null;
 let behaviorTimer: number | null = null;
 let sleepTimer: number | null = null;
 
-const MIRROR: Record<string, string> = {
-  '╭': '╮', '╮': '╭', '╰': '╯', '╯': '╰',
-  '┌': '┐', '┐': '┌', '└': '┘', '┘': '└',
-  '├': '┤', '┤': '├', '╴': '╶', '╶': '╴',
-};
+const seg = (cls: string, text: string) => `<i class="${cls}">${text}</i>`;
 
-function mirrorRow(row: string): string {
-  return [...row].reverse().map((ch) => MIRROR[ch] ?? ch).join('');
-}
+/** Front-view block dog. eyes: 'open'|'blink'|'sleep'|'happy'; gait picks leg spread. */
+function sprite(eyes: string, gaitFrame: 0 | 1, sit: boolean, lying: boolean): string {
+  const earL = seg('pc-ear', '██');
+  const earR = seg('pc-ear', '██');
+  const headL = seg('pc-head', '███');
+  const headR = seg('pc-head', '███');
+  const headTop = seg('pc-head', '█████████████');
+  const jaw = seg('pc-head', '█████████████');
 
-function sprite(): string {
-  const eyes = sleeping ? EYES.sleep : happyUntil > Date.now() ? EYES.happy : blinkUntil > Date.now() ? EYES.blink : EYES.open;
-  const wagCh = wag ? '╮' : '│';
-  let rows: string[];
+  let face: string;
+  if (lying) face = seg('pc-head', '███') + seg('pc-eye', ' ▄▄ ▄▄ ') + seg('pc-head', '███');
+  else if (eyes === 'open') face = headL + seg('pc-eye', '██') + seg('pc-head', ' ') + seg('pc-eye', '██') + headR;
+  else if (eyes === 'happy') face = headL + seg('pc-eyeH', '██') + seg('pc-head', ' ') + seg('pc-eyeH', '██') + headR;
+  else face = seg('pc-head', '███████████████'); // blink/sleep: eyes shut, solid face
 
-  if (sleeping) {
-    rows = [
-      '  ╭──╮ ┌─────────┬─',
-      ` ╭╯ ${eyes} │─┤ ═══════ │`,
-      ' ╰────┴┴─────────┘╯',
-      '  ╰══════════════╯',
-    ];
-  } else if (sitting) {
-    rows = [
-      '  ╭──╮ ┌─────────┬╮',
-      ` ╭╯${eyes} │─┤ ═══════ ││`,
-      ' ╰┬─┴┐└┴─────────┘╯',
-      '  ╰──┴╯ ╵ ╵',
-    ];
-  } else {
-    const legs = walking ? (gait ? '   ╵ ╵  ╵   ╵  ' : '  ╵   ╵  ╵ ╵    ') : '  ╵ ╵   ╵  ╵    ';
-    rows = [
-      '  ╭──╮ ┌─────────┬╮',
-      ` ╭╯${eyes} │─┤ ═══════ ││`,
-      ' ╰┬─┴┐└┬───────┬┘╯',
-      legs,
-    ];
+  const legsA =
+    seg('pc-legF', '██') + '  ' + seg('pc-legR', '██') + '  ' + seg('pc-legR', '██') + '  ' + seg('pc-legF', '██');
+  const legsB =
+    seg('pc-legF', ' ██') + ' ' + seg('pc-legR', '████') + ' ' + seg('pc-legF', '██ ');
+  const pawsA =
+    seg('pc-paw', '▄▄') + '  ' + seg('pc-paw', '▄▄') + '  ' + seg('pc-paw', '▄▄') + '  ' + seg('pc-paw', '▄▄');
+  const pawsB =
+    seg('pc-paw', ' ▄▄') + ' ' + seg('pc-paw', '▄▄▄▄') + ' ' + seg('pc-paw', '▄▄ ');
+
+  if (lying) {
+    return [
+      seg('pc-ear', ' ██   ██ '),
+      seg('pc-head', '█████████████'),
+      face,
+      seg('pc-body', '███████████████'),
+      seg('pc-paw', '▀▀▀▀▀▀▀▀▀▀▀▀▀▀'),
+    ].join('\n');
   }
-  if (dir === 1) rows = rows.map(mirrorRow);
-  return rows.join('\n');
+  if (sit) {
+    return [
+      seg('pc-ear', ' ██       ██ ') + (eyes === 'happy' ? seg('pc-eyeH', ' ♥') : ''),
+      seg('pc-head', '███████████████'),
+      face,
+      jaw,
+      seg('pc-body', '███████████████'),
+      seg('pc-legF', '███') + '     ' + seg('pc-legF', '███'),
+      seg('pc-paw', '▄▄▄') + '   ' + seg('pc-paw', '▄▄▄') + seg('pc-legR', '  ▄▄▄▄▄▄▄'),
+    ].join('\n');
+  }
+  const legs = gaitFrame === 0 ? legsA : legsB;
+  const paws = gaitFrame === 0 ? pawsA : pawsB;
+  const chest = seg('pc-body', '█████') + seg('pc-led', '▄▄') + seg('pc-body', '████████');
+  return [
+    earL + '       ' + earR,
+    headTop,
+    face,
+    jaw,
+    chest,
+    legs,
+    paws,
+  ].join('\n');
 }
 
 function render(): void {
   if (!container || hidden) return;
   const pre = container.querySelector('pre')!;
-  pre.textContent = sprite();
+  const eyes = sleeping ? 'sleep' : happyUntil > Date.now() ? 'happy' : blinkUntil > Date.now() ? 'blink' : 'open';
+  pre.innerHTML = sprite(eyes, gait as 0 | 1, sitting, sleeping);
 }
 
 function bubble(text: string, ms = 1400): void {
@@ -112,21 +127,22 @@ function bark(): void {
   bubble('汪！汪！', 1400);
 }
 
-function turnAround(): void {
-  dir = dir === -1 ? 1 : -1;
-  render();
-  bubble('（转身）', 900);
+function spin(): void {
+  if (!container || hidden) return;
+  markInteraction();
+  container.classList.remove('spin');
+  void container.offsetWidth;
+  container.classList.add('spin');
+  bubble('（原地转圈）', 1200);
 }
 
 function walk(): void {
   if (!container || hidden || sleeping || sitting) return;
-  const dx = (Math.random() < 0.5 ? -1 : 1) * (60 + Math.random() * 150);
-  dir = dx < 0 ? -1 : 1;
   const rect = container.getBoundingClientRect();
   const minX = 8;
   const maxX = window.innerWidth - rect.width - 8;
-  let next = rect.left + dx;
-  if (next < minX || next > maxX) next = rect.left - dx;
+  let next = rect.left + (Math.random() < 0.5 ? -1 : 1) * (60 + Math.random() * 150);
+  if (next < minX || next > maxX) next = rect.left - (next - rect.left);
   next = Math.min(maxX, Math.max(minX, next));
   const dist = Math.abs(next - rect.left);
   if (dist < 12) return;
@@ -136,9 +152,8 @@ function walk(): void {
   container.style.right = 'auto'; // left+right together would stretch the fixed box
   const step = window.setInterval(() => {
     gait = gait ? 0 : 1;
-    wag = wag ? 0 : 1;
     render();
-  }, 130);
+  }, 150);
   window.setTimeout(() => {
     window.clearInterval(step);
     walking = false;
@@ -151,11 +166,11 @@ function scheduleBehavior(): void {
   behaviorTimer = window.setTimeout(() => {
     if (!hidden && !sleeping && !walking) {
       const roll = Math.random();
-      if (roll < 0.55) walk();
-      else if (roll < 0.7) {
+      if (roll < 0.6) walk();
+      else if (roll < 0.78) {
         blinkUntil = Date.now() + 220;
         render();
-      } else if (roll < 0.82 && !sitting) {
+      } else if (roll < 0.9 && !sitting) {
         sitting = true;
         render();
         window.setTimeout(() => {
@@ -163,8 +178,12 @@ function scheduleBehavior(): void {
           render();
         }, 4000 + Math.random() * 4000);
       } else {
-        wag = wag ? 0 : 1;
+        sitting = true;
         render();
+        window.setTimeout(() => {
+          sitting = false;
+          render();
+        }, 3000);
       }
     }
     scheduleBehavior();
@@ -221,7 +240,7 @@ function mount(): void {
     el.addEventListener('pointerup', up);
   });
 
-  renderTimer = window.setInterval(render, 1100); // idle blink/wag refresh
+  renderTimer = window.setInterval(render, 1100); // idle blink refresh
   scheduleBehavior();
   scheduleSleep();
 }
@@ -248,8 +267,8 @@ export function initPet(): PetApi {
           return `${C.accent}robo${R} 坐下了（等指令）`;
         case 'spin':
           if (hidden) return 'robo 已隐藏 — pet on 唤回';
-          turnAround();
-          return `${C.accent}robo${R} 原地转了个身`;
+          spin();
+          return `${C.accent}robo${R} 原地转了个圈`;
         case 'sleep':
           sleeping = true;
           render();

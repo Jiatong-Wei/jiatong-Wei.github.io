@@ -45,6 +45,7 @@ self-website/ (= GitHub 上的 jiatong-Wei.github.io 仓库)
 | 首屏（ASCII 大名 / 链接行 / Last update） | `src/apps/builtins.ts`（`profileScreen`、`ART_*`） |
 | bring-up 日志（`boot` 命令） | `src/apps/builtins.ts`（`BOOT_LINES`） |
 | neofetch 身份卡 / rostopic / 彩蛋 | `src/apps/fun.ts` |
+| 桌宠 robo（机器狗字形/行为/配色） | `src/term/pet.ts`、index.html 的 `--pet-*` 变量 |
 | 深浅主题配色 | `src/term/ui.ts` 的 `DARK` / `LIGHT` |
 | 首屏可点击的命令词 | `src/term/ui.ts` 的 `CMD_MAP` |
 | `open` 命令目标 | `src/apps/env.ts` 的 `OPEN_TARGETS` |
