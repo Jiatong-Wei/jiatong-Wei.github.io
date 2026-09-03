@@ -99,7 +99,7 @@ export class Shell {
           return;
         }
         try {
-          result = await cmd.run({ argv: argv.slice(1), stdin, api: this.ui });
+          result = await cmd.run({ argv: argv.slice(1), stdin, api: this.ui, piped: i > 0 });
         } catch (e) {
           this.writeErr(`${name}: ${e instanceof Error ? e.message : String(e)}`);
           return;

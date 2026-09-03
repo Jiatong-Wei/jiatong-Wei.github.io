@@ -162,18 +162,31 @@ function walk(): void {
   const el = container;
   if (!el || hidden || sleeping || sitting) return;
   const rect = el.getBoundingClientRect();
-  const minX = 8;
-  const maxX = window.innerWidth - rect.width - 8;
-  let next = rect.left + (Math.random() < 0.5 ? -1 : 1) * (60 + Math.random() * 150);
-  if (next < minX || next > maxX) next = rect.left - (next - rect.left);
-  next = Math.min(maxX, Math.max(minX, next));
-  const dist = Math.abs(next - rect.left);
-  if (dist < 12) return;
+  const margin = 8;
+  const maxX = window.innerWidth - rect.width - margin;
+  const maxY = window.innerHeight - rect.height - margin;
+  // idle wandering: mostly strolls along the bottom band; ~30% of the time
+  // UMI explores the right-side lane (usually blank terminal margin)
+  let nextX = rect.left;
+  let nextY = rect.top;
+  if (Math.random() < 0.3) {
+    nextX = Math.max(maxX - 60 - Math.random() * 100, margin);
+    nextY = Math.max(70 + Math.random() * (window.innerHeight * 0.55), margin + 60);
+    nextY = Math.min(nextY, maxY);
+  } else {
+    nextX = margin + Math.random() * Math.max(40, maxX - margin);
+    nextY = maxY;
+  }
+  nextX = Math.min(maxX, Math.max(margin, nextX));
+  const dist = Math.hypot(nextX - rect.left, nextY - rect.top);
+  if (dist < 24) return;
   walking = true;
   el.classList.add('walk'); // head bob while strolling
   el.style.transitionDuration = `${Math.max(700, Math.round(dist * 5))}ms`;
-  el.style.left = `${Math.round(next)}px`;
-  el.style.right = 'auto'; // left+right together would stretch the fixed box
+  el.style.left = `${Math.round(nextX)}px`;
+  el.style.top = `${Math.round(nextY)}px`;
+  el.style.right = 'auto';
+  el.style.bottom = 'auto';
   window.setTimeout(() => {
     walking = false;
     el.classList.remove('walk');
@@ -181,21 +194,29 @@ function walk(): void {
   }, Math.max(700, Math.round(dist * 5)) + 80);
 }
 
+function sniff(): void {
+  // little two-tap bounce — UMI inspecting the floor
+  hop();
+  window.setTimeout(hop, 260);
+}
+
 function scheduleBehavior(): void {
   if (behaviorTimer !== null) window.clearTimeout(behaviorTimer);
   behaviorTimer = window.setTimeout(() => {
     if (!hidden && !sleeping && !walking) {
       const roll = Math.random();
-      if (roll < 0.6) walk();
-      else if (roll < 0.78) {
+      if (roll < 0.55) walk();
+      else if (roll < 0.7) {
         blinkUntil = Date.now() + 220;
         render();
-      } else {
+      } else if (roll < 0.82) {
         tiltFor(2500 + Math.random() * 3000); // curious head tilt
+      } else {
+        sniff();
       }
     }
     scheduleBehavior();
-  }, 5500 + Math.random() * 8000);
+  }, 3500 + Math.random() * 6000);
 }
 
 function scheduleSleep(): void {
@@ -213,7 +234,7 @@ function scheduleSleep(): void {
 function mount(): void {
   container = document.createElement('div');
   container.id = 'pet';
-  container.title = 'robo — 点我会有汪';
+  container.title = '优米 UMI — 点我会有汪';
   container.innerHTML = '<div class="pet-bubble"></div><pre></pre>';
   document.body.appendChild(container);
 
@@ -273,34 +294,34 @@ export function initPet(): PetApi {
     run: (action: string): string => {
       switch (action) {
         case 'pet':
-          if (hidden) return 'robo 已隐藏 — pet on 唤回';
+          if (hidden) return '优米已躲起来 — pet on 唤回';
           bark();
-          return `${C.accent}robo${R} 开心地蹭了蹭你`;
+          return `${C.accent}优米${R} 开心地蹭了蹭你`;
         case 'sit':
-          if (hidden) return 'robo 已隐藏 — pet on 唤回';
+          if (hidden) return '优米已躲起来 — pet on 唤回';
           markInteraction();
           tiltFor(3000);
-          return `${C.accent}robo${R} 歪了歪头（等指令）`;
+          return `${C.accent}优米${R} 歪了歪头（等指令）`;
         case 'spin':
-          if (hidden) return 'robo 已隐藏 — pet on 唤回';
+          if (hidden) return '优米已躲起来 — pet on 唤回';
           spin();
-          return `${C.accent}robo${R} 原地转了个圈`;
+          return `${C.accent}优米${R} 原地转了个圈`;
         case 'sleep':
           sleeping = true;
           render();
-          return `${C.accent}robo${R} 趴下睡了`;
+          return `${C.accent}优米${R} 趴下睡了`;
         case 'wake':
           markInteraction();
-          return `${C.accent}robo${R} 一个激灵精神了`;
+          return `${C.accent}优米${R} 一个激灵精神了`;
         case 'off':
           hidden = true;
           if (container) container.style.display = 'none';
-          return 'robo 回狗窝了（pet on 唤回）';
+          return '优米回狗窝了（pet on 唤回）';
         case 'on':
           hidden = false;
           if (container) container.style.display = '';
           markInteraction();
-          return 'robo 回到岗哨';
+          return '优米回到岗哨';
         default:
           return `pet: 未知动作 ${action} — 可用：pet | sit | spin | sleep | wake | on | off`;
       }

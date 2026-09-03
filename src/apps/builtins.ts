@@ -22,7 +22,7 @@ export const help: Command = {
     rows.push(['neofetch', '我是谁，我的机器是什么']);
     rows.push(['rostopic', 'ROS 惯急了的可以试这个']);
     rows.push(['whoami / joints / boot', '彩蛋三件套']);
-    rows.push(['pet', '桌宠 robo 机器狗：会遛弯会坐下，点它汪']);
+    rows.push(['pet', '桌宠优米（UMI）：会遛弯会歪头，点它汪']);
     rows.push(['theme / clear / history / echo', '老四样']);
     const w = Math.max(...rows.map(([a]) => strWidth(a)));
     return [
@@ -122,7 +122,7 @@ export const wc: Command = {
   name: 'wc',
   summary: '数行数/词数',
   usage: 'wc [-l] [<doc>]',
-  run: ({ argv, stdin }) => {
+  run: ({ argv, stdin, piped }) => {
     const linesOnly = argv[0] === '-l';
     const target = linesOnly ? argv[1] : argv[0];
     let text = stdin;
@@ -132,10 +132,10 @@ export const wc: Command = {
       if (!doc) return `wc: ${target}: No such file or directory`;
       text = renderDoc(doc, true);
       label = doc.name;
-    } else if (!stdin) {
+    } else if (!stdin && !piped) {
       return `wc: 缺输入 — 用 wc <doc> 或接在管道后面（cat about | wc -l）`;
     }
-    const lines = text.split('\n').length;
+    const lines = text ? text.split('\n').length : 0;
     if (linesOnly) return `${lines} ${label}`;
     const words = text.split(/\s+/).filter(Boolean).length;
     const chars = text.replace(/\x1b\[[0-9;]*m|\x1b\]8;;[^\x07]*\x07/g, '').length;
@@ -342,6 +342,9 @@ export function profileScreen(cols: number): string[] {
   lines.push('');
   lines.push(`${C.accent}•${R} 本页同时是一个 shell。`);
   lines.push(`  试试：${C.accent}help${R}${C.dim}、${R}${C.accent}neofetch${R}${C.dim}、${R}${C.accent}cat about | wc -l${R}${C.dim}。${R}`);
+  lines.push('');
+  lines.push(`${C.dim}│${R} 🐶 右下角那只狗叫 ${C.accent}优米${R}（${C.accent}UMI${R}${C.dim}）——名字致敬具身智能数据采设备 Universal`);
+  lines.push(`${C.dim}│${R} ${C.dim}Manipulation Interface。没人理它时会自己遛弯，点它 / ${C.accent}pet${R} 可以摸。${R}`);
   lines.push('');
   lines.push(dim(`Last update: ${lastUpdate()}`));
   lines.push('');

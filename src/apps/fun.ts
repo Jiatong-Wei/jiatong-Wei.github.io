@@ -123,8 +123,8 @@ export const sudo: Command = {
 
 export const pet: Command = {
   name: 'pet',
-  summary: '和桌宠 robo 互动',
-  usage: 'pet [pet|spin|sleep|wake|on|off]',
+  summary: '和桌宠优米（UMI）互动',
+  usage: 'pet [pet|sit|spin|sleep|wake|on|off]',
   run: ({ argv }) => getPet().run(argv[0] ?? 'pet'),
 };
 

@@ -8,6 +8,8 @@ export interface Ctx {
   argv: string[];
   stdin: string;
   api: Ui;
+  /** True when this command received another command's output via a pipe. */
+  piped?: boolean;
 }
 
 export interface Command {

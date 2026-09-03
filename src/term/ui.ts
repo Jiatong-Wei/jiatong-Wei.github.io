@@ -107,9 +107,10 @@ const CMD_MAP: Record<string, string> = {
   tree: 'tree',
   github: 'open github',
   splat: 'open splat',
+  umi: 'pet pet',
 };
 
-const CMD_RE = /\b(?:about|awards|news|links|help|neofetch|whoami|joints|boot|tree|github|splat)\b|wiki\/[a-z0-9-]+/gi;
+const CMD_RE = /\b(?:about|awards|news|links|help|neofetch|whoami|joints|boot|tree|github|splat|umi)\b|wiki\/[a-z0-9-]+/gi;
 
 function registerCommandLinks(term: Terminal): void {
   const workingCell = term.buffer.active.getNullCell();
