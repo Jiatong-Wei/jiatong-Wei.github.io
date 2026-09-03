@@ -20,7 +20,7 @@ const ART = [
   arm('    ███'),
   arm('  ██████'), // base taper
   arm('██████████████'), // pedestal
-  cube('              ▄██▄'), // the cube. still on the table.
+  cube('                          ▄██▄'), // the cube — 0.094 m away, still holding
 ];
 
 const INFO: Array<[string, string]> = [
