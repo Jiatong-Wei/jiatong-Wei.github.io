@@ -45,8 +45,8 @@ const PALETTE: Record<string, string> = {
 const HEAD_BASE: string[] = [
   '  E            E  ', // ear tips (axis col 2 / col 15): 2sp+1+12sp+1+2sp
   ' EEE          EEE ', // ears: 1+3+10+3+1
-  'EEEEE        EEEEE', // ear bases merge into head top: 5+8+5
-  'HHHHHHHHHHHHHHHHHH',
+  'EEEEE        EEEEE', // ear bases: 5+8+5
+  '     HHHHHHHH     ', // head top only BETWEEN the ears (inset, 5+8+5) — ears perch free on the corners
   'HHHHHYHHHHYHHHHH', // eyes: 5 + eye2 + 4 + eye2 + 5 = 18 cells
   'HHHHHHHHHHHHHHHHHH',
   'HHHHHMMMMMMMMHHHHH', // muzzle: 5+8+5
@@ -67,7 +67,7 @@ function sprite(state: PetState): string {
     .map((row) =>
       [...row]
         .map((ch) => {
-          if (ch === '.') return ' ';
+          if (ch === '.' || ch === ' ') return ' '; // gaps show the page background
           if (ch === 'Y') return seg(eyeCls, eyeGlyph);
           return seg(PALETTE[ch] ?? 'pc-head', '█');
         })
