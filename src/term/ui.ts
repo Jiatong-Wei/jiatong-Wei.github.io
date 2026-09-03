@@ -83,6 +83,8 @@ export interface Ui {
   clear(): void;
   openImage(url: string, caption: string): void;
   openUrl(url: string): void;
+  /** PDF in the overlay lightbox (desktop); falls back to a new tab on touch. */
+  openPdf(url: string, caption: string): void;
   note(text: string): void;
   /** True when the screen rectangle (viewport px) covers no terminal text. */
   isBlankRect(x: number, y: number, w: number, h: number): boolean;
@@ -167,15 +169,18 @@ function registerCommandLinks(term: Terminal): void {
 
 // --- overlay lightbox ---
 
-function initOverlay(): Pick<Ui, 'openImage' | 'openUrl' | 'note'> {
+function initOverlay(): Pick<Ui, 'openImage' | 'openUrl' | 'openPdf' | 'note'> {
   const overlay = document.getElementById('overlay')!;
   const overlayImg = document.getElementById('overlay-img') as HTMLImageElement;
   const overlayCap = document.getElementById('overlay-cap')!;
+  const overlayPdf = document.getElementById('overlay-pdf') as HTMLIFrameElement;
   const hideOverlay = () => {
     overlay.classList.remove('show');
     overlayImg.src = '';
     overlayCap.textContent = '';
     overlayImg.style.display = '';
+    overlayPdf.style.display = 'none';
+    overlayPdf.src = '';
   };
   overlay.addEventListener('click', (e) => {
     if (e.target === overlay) hideOverlay();
@@ -198,6 +203,20 @@ function initOverlay(): Pick<Ui, 'openImage' | 'openUrl' | 'note'> {
       overlay.classList.add('show');
     },
     openUrl: (url) => window.open(url, '_blank', 'noopener'),
+    // PDFs render inline on desktop; iOS/Android webviews can't, so those
+    // still pop a new tab
+    openPdf: (url, caption) => {
+      const touch = window.matchMedia('(pointer: coarse)').matches;
+      if (touch) {
+        window.open(url, '_blank', 'noopener');
+        return;
+      }
+      overlayImg.style.display = 'none';
+      overlayPdf.style.display = '';
+      overlayPdf.src = url;
+      overlayCap.textContent = caption;
+      overlay.classList.add('show');
+    },
     note: (text) => {
       overlayImg.style.display = 'none';
       overlayCap.textContent = text;

@@ -79,6 +79,37 @@ export class Shell {
     this.ui.term.write(`${C.red}✗${R} ${msg}\r\n`);
   }
 
+  /** Closest registered command within edit distance 2 — for "did you mean". */
+  private suggest(name: string): string | null {
+    const lev = (a: string, b: string): number => {
+      const m = a.length;
+      const n = b.length;
+      const d = Array.from({ length: m + 1 }, (_, i) => [i, ...Array(n).fill(0)]);
+      for (let j = 0; j <= n; j++) d[0][j] = j;
+      for (let i = 1; i <= m; i++) {
+        for (let j = 1; j <= n; j++) {
+          d[i][j] = Math.min(
+            d[i - 1][j] + 1,
+            d[i][j - 1] + 1,
+            d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1),
+          );
+        }
+      }
+      return d[m][n];
+    };
+    let best: string | null = null;
+    let bestD = 3;
+    for (const key of registry.keys()) {
+      if (registry.get(key)!.hidden) continue;
+      const d = lev(name, key);
+      if (d < bestD || (d === bestD && best !== null && key.length < best.length)) {
+        best = key;
+        bestD = d;
+      }
+    }
+    return bestD <= 2 ? best : null;
+  }
+
   private async exec(line: string): Promise<void> {
     this.busy = true;
     let firstName = line.trim().split(/\s+/)[0] ?? '';
@@ -93,7 +124,11 @@ export class Shell {
         const name = argv[0];
         const cmd = registry.get(name);
         if (!cmd) {
-          this.writeErr(`command not found: ${bold(name)} ${C.dim}(试试 help)${R}`);
+          const hint = this.suggest(name);
+          this.writeErr(
+            `command not found: ${bold(name)}` +
+              (hint ? ` ${C.dim}— 是不是想敲 ${R}${C.accent}${hint}${R}${C.dim}？${R}` : ` ${C.dim}(试试 help)${R}`),
+          );
           ok = false;
           return;
         }

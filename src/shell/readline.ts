@@ -98,6 +98,11 @@ export class Readline {
         this.term.write('^C\r\n');
         return this.submit('');
       }
+      if (ch === '\x0c') {
+        // Ctrl+L: clear screen, keep the line being typed
+        this.term.write('\x1b[2J\x1b[3J\x1b[H');
+        this.redraw();
+      }
       if (ch === '\x7f') {
         if (this.pos > 0) {
           this.buf.splice(this.pos - 1, 1);

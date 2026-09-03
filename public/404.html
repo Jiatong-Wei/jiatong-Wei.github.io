@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>404 — command not found</title>
+  <style>
+    body {
+      margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      background: #0a0d0b; color: #c9d6c9;
+      font-family: "Cascadia Mono", "JetBrains Mono", Menlo, Consolas, "Noto Sans Mono CJK SC", monospace;
+    }
+    .box { max-width: 640px; padding: 0 24px; line-height: 1.9; font-size: 15px; }
+    .p { color: #57e389; }
+    .err { color: #ff6b6b; }
+    .dim { color: #7a6f5d; }
+    a { color: #57e389; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <div><span class="p">wei@nwpu:~$</span> cd /this-page</div>
+    <div><span class="err">✗ command not found:</span> this page — 是不是想敲别的地址？</div>
+    <div class="dim">404 · 页面不存在，但终端还开着。</div>
+    <div style="margin-top:24px"><span class="p">wei@nwpu:~$</span> <a href="/">cd ~</a> &nbsp;<span class="dim">← 回到首页</span></div>
+  </div>
+</body>
+</html>

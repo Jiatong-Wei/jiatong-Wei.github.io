@@ -10,6 +10,11 @@
   <meta property="og:description" content="魏佳桐（Jiatong Wei）· robotics · 在仿真里较真" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://jiatong-wei.github.io/" />
+  <meta property="og:image" content="https://jiatong-wei.github.io/images/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="~wei@nwpu" />
+  <meta name="twitter:description" content="魏佳桐（Jiatong Wei）· robotics · 在仿真里较真" />
+  <meta name="twitter:image" content="https://jiatong-wei.github.io/images/og-card.png" />
   <link rel="icon" href="./images/favicon.ico" />
   <link rel="apple-touch-icon" href="./images/apple-touch-icon.png" />
   <style>
@@ -83,6 +88,7 @@
     }
     #overlay.show { display: flex; }
     #overlay img { max-width: 92vw; max-height: 86vh; border: 1px solid var(--line); }
+    #overlay iframe { width: 92vw; height: 86vh; border: 1px solid var(--line); background: var(--bg); }
     #overlay .cap {
       position: absolute; bottom: 18px; left: 0; right: 0; text-align: center;
       color: var(--dim); font-size: 13px;
@@ -152,6 +158,7 @@
   <div id="overlay" role="dialog" aria-modal="true">
     <button class="close" aria-label="关闭">✕</button>
     <img id="overlay-img" alt="" />
+    <iframe id="overlay-pdf" title="PDF 预览" style="display:none"></iframe>
     <div class="cap" id="overlay-cap"></div>
   </div>
   <noscript>

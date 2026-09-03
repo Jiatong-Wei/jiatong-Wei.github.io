@@ -19,6 +19,7 @@ export const help: Command = {
     rows.push(['wiki', '研究记录目录（Human / Human in the loop 标识都在）']);
     rows.push(['open <target>', `打开图片/文件/链接：${Object.keys(OPEN_TARGETS).join(' · ')}`]);
     rows.push(['wc [-l] <doc>', '数行数，支持管道 cat about | wc -l']);
+    rows.push(['grep <词> [<doc>]', '找关键词，命中高亮，支持管道']);
     rows.push(['neofetch', '我是谁，我的机器是什么']);
     rows.push(['rostopic', 'ROS 惯急了的可以试这个']);
     rows.push(['whoami / joints / boot', '彩蛋三件套']);
@@ -144,6 +145,37 @@ export const wc: Command = {
   },
 };
 
+export const grep: Command = {
+  name: 'grep',
+  summary: '在文档/管道输出里找关键词',
+  usage: 'grep <关键词> [<doc>]（支持 cat about | grep robotics）',
+  minArgs: 1,
+  run: ({ argv, stdin, piped }) => {
+    const pattern = argv[0].toLowerCase();
+    const target = argv[1];
+    let text = stdin;
+    if (target) {
+      const doc = docByName(target.replace(/^\//, ''));
+      if (!doc) return `grep: ${target}: No such file or directory`;
+      text = renderDoc(doc);
+    } else if (!stdin && !piped) {
+      return `grep: 缺输入 — 用 grep <词> <doc>，或接在管道后面（cat about | grep robotics）`;
+    }
+    const hits: string[] = [];
+    for (const line of text.split('\n')) {
+      const plain = line.replace(/\x1b\[[0-9;]*m|\x1b\]8;;[^\x07]*\x07/g, '');
+      const idx = plain.toLowerCase().indexOf(pattern);
+      if (idx < 0) continue;
+      // highlight the hit inside the plain line, keep it simple
+      hits.push(
+        plain.slice(0, idx) + `${C.accent}${bold(plain.slice(idx, idx + pattern.length))}${R}` + plain.slice(idx + pattern.length),
+      );
+    }
+    if (!hits.length) return `${C.dim}（没有匹配行）${R}`;
+    return hits.join('\n');
+  },
+};
+
 export const open: Command = {
   name: 'open',
   summary: '打开图片/文件/链接',
@@ -153,6 +185,7 @@ export const open: Command = {
     const t = OPEN_TARGETS[argv[0]];
     if (!t) return `open: 未知目标 ${argv[0]} — 可选：${Object.keys(OPEN_TARGETS).join(' · ')}`;
     if (t.url.endsWith('.jpg') || t.url.endsWith('.png')) api.openImage(t.url, t.desc);
+    else if (t.url.endsWith('.pdf')) api.openPdf(t.url, t.desc);
     else api.openUrl(t.url);
     return `${C.accent}→${R} ${t.desc}`;
   },
@@ -379,5 +412,5 @@ export const theme: Command = {
 };
 
 export const builtins: Command[] = [
-  help, ls, wiki, cat, tree, wc, open, clear, echo, history, whoami, pwd, date, uname, boot, theme,
+  help, ls, wiki, cat, tree, wc, grep, open, clear, echo, history, whoami, pwd, date, uname, boot, theme,
 ];

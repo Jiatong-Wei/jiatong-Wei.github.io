@@ -183,13 +183,24 @@ function walk(): void {
   const margin = 8;
   const maxX = window.innerWidth - rect.width - margin;
   const maxY = window.innerHeight - rect.height - margin;
-  // pick a blank spot: bottom-band strolls or a lane up the right side —
-  // candidates are rejected when they would cover terminal text
+  // pick a blank spot: bottom-band strolls, a lane up the right side, or —
+  // occasionally — right off the edge of the screen for a breather; when
+  // she's already out there, the next stroll must bring her back
+  const offscreen = rect.right < 0 || rect.left > window.innerWidth;
   let nextX = rect.left;
   let nextY = rect.top;
   let ok = false;
   for (let attempt = 0; attempt < 6 && !ok; attempt++) {
-    if (roamMode) {
+    if (offscreen) {
+      // coming home: blank spot inside the screen
+      nextX = margin + Math.random() * Math.max(40, maxX - margin);
+      nextY = Math.min(Math.max(70 + Math.random() * (window.innerHeight - 90 - rect.height), margin + 60), maxY);
+    } else if (!roamMode && Math.random() < 0.12) {
+      // wander off the edge (left or right) for a moment
+      const beyond = 100 + Math.random() * 140;
+      nextX = Math.random() < 0.5 ? -rect.width - beyond : window.innerWidth + beyond;
+      nextY = maxY - Math.random() * 80;
+    } else if (roamMode) {
       // off-leash: sample the whole screen (below the header), blank spots only
       nextX = margin + Math.random() * Math.max(40, maxX - margin);
       nextY = Math.min(Math.max(70 + Math.random() * (window.innerHeight - 90 - rect.height), margin + 60), maxY);
@@ -200,8 +211,8 @@ function walk(): void {
       nextX = margin + Math.random() * Math.max(40, maxX - margin);
       nextY = maxY;
     }
-    nextX = Math.min(maxX, Math.max(margin, nextX));
-    ok = !blankRect || blankRect(nextX, nextY, rect.width, rect.height);
+    nextX = Math.min(maxX + 240, Math.max(-rect.width - 240, nextX));
+    ok = offscreen || !blankRect || blankRect(nextX, nextY, rect.width, rect.height);
   }
   if (!ok) return; // every candidate would cover text — stay put
   const dist = Math.hypot(nextX - rect.left, nextY - rect.top);
@@ -228,6 +239,8 @@ function sniff(): void {
 
 // --- gaze: eyes follow the pointer while it's nearby ---
 
+let shyCooldown = 0;
+
 function onPointerMove(e: MouseEvent): void {
   const el = container;
   if (!el || sleeping) return;
@@ -243,6 +256,25 @@ function onPointerMove(e: MouseEvent): void {
     gaze = 'center';
     render();
   }, 3000);
+  // shy: pointer intruding into her personal space -> back off a step
+  const near =
+    e.clientX > r.left - 24 && e.clientX < r.right + 24 && e.clientY > r.top - 24 && e.clientY < r.bottom + 24;
+  if (near && !walking && !fetching && !roamMode && Date.now() > shyCooldown) {
+    shyCooldown = Date.now() + 3000;
+    const dir = e.clientX < cx ? 1 : -1; // step away from the pointer
+    const step = 70;
+    let nx = r.left + dir * step;
+    nx = Math.min(window.innerWidth - r.width - 4, Math.max(4, nx));
+    el.style.transitionDuration = '320ms';
+    el.style.left = `${Math.round(nx)}px`;
+    el.style.top = `${Math.round(r.top)}px`;
+    el.style.right = 'auto';
+    el.style.bottom = 'auto';
+    window.setTimeout(() => {
+      el.style.transitionDuration = '';
+    }, 340);
+    bubble('（怕生）', 1100);
+  }
 }
 
 // --- reactions to shell commands ---
@@ -334,11 +366,19 @@ function toggleRoamInternal(): boolean {
 
 function scheduleBehavior(): void {
   if (behaviorTimer !== null) window.clearTimeout(behaviorTimer);
-  const interval = () => (roamMode ? 1300 + Math.random() * 1800 : 3500 + Math.random() * 6000);
+  const interval = () => {
+    if (roamMode) return 1300 + Math.random() * 1800;
+    // out of screen? come back sooner rather than later (2-5s breather)
+    const r = container?.getBoundingClientRect();
+    if (r && (r.right < 0 || r.left > window.innerWidth)) return 2000 + Math.random() * 3000;
+    return 3500 + Math.random() * 6000;
+  };
   behaviorTimer = window.setTimeout(() => {
     if (!hidden && !sleeping && !walking && !fetching) {
+      const r = container?.getBoundingClientRect();
+      const out = !!r && (r.right < 0 || r.left > window.innerWidth);
       const roll = Math.random();
-      if (roll < (roamMode ? 0.85 : 0.55)) walk();
+      if (out || roll < (roamMode ? 0.85 : 0.55)) walk();
       else if (roll < 0.7) {
         blinkUntil = Date.now() + 220;
         render();
