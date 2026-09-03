@@ -12,6 +12,7 @@ export const FONT_STACK =
   '"Noto Sans Mono CJK SC", "Source Han Mono SC", "Microsoft YaHei Mono", monospace';
 
 // Green phosphor on near-black — the classic terminal.
+// red/yellow/cyan/blue/magenta double as the rainbow bands for the ASCII name.
 const DARK = {
   background: '#0a0d0b',
   foreground: '#c9d6c9',
@@ -19,12 +20,12 @@ const DARK = {
   cursorAccent: '#0a0d0b',
   selectionBackground: '#1d3a26',
   black: '#0a0d0b',
-  red: '#e0524a',
+  red: '#ff6b6b',
   green: '#3ccf6d',
-  yellow: '#d9c84a',
-  blue: '#5aa0d0',
-  magenta: '#b078c8',
-  cyan: '#4ac0c0',
+  yellow: '#ffd166',
+  blue: '#6aa6ff',
+  magenta: '#c792ea',
+  cyan: '#4dd0e1',
   white: '#c9d6c9',
   brightBlack: '#5c6b5c',
   brightRed: '#ff6b5e',
@@ -45,11 +46,11 @@ const LIGHT = {
   selectionBackground: '#cfe8d4',
   black: '#20241f',
   red: '#b3261e',
-  green: '#0b7d2e',
-  yellow: '#8a6d00',
+  green: '#0a8f33',
+  yellow: '#9a6d00',
   blue: '#2456d0',
   magenta: '#8a2ba0',
-  cyan: '#0a7a7a',
+  cyan: '#00838f',
   white: '#20241f',
   brightBlack: '#6b706b',
   brightRed: '#c93a30',

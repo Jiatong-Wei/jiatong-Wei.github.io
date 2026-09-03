@@ -225,30 +225,33 @@ export const uname: Command = {
 
 // --- first screen (jyy-style profile) ---
 
-// ansi_shadow, one line — desktop
+// banner3, one line — desktop (loose letterforms, clean W/E boundaries)
 const ART_FULL = [
-  '     ██╗██╗ █████╗ ████████╗ ██████╗ ███╗   ██╗ ██████╗     ██╗    ██╗███████╗██╗',
-  '     ██║██║██╔══██╗╚══██╔══╝██╔═══██╗████╗  ██║██╔════╝     ██║    ██║██╔════╝██║',
-  '     ██║██║███████║   ██║   ██║   ██║██╔██╗ ██║██║  ███╗    ██║ █╗ ██║█████╗  ██║',
-  '██   ██║██║██╔══██║   ██║   ██║   ██║██║╚██╗██║██║   ██║    ██║███╗██║██╔══╝  ██║',
-  '╚█████╔╝██║██║  ██║   ██║   ╚██████╔╝██║ ╚████║╚██████╔╝    ╚███╔███╔╝███████╗██║',
-  ' ╚════╝ ╚═╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝      ╚══╝╚══╝ ╚══════╝╚═╝',
+  '      ## ####    ###    ########  #######  ##    ##  ######      ##      ## ######## ####',
+  '      ##  ##    ## ##      ##    ##     ## ###   ## ##    ##     ##  ##  ## ##        ##',
+  '      ##  ##   ##   ##     ##    ##     ## ####  ## ##           ##  ##  ## ##        ##',
+  '      ##  ##  ##     ##    ##    ##     ## ## ## ## ##   ####    ##  ##  ## ######    ##',
+  '##    ##  ##  #########    ##    ##     ## ##  #### ##    ##     ##  ##  ## ##        ##',
+  '##    ##  ##  ##     ##    ##    ##     ## ##   ### ##    ##     ##  ##  ## ##        ##',
+  ' ######  #### ##     ##    ##     #######  ##    ##  ######       ###  ###  ######## ####',
 ];
-// ansi_shadow, stacked — mid width
+// banner3, stacked — mid width
 const ART_STACKED = [
-  '     ██╗██╗ █████╗ ████████╗ ██████╗ ███╗   ██╗ ██████╗',
-  '     ██║██║██╔══██╗╚══██╔══╝██╔═══██╗████╗  ██║██╔════╝',
-  '     ██║██║███████║   ██║   ██║   ██║██╔██╗ ██║██║  ███╗',
-  '██   ██║██║██╔══██║   ██║   ██║   ██║██║╚██╗██║██║   ██║',
-  '╚█████╔╝██║██║  ██║   ██║   ╚██████╔╝██║ ╚████║╚██████╔╝',
-  ' ╚════╝ ╚═╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝',
+  '      ## ####    ###    ########  #######  ##    ##  ######',
+  '      ##  ##    ## ##      ##    ##     ## ###   ## ##    ##',
+  '      ##  ##   ##   ##     ##    ##     ## ####  ## ##',
+  '      ##  ##  ##     ##    ##    ##     ## ## ## ## ##   ####',
+  '##    ##  ##  #########    ##    ##     ## ##  #### ##    ##',
+  '##    ##  ##  ##     ##    ##    ##     ## ##   ### ##    ##',
+  ' ######  #### ##     ##    ##     #######  ##    ##  ######',
   '',
-  '██╗    ██╗███████╗██╗',
-  '██║    ██║██╔════╝██║',
-  '██║ █╗ ██║█████╗  ██║',
-  '██║███╗██║██╔══╝  ██║',
-  '╚███╔███╔╝███████╗██║',
-  ' ╚══╝╚══╝ ╚══════╝╚═╝',
+  '##      ## ######## ####',
+  '##  ##  ## ##        ##',
+  '##  ##  ## ##        ##',
+  '##  ##  ## ######    ##',
+  '##  ##  ## ##        ##',
+  '##  ##  ## ##        ##',
+  ' ###  ###  ######## ####',
 ];
 // figlet shadow, compact — phones
 const ART_SMALL = [
@@ -263,6 +266,33 @@ const ART_SMALL = [
   '   \\_/\\_/ \\___|_|',
 ];
 
+// lolcat-style diagonal rainbow over the name, palette-indexed so both
+// themes re-color it on switch.
+const RAINBOW = [C.red, C.yellow, C.green, C.cyan, C.blue, C.magenta];
+
+function rainbowize(rows: string[]): string[] {
+  const width = Math.max(...rows.map((r) => strWidth(r)));
+  return rows.map((row, r) => {
+    let out = '';
+    let last = -1;
+    for (let c = 0; c < row.length; c++) {
+      const ch = row[c];
+      if (ch === ' ') {
+        out += ' ';
+        last = -1;
+        continue;
+      }
+      const idx = Math.floor((((c + r * 5) % width) / width) * RAINBOW.length);
+      if (idx !== last) {
+        out += RAINBOW[idx];
+        last = idx;
+      }
+      out += ch;
+    }
+    return `${out}${R}`;
+  });
+}
+
 function lastUpdate(): string {
   const d = new Date(GENERATED_AT);
   const M = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -271,14 +301,14 @@ function lastUpdate(): string {
 }
 
 export function profileScreen(cols: number): string[] {
-  const art = cols >= 86 ? ART_FULL : cols >= 58 ? ART_STACKED : ART_SMALL;
+  const art = cols >= 92 ? ART_FULL : cols >= 64 ? ART_STACKED : ART_SMALL;
   const lines: string[] = [''];
   lines.push(
     `${C.accent}${bold('# 魏佳桐')}${R}  ${link(`${C.blue}joyetong58@gmail.com${R}`, 'mailto:joyetong58@gmail.com')}`,
   );
   lines.push(dim('─'.repeat(Math.max(0, Math.min(cols - 4, 44)))));
   lines.push('');
-  for (const row of art) lines.push(`${C.green}${row}${R}`);
+  for (const row of rainbowize(art)) lines.push(row);
   lines.push('');
   lines.push(
     `${bold('Undergraduate')}${C.dim} · ${R}Underwater Acoustics Engineering`,
