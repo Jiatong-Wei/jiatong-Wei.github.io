@@ -419,12 +419,14 @@ function mount(): void {
   container.innerHTML = '<div class="pet-bubble"></div><pre></pre>';
   document.body.appendChild(container);
 
-  // freeze the CSS-anchored (right/bottom) start position into explicit px:
-  // a transition from left/top:auto to pixels is NOT interpolable — the very
-  // first stroll would teleport instead of glide
+  // draw the sprite BEFORE anchoring: the pet box has zero size until the
+  // first render, and anchoring a zero-size box leaves the grown sprite
+  // hanging off the screen's bottom-right corner (invisible until the first
+  // stroll pulled her back)
+  render();
   const start = container.getBoundingClientRect();
-  container.style.left = `${Math.round(start.left)}px`;
-  container.style.top = `${Math.round(start.top)}px`;
+  container.style.left = `${Math.round(window.innerWidth - start.width - 18)}px`;
+  container.style.top = `${Math.round(window.innerHeight - start.height - 6)}px`;
   container.style.right = 'auto';
   container.style.bottom = 'auto';
 
