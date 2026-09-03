@@ -5,14 +5,23 @@ import { renderDoc } from '../term/mdansi';
 import { getPet } from '../term/pet';
 import { Command, docByName, wikiDocs } from './env';
 
+// neofetch art: Franka-style arm reaching over the 5 cm cube — which is still
+// on the table (grasp 0/5). Arm in accent, cube in red, like the sim.
+const arm = (s: string) => `${C.accent}${s}${R}`;
+const cube = (s: string) => `${C.red}${s}${R}`;
 const ART = [
-  '      +----------------+',
-  '   == | (==)    (==) | ==',
-  '      |   wei robo    |',
-  '   == | (==)    (==) | ==',
-  '      +-------+--------+',
-  '              |  gripper up front',
-  '   mecanum x4 |  4WD omnibase',
+  arm('            ██  ██'), // open gripper
+  arm('            ██████'), // hand
+  arm('             ███'), // wrist
+  arm('            ███'),
+  arm('          ████'), // elbow
+  arm('        ████'),
+  arm('      ████'),
+  arm('    ████'), // shoulder
+  arm('  ██████'),
+  arm('████████████'), // base
+  cube('          ▄██▄'), // the cube. still on the table.
+  cube('          ▀▀▀▀'),
 ];
 
 const INFO: Array<[string, string]> = [
