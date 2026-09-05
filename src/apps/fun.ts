@@ -162,7 +162,7 @@ export const umi: Command = {
     [
       `${C.accent}${bold('UMI')}${R} = ${C.accent}Universal Manipulation Interface${R}`,
       `${C.dim}一款经典的具身智能数采设备，也是优米名字的由来。${R}`,
-      `${C.dim}Congrats！你挖到了本站第一颗彩蛋${R}`,
+      `${C.dim}🎉 Congrats！你挖到了本站第一颗彩蛋${R}`,
     ].join('\n'),
 };
 
