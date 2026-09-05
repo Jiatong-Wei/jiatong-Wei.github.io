@@ -100,7 +100,8 @@ export class Shell {
     let best: string | null = null;
     let bestD = 3;
     for (const key of registry.keys()) {
-      if (registry.get(key)!.hidden) continue;
+      // suggestions cover every registered command, hidden ones included —
+      // typos of `boot` or content docs deserve correction just as much
       const d = lev(name, key);
       if (d < bestD || (d === bestD && best !== null && key.length < best.length)) {
         best = key;
@@ -127,7 +128,9 @@ export class Shell {
           const hint = this.suggest(name);
           this.writeErr(
             `command not found: ${bold(name)}` +
-              (hint ? ` ${C.dim}— 是不是想敲 ${R}${C.accent}${hint}${R}${C.dim}？${R}` : ` ${C.dim}(试试 help)${R}`),
+              (hint
+                ? ` ${C.dim}— 是不是想敲 ${R}${C.accent}${hint}${R}${C.dim}？（回车重敲，或 ↑ 改）${R}`
+                : ` ${C.dim}(试试 help)${R}`),
           );
           ok = false;
           return;

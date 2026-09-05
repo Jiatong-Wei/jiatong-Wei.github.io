@@ -40,7 +40,9 @@ function inlineTok(t: Tok, plain: boolean): string {
     }
     case 'codespan': {
       const s = t.text ?? '';
-      return plain ? s : `${C.codeBg}${C.accent}${s}${R}`;
+      // accent text on theme-aware bg: in light mode C.accent is dark green,
+      // so the old bright-on-dark pairing vanished — use the ink color instead
+      return plain ? s : `${C.codeBg}${C.fgText}${s}${R}`;
     }
     case 'link': {
       const inner = renderInline(t.tokens, plain) || t.text || t.href;

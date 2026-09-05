@@ -11,6 +11,7 @@ export const C = {
   red: '\x1b[31m',
   dim: '\x1b[90m',
   codeBg: '\x1b[100m', // bright black background for code spans/blocks
+  fgText: '\x1b[37m', // normal text color, theme-mapped — readable on codeBg in both themes
 };
 
 export const R = '\x1b[0m';
