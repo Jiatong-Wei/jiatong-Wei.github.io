@@ -378,10 +378,8 @@ export function profileScreenParts(cols: number): {
   tail.push(`${C.dim}│${R} mail   ${link(`${C.cyan}joyetong58@gmail.com${R}`, 'mailto:joyetong58@gmail.com')}`);
   tail.push(`${C.dim}│${R} github ${link(`${C.cyan}github.com/Jiatong-Wei${R}`, 'https://github.com/Jiatong-Wei')}`);
   tail.push('');
-  tail.push(`${italic('把实车上调过的控制环，和仿真里拆过的抓取任务，接到同一条研究路上。')}`);
-  tail.push('');
-  tail.push(`${C.accent}•${R} 本页同时是一个 shell。`);
-  tail.push(`  试试：${C.accent}help${R}${C.dim}、${R}${C.accent}neofetch${R}${C.dim}、${R}${C.accent}cat about | wc -l${R}${C.dim}。${R}`);
+  tail.push(`${C.accent}•${R} This page doubles as a shell.`);
+  tail.push(`  Try: ${C.accent}help${R}${C.dim}, ${R}${C.accent}neofetch${R}${C.dim}, ${R}${C.accent}cat about | wc -l${R}${C.dim}.${R}`);
   tail.push('');
   tail.push(`${C.dim}│${R} 🐶 右下角那只狗叫 ${C.accent}优米${R}（${C.accent}UMI${R}${C.dim}）——名字致敬具身智能数据采设备 Universal`);
   tail.push(`${C.dim}│${R} ${C.dim}Manipulation Interface。没人理它时会自己遛弯，点它 / ${C.accent}pet${R} 可以摸。${R}`);
