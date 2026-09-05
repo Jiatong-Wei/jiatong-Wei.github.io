@@ -348,41 +348,50 @@ function lastUpdate(): string {
   return `${W[d.getUTCDay()]} ${M[d.getUTCMonth()]} ${d.getUTCDate()} ${d.getUTCFullYear()}`;
 }
 
-export function profileScreen(cols: number): string[] {
+export function profileScreenParts(cols: number): {
+  head: string[];
+  art: string[];
+  tail: string[];
+} {
   const art = cols >= 102 ? ART_FULL : cols >= 71 ? ART_STACKED : ART_SMALL;
-  const lines: string[] = [''];
-  lines.push(
+  const head: string[] = [''];
+  head.push(
     `${C.accent}${bold('# 魏佳桐')}${R}  ${link(`${C.blue}joyetong58@gmail.com${R}`, 'mailto:joyetong58@gmail.com')}`,
   );
-  lines.push(dim('─'.repeat(Math.max(0, Math.min(cols - 4, 44)))));
-  lines.push('');
-  for (const row of rainbowize(art)) lines.push(row);
-  lines.push('');
-  lines.push(
+  head.push(dim('─'.repeat(Math.max(0, Math.min(cols - 4, 44)))));
+  head.push('');
+  const artRows = rainbowize(art);
+  const tail: string[] = [''];
+  tail.push(
     `${bold('Undergraduate')}${C.dim} · ${R}Underwater Acoustics Engineering`,
   );
-  lines.push(
+  tail.push(
     `${link(`${C.blue}Northwestern Polytechnical University${R}`, 'https://www.nwpu.edu.cn/')}${C.dim} · ${R}西安`,
   );
-  lines.push(`${bold('Robotics')}${C.dim} — ${R}manipulation · mobile robots · learning & control`);
-  lines.push('');
-  lines.push(`${C.dim}│${R} 🤖 ${C.accent}About${R}${C.dim} · ${R}🏅 ${C.accent}Awards${R}${C.dim} · ${R}📰 ${C.accent}News${R}`);
-  lines.push(`${C.dim}│${R} 📖 ${C.accent}Wiki${R}${C.dim} · ${R}🔗 ${C.accent}Links${R}${C.dim} · ${R}🐙 ${C.accent}GitHub${R}`);
-  lines.push(`${C.dim}│${R}`);
-  lines.push(`${C.dim}│${R} mail   ${link(`${C.cyan}joyetong58@gmail.com${R}`, 'mailto:joyetong58@gmail.com')}`);
-  lines.push(`${C.dim}│${R} github ${link(`${C.cyan}github.com/Jiatong-Wei${R}`, 'https://github.com/Jiatong-Wei')}`);
-  lines.push('');
-  lines.push(`${italic('把实车上调过的控制环，和仿真里拆过的抓取任务，接到同一条研究路上。')}`);
-  lines.push('');
-  lines.push(`${C.accent}•${R} 本页同时是一个 shell。`);
-  lines.push(`  试试：${C.accent}help${R}${C.dim}、${R}${C.accent}neofetch${R}${C.dim}、${R}${C.accent}cat about | wc -l${R}${C.dim}。${R}`);
-  lines.push('');
-  lines.push(`${C.dim}│${R} 🐶 右下角那只狗叫 ${C.accent}优米${R}（${C.accent}UMI${R}${C.dim}）——名字致敬具身智能数据采设备 Universal`);
-  lines.push(`${C.dim}│${R} ${C.dim}Manipulation Interface。没人理它时会自己遛弯，点它 / ${C.accent}pet${R} 可以摸。${R}`);
-  lines.push('');
-  lines.push(dim(`Last update: ${lastUpdate()}`));
-  lines.push('');
-  return lines;
+  tail.push(`${bold('Robotics')}${C.dim} — ${R}manipulation · mobile robots · learning & control`);
+  tail.push('');
+  tail.push(`${C.dim}│${R} 🤖 ${C.accent}About${R}${C.dim} · ${R}🏅 ${C.accent}Awards${R}${C.dim} · ${R}📰 ${C.accent}News${R}`);
+  tail.push(`${C.dim}│${R} 📖 ${C.accent}Wiki${R}${C.dim} · ${R}🔗 ${C.accent}Links${R}${C.dim} · ${R}🐙 ${C.accent}GitHub${R}`);
+  tail.push(`${C.dim}│${R}`);
+  tail.push(`${C.dim}│${R} mail   ${link(`${C.cyan}joyetong58@gmail.com${R}`, 'mailto:joyetong58@gmail.com')}`);
+  tail.push(`${C.dim}│${R} github ${link(`${C.cyan}github.com/Jiatong-Wei${R}`, 'https://github.com/Jiatong-Wei')}`);
+  tail.push('');
+  tail.push(`${italic('把实车上调过的控制环，和仿真里拆过的抓取任务，接到同一条研究路上。')}`);
+  tail.push('');
+  tail.push(`${C.accent}•${R} 本页同时是一个 shell。`);
+  tail.push(`  试试：${C.accent}help${R}${C.dim}、${R}${C.accent}neofetch${R}${C.dim}、${R}${C.accent}cat about | wc -l${R}${C.dim}。${R}`);
+  tail.push('');
+  tail.push(`${C.dim}│${R} 🐶 右下角那只狗叫 ${C.accent}优米${R}（${C.accent}UMI${R}${C.dim}）——名字致敬具身智能数据采设备 Universal`);
+  tail.push(`${C.dim}│${R} ${C.dim}Manipulation Interface。没人理它时会自己遛弯，点它 / ${C.accent}pet${R} 可以摸。${R}`);
+  tail.push('');
+  tail.push(dim(`Last update: ${lastUpdate()}`));
+  tail.push('');
+  return { head, art: artRows, tail };
+}
+
+export function profileScreen(cols: number): string[] {
+  const { head, art, tail } = profileScreenParts(cols);
+  return [...head, ...art, ...tail];
 }
 
 export const BOOT_LINES: Array<{ kind: 'ok' | 'warn'; text: string; delay?: number }> = [
