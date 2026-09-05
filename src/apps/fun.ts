@@ -153,4 +153,17 @@ export const walkCmd: Command = {
   },
 };
 
-export const funCommands: Command[] = [neofetch, rostopic, joints, sudo, pet, fetchCmd, walkCmd];
+// hidden easter egg: the UMI tribute, for visitors who click the name or type it
+export const umi: Command = {
+  name: 'umi',
+  summary: '???',
+  hidden: true,
+  run: () =>
+    [
+      `${C.accent}${bold('UMI')}${R} = ${C.accent}Universal Manipulation Interface${R}`,
+      `${C.dim}——具身智能研究常用的手持数据采集设备。优米的名字致敬它。${R}`,
+      `${C.dim}恭喜，你挖到了本站第一颗彩蛋 🥚${R}`,
+    ].join('\n'),
+};
+
+export const funCommands: Command[] = [neofetch, rostopic, joints, sudo, pet, fetchCmd, walkCmd, umi];

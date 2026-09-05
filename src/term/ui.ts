@@ -111,7 +111,7 @@ const CMD_MAP: Record<string, string> = {
   tree: 'tree',
   github: 'open github',
   splat: 'open splat',
-  umi: 'pet pet',
+  umi: 'umi',
 };
 
 const CMD_RE = /\b(?:about|awards|news|links|help|neofetch|whoami|joints|boot|tree|github|splat|umi)\b|wiki\/[a-z0-9-]+/gi;

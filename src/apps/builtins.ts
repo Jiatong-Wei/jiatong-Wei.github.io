@@ -372,8 +372,8 @@ export function profileScreenParts(cols: number): {
     `${bold('Vision')}${C.dim} — ${R}${italic('toward Physical AI that is more capable, safer, and more inclusive')}`,
   );
   tail.push('');
-  tail.push(`${C.dim}│${R} 🤖 ${C.accent}About${R}${C.dim} · ${R}🏅 ${C.accent}Awards${R}${C.dim} · ${R}📰 ${C.accent}News${R}`);
-  tail.push(`${C.dim}│${R} 📖 ${C.accent}Wiki${R}${C.dim} · ${R}🔗 ${C.accent}Links${R}${C.dim} · ${R}🐙 ${C.accent}GitHub${R}`);
+  tail.push(`${C.dim}│${R} 🤖  ${C.accent}About${R}${C.dim} · ${R}🏅  ${C.accent}Awards${R}${C.dim} · ${R}📰  ${C.accent}News${R}`);
+  tail.push(`${C.dim}│${R} 📖  ${C.accent}Wiki${R}${C.dim} · ${R}🔗  ${C.accent}Links${R}${C.dim} · ${R}🐙  ${C.accent}GitHub${R}`);
   tail.push(`${C.dim}│${R}`);
   tail.push(`${C.dim}│${R} mail   ${link(`${C.cyan}joyetong58@gmail.com${R}`, 'mailto:joyetong58@gmail.com')}`);
   tail.push(`${C.dim}│${R} github ${link(`${C.cyan}github.com/Jiatong-Wei${R}`, 'https://github.com/Jiatong-Wei')}`);
@@ -381,8 +381,7 @@ export function profileScreenParts(cols: number): {
   tail.push(`${C.accent}•${R} This page doubles as a shell.`);
   tail.push(`  Try: ${C.accent}help${R}${C.dim}, ${R}${C.accent}neofetch${R}${C.dim}, ${R}${C.accent}cat about | wc -l${R}${C.dim}.${R}`);
   tail.push('');
-  tail.push(`${C.dim}│${R} 🐶 右下角那只狗叫 ${C.accent}优米${R}（${C.accent}UMI${R}${C.dim}）——名字致敬具身智能数据采设备 Universal`);
-  tail.push(`${C.dim}│${R} ${C.dim}Manipulation Interface。没人理它时会自己遛弯，点它 / ${C.accent}pet${R} 可以摸。${R}`);
+  tail.push(`${C.dim}│${R} 🐶  右下角那只狗叫 ${C.accent}优米${R}（${C.accent}UMI${R}${C.dim}）——点它可以摸，或键入 ${C.accent}pet${R}${C.dim}。${R}`);
   tail.push('');
   tail.push(dim(`Last update: ${lastUpdate()}`));
   tail.push('');
