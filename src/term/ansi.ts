@@ -10,8 +10,11 @@ export const C = {
   cyan: '\x1b[36m',
   red: '\x1b[31m',
   dim: '\x1b[90m',
-  codeBg: '\x1b[100m', // bright black background for code spans/blocks
-  fgText: '\x1b[37m', // normal text color, theme-mapped — readable on codeBg in both themes
+  // code spans/blocks: theme-mapped text color (37) on a theme-mapped muted
+  // background (100) — the background is intentionally subtle; readability
+  // comes from the text color, not the block
+  codeBg: '\x1b[100m',
+  fgText: '\x1b[37m',
 };
 
 export const R = '\x1b[0m';

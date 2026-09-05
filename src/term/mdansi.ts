@@ -40,9 +40,9 @@ function inlineTok(t: Tok, plain: boolean): string {
     }
     case 'codespan': {
       const s = t.text ?? '';
-      // accent text on theme-aware bg: in light mode C.accent is dark green,
-      // so the old bright-on-dark pairing vanished — use the ink color instead
-      return plain ? s : `${C.codeBg}${C.fgText}${s}${R}`;
+      // no background block: theme-mapped accent + bold carries the highlight;
+      // a colored box that works on dark inevitably fails on light (and vice versa)
+      return plain ? s : `${C.accent}${bold(s)}${R}`;
     }
     case 'link': {
       const inner = renderInline(t.tokens, plain) || t.text || t.href;
@@ -91,7 +91,8 @@ function blockLines(t: Tok, plain: boolean): string[] {
       return [renderInline(t.tokens, plain), ''];
     case 'code': {
       const body = String(t.text ?? '').replace(/\n$/, '').split('\n');
-      return ['', ...body.map((l) => (plain ? l : `${C.codeBg}${C.green} ${l}${R}`)), ''];
+      // fenced blocks keep a subtle background but use theme text color
+      return ['', ...body.map((l) => (plain ? l : `${C.codeBg}${C.fgText} ${l}${R}`)), ''];
     }
     case 'blockquote': {
       const inner: string[] = [];
