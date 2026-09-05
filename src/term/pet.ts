@@ -23,6 +23,36 @@ export interface PetApi {
 let container: HTMLDivElement | null = null;
 let api: PetApi | null = null;
 let hidden = false;
+let petOn = true; // small screens hide UMI by default; `pet on` summons her
+const PET_ON_KEY = 'weijiatong.term.petOn';
+
+function loadPetOn(): boolean {
+  try {
+    const saved = localStorage.getItem(PET_ON_KEY);
+    if (saved === 'on') return true;
+    if (saved === 'off') return false;
+  } catch {
+    /* private mode */
+  }
+  // no stored preference: visible on desktop, hidden on phones (limited space)
+  return !window.matchMedia('(max-width: 768px)').matches;
+}
+
+function isSmallScreen(): boolean {
+  return window.matchMedia('(max-width: 768px)').matches;
+}
+
+/** UMI visibility = user summon flag AND (not force-hidden on small screens). */
+function petVisible(): boolean {
+  return hidden ? false : petOn || !isSmallScreen();
+}
+
+function applyVisibility(): void {
+  if (!container) return;
+  // explicit block/none: an inline empty string would fall back to the CSS
+  // @media rule that hides #pet on small screens
+  container.style.display = petVisible() ? 'block' : 'none';
+}
 let sleeping = false;
 let sitting = false;
 let happyUntil = 0;
@@ -97,7 +127,7 @@ function sprite(state: PetState): string {
 }
 
 function render(): void {
-  if (!container || hidden) return;
+  if (!container || hidden || !petVisible()) return;
   const pre = container.querySelector('pre')!;
   const state: PetState = sleeping
     ? 'sleep'
@@ -413,6 +443,7 @@ function scheduleSleep(): void {
 
 function mount(): void {
   mountTime = Date.now();
+  petOn = loadPetOn();
   container = document.createElement('div');
   container.id = 'pet';
   container.title = '优米 UMI — 点我会有汪';
@@ -472,6 +503,8 @@ function mount(): void {
 
   renderTimer = window.setInterval(render, 1100); // idle blink/eye refresh
   window.addEventListener('mousemove', onPointerMove, { passive: true });
+  window.addEventListener('resize', applyVisibility);
+  applyVisibility();
   scheduleBehavior();
   scheduleSleep();
 }
@@ -517,6 +550,11 @@ export function initPet(deps: PetDeps = {}): PetApi {
       switch (action) {
         case 'pet':
           if (hidden) return '优米已躲起来 — pet on 唤回';
+          if (!petVisible()) {
+            petOn = true;
+            try { localStorage.setItem(PET_ON_KEY, 'on'); } catch {}
+            applyVisibility();
+          }
           bark();
           return `${C.accent}优米${R} 开心地蹭了蹭你`;
         case 'sit':
@@ -537,11 +575,13 @@ export function initPet(deps: PetDeps = {}): PetApi {
           return `${C.accent}优米${R} 一个激灵精神了`;
         case 'off':
           hidden = true;
-          if (container) container.style.display = 'none';
+          applyVisibility();
           return '优米回狗窝了（pet on 唤回）';
         case 'on':
           hidden = false;
-          if (container) container.style.display = '';
+          petOn = true; // a summon also overrides the small-screen default
+          try { localStorage.setItem(PET_ON_KEY, 'on'); } catch {}
+          applyVisibility();
           markInteraction();
           return '优米回到岗哨';
         default:

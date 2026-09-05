@@ -102,6 +102,14 @@
       position: fixed; bottom: 6px; right: 18px; z-index: 40;
       cursor: grab; user-select: none; touch-action: none;
       transition: left 1s ease-in-out, top 1s ease-in-out, transform .3s ease;
+      /* never intercept clicks aimed at terminal content under her */
+      pointer-events: auto;
+    }
+    /* small screens: limited real estate — UMI stays hidden unless summoned
+       with `pet on` (choice persists in localStorage) */
+    @media (max-width: 768px) {
+      #pet { display: none; }
+      #pet.umi-on { display: block; }
     }
     #pet.sit { transform: rotate(-8deg); }
     #pet.walk pre { animation: pet-bob .45s ease-in-out infinite; }
