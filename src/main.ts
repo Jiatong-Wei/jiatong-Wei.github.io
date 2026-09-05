@@ -8,6 +8,15 @@ import { profileScreenParts } from './apps/builtins';
 const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
 async function main(): Promise<void> {
+  // The fit addon measures the cell grid at init — wait for the real font
+  // (bounded) or cols/rows get computed from fallback-font metrics.
+  await Promise.race([
+    Promise.all([
+      document.fonts.load('15px "Maple Mono"'),
+      document.fonts.load('italic 15px "Maple Mono"'),
+    ]),
+    new Promise((r) => setTimeout(r, 1500)),
+  ]);
   const ui = createUi();
   const shell = new Shell(ui);
   const pet = initPet({ isBlankRect: (x, y, w, h) => ui.isBlankRect(x, y, w, h) });

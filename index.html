@@ -53,9 +53,24 @@
     html, body { height: 100%; }
     body {
       margin: 0; background: var(--bg); color: var(--fg);
-      font-family: "Cascadia Mono", "JetBrains Mono", Menlo, Consolas, "Sarasa Mono SC",
+      font-family: "Maple Mono", "Cascadia Mono", "JetBrains Mono", Menlo, Consolas, "Sarasa Mono SC",
         "Noto Sans Mono CJK SC", "Source Han Mono SC", "Microsoft YaHei Mono", monospace;
       overflow: hidden;
+    }
+    /* Maple Mono (OFL) — self-hosted, cursive italic; license at /fonts/OFL.txt */
+    @font-face {
+      font-family: "Maple Mono";
+      src: url("/fonts/MapleMono.woff2") format("woff2");
+      font-weight: 300 700;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: "Maple Mono";
+      src: url("/fonts/MapleMono-Italic.woff2") format("woff2");
+      font-weight: 300 700;
+      font-style: italic;
+      font-display: swap;
     }
     #app { display: flex; flex-direction: column; height: 100dvh; }
     header {
@@ -100,16 +115,6 @@
       filter: drop-shadow(0 0 5px #f0a232) drop-shadow(0 0 9px #f0a232);
     }
     #term-wrap { flex: 1; min-height: 0; padding: 8px 10px 12px; }
-    /* jyy-style mixed typography: italic SGR text renders in a serif face —
-       Latin gets true italics (Georgia), CJK falls back to upright Songti
-       (font-synthesis: none kills the fake oblique). */
-    .xterm-italic {
-      font-family: Georgia, "Times New Roman", "Noto Serif CJK SC", "Source Han Serif SC",
-        "Songti SC", "SimSun", serif;
-      font-style: italic;
-      font-synthesis: none;
-      font-size: 1.08em;
-    }
     #term, #term .xterm { height: 100%; }
     #overlay {
       position: fixed; inset: 0; z-index: 50; display: none;

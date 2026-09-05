@@ -8,7 +8,7 @@ import { FitAddon } from '@xterm/addon-fit';
 import '@xterm/xterm/css/xterm.css';
 
 export const FONT_STACK =
-  '"Cascadia Mono", "JetBrains Mono", Menlo, Consolas, "Sarasa Mono SC", ' +
+  '"Maple Mono", "Cascadia Mono", "JetBrains Mono", Menlo, Consolas, "Sarasa Mono SC", ' +
   '"Noto Sans Mono CJK SC", "Source Han Mono SC", "Microsoft YaHei Mono", monospace';
 
 // Green phosphor on near-black — the classic terminal.
