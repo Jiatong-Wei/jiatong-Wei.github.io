@@ -366,7 +366,7 @@ export function profileScreenParts(cols: number): {
     `${bold('Undergraduate')}${C.dim} · ${R}Underwater Acoustics Engineering`,
   );
   tail.push(
-    `${link(`${C.blue}Northwestern Polytechnical University${R}`, 'https://www.nwpu.edu.cn/')}${C.dim} · ${R}西安`,
+    `${link(`${C.blue}Northwestern Polytechnical University${R}`, 'https://www.nwpu.edu.cn/')}${C.dim} · ${R}Xi'an`,
   );
   tail.push(`${bold('Robotics')}${C.dim} — ${R}manipulation · mobile robots · learning & control`);
   tail.push('');
