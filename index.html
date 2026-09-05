@@ -82,15 +82,22 @@
     header .right a:hover, header .right button:hover { color: var(--accent); }
     header .right a, header .right button { display: inline-flex; align-items: center; }
 
-    /* theme icons: the active-mode icon glows, the other stays dim */
+    /* theme icons: the active-mode icon glows in its own light —
+       moon = bright yellow moonlight, sun = warm orange sunlight */
     #theme-btn .ico-moon, #theme-btn .ico-sun {
       transition: opacity .3s, filter .3s;
       opacity: .35;
     }
-    :root .ico-moon { opacity: 1 !important; filter: drop-shadow(0 0 5px var(--accent)); }
+    :root .ico-moon {
+      opacity: 1 !important;
+      filter: drop-shadow(0 0 5px #f5e27a) drop-shadow(0 0 9px #f5e27a);
+    }
     :root[data-theme='light'] #theme-btn .ico-moon { opacity: .35; filter: none; }
     :root #theme-btn .ico-sun { opacity: .35; filter: none; }
-    :root[data-theme='light'] #theme-btn .ico-sun { opacity: 1 !important; filter: drop-shadow(0 0 5px var(--accent)); }
+    :root[data-theme='light'] #theme-btn .ico-sun {
+      opacity: 1 !important;
+      filter: drop-shadow(0 0 5px #f0a232) drop-shadow(0 0 9px #f0a232);
+    }
     #term-wrap { flex: 1; min-height: 0; padding: 8px 10px 12px; }
     #term, #term .xterm { height: 100%; }
     #overlay {
