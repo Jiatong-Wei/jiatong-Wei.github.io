@@ -100,6 +100,16 @@
       filter: drop-shadow(0 0 5px #f0a232) drop-shadow(0 0 9px #f0a232);
     }
     #term-wrap { flex: 1; min-height: 0; padding: 8px 10px 12px; }
+    /* jyy-style mixed typography: italic SGR text renders in a serif face —
+       Latin gets true italics (Georgia), CJK falls back to upright Songti
+       (font-synthesis: none kills the fake oblique). */
+    .xterm-italic {
+      font-family: Georgia, "Times New Roman", "Noto Serif CJK SC", "Source Han Serif SC",
+        "Songti SC", "SimSun", serif;
+      font-style: italic;
+      font-synthesis: none;
+      font-size: 1.08em;
+    }
     #term, #term .xterm { height: 100%; }
     #overlay {
       position: fixed; inset: 0; z-index: 50; display: none;
