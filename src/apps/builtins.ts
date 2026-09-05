@@ -368,7 +368,7 @@ export function profileScreenParts(cols: number): {
   tail.push(
     `${link(`${C.blue}Northwestern Polytechnical University${R}`, 'https://www.nwpu.edu.cn/')}${C.dim} · ${R}Xi'an`,
   );
-  tail.push(`${bold('Robotics')}${C.dim} — ${R}toward Physical AI that is more capable, safer, and more inclusive`);
+  tail.push(`${bold('Vision')}${C.dim} — ${R}toward Physical AI that is more capable, safer, and more inclusive`);
   tail.push('');
   tail.push(`${C.dim}│${R} 🤖 ${C.accent}About${R}${C.dim} · ${R}🏅 ${C.accent}Awards${R}${C.dim} · ${R}📰 ${C.accent}News${R}`);
   tail.push(`${C.dim}│${R} 📖 ${C.accent}Wiki${R}${C.dim} · ${R}🔗 ${C.accent}Links${R}${C.dim} · ${R}🐙 ${C.accent}GitHub${R}`);
