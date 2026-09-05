@@ -27,7 +27,7 @@ const INFO: Array<[string, string]> = [
   ['', `${C.accent}${bold('魏佳桐')}${R} ${C.dim}(Leo Wei)${R}`],
   ['os', 'RoboStation 6.0 — 在仿真里较真'],
   ['host', '西安 · NWPU 水声工程 2023–2027'],
-  ['research', 'manipulation · mobile robots'],
+  ['research', 'Physical AI — capable · safe · inclusive'],
   ['stack', 'STM32 · ROS2 · LeRobot · PyTorch'],
   ['sim', 'Isaac Sim 6.0 · Franka Panda'],
   ['best', '0.094 m approach (4× DAgger)'],

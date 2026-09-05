@@ -230,7 +230,7 @@ export const whoami: Command = {
       `${C.accent}${bold('魏佳桐')}${R} ${C.dim}(Leo Wei)${R} — 西北工业大学 · 水声工程 · 2023–2027`,
       '',
       `${C.dim}把实车上调过的控制环，和仿真里拆过的抓取任务，接到同一条研究路上。${R}`,
-      `${C.dim}manipulation · mobile robots · 能被证伪的学习与控制${R}`,
+      `${C.dim}toward more capable, safer, and more inclusive Physical AI${R}`,
       '',
       `  mail   ${link(`${C.cyan}joyetong58@gmail.com${R}`, 'mailto:joyetong58@gmail.com')}`,
       `  github ${link(`${C.cyan}github.com/Jiatong-Wei${R}`, 'https://github.com/Jiatong-Wei')}`,
@@ -368,7 +368,7 @@ export function profileScreenParts(cols: number): {
   tail.push(
     `${link(`${C.blue}Northwestern Polytechnical University${R}`, 'https://www.nwpu.edu.cn/')}${C.dim} · ${R}Xi'an`,
   );
-  tail.push(`${bold('Robotics')}${C.dim} — ${R}manipulation · mobile robots · learning & control`);
+  tail.push(`${bold('Robotics')}${C.dim} — ${R}toward Physical AI that is more capable, safer, and more inclusive`);
   tail.push('');
   tail.push(`${C.dim}│${R} 🤖 ${C.accent}About${R}${C.dim} · ${R}🏅 ${C.accent}Awards${R}${C.dim} · ${R}📰 ${C.accent}News${R}`);
   tail.push(`${C.dim}│${R} 📖 ${C.accent}Wiki${R}${C.dim} · ${R}🔗 ${C.accent}Links${R}${C.dim} · ${R}🐙 ${C.accent}GitHub${R}`);
