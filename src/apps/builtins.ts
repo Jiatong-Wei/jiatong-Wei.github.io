@@ -3,7 +3,7 @@
 import { C, R, bold, dim, italic, link, padEnd, strWidth } from '../term/ansi';
 import { renderDoc } from '../term/mdansi';
 import { GENERATED_AT } from '../generated/content';
-import { Command, Ctx, docByName, GC_ASSETS, REPORT, topDocs, wikiDocs, OPEN_TARGETS } from './env';
+import { Command, Ctx, docByName, topDocs, wikiDocs } from './env';
 
 const OK = `${C.green}[  OK  ]${R}`;
 const WARN = `${C.yellow}[ WARN ]${R}`;
@@ -17,7 +17,6 @@ export const help: Command = {
     rows.push(['ls / tree', '快来看看我的个人站里都有什么']);
     rows.push(['cat <doc>', '读一读我的手作文章（about / awards / news / links / wiki/…）']);
     rows.push(['wiki', '研究札记']);
-    rows.push(['open <target>', `打开图片/文件/链接：${Object.keys(OPEN_TARGETS).join(' · ')}`]);
     rows.push(['wc [-l] <doc>', '数行数，支持管道 cat about | wc -l']);
     rows.push(['grep <词> [<doc>]', '找关键词，命中高亮，支持管道']);
     rows.push(['neofetch', '我是谁']);
@@ -41,7 +40,7 @@ export const help: Command = {
 export const ls: Command = {
   name: 'ls',
   summary: '列出文件',
-  usage: 'ls [wiki|files|images/gc]',
+  usage: 'ls [wiki]',
   run: ({ argv }) => {
     const arg = argv[0] ?? '';
     if (arg === '' || arg === '.' || arg === '~') {
@@ -50,26 +49,12 @@ export const ls: Command = {
         return `  ${padEnd(cert, 12)}${C.cyan}${padEnd(d.name + '.md', 14)}${R}${C.dim}${d.title ?? ''}${R}`;
       });
       lines.push(
-        `  ${padEnd('', 12)}${C.accent}${bold('wiki/')}${R}${' '.repeat(9)}${C.dim}${wikiDocs().length} 篇研究记录${R}`,
-        `  ${padEnd('', 12)}${C.accent}${bold('files/')}${R}${' '.repeat(9)}${C.dim}${REPORT.file}${R}`,
-        `  ${padEnd('', 12)}${C.accent}${bold('images/gc/')}${R}${' '.repeat(5)}${C.dim}赛场照片 ×${GC_ASSETS.length}（open gc-1）${R}`,
+        `  ${padEnd('', 12)}${C.accent}${bold('wiki/')}${R}${' '.repeat(9)}${C.dim}${wikiDocs().length} 篇研究记录（照片与 PDF 在 wiki 站）${R}`,
         '',
       );
       return lines.join('\n');
     }
     if (arg === 'wiki' || arg === 'wiki/') return wikiLs();
-    if (arg === 'images' || arg === 'images/' || arg === 'images/gc' || arg === 'images/gc/') {
-      return [
-        `${C.dim}images/gc/${R}`,
-        ...GC_ASSETS.map((a) => `  ${padEnd(a.file, 16)}${C.dim}${a.cap}${R}`),
-        '',
-        `${C.dim}视频素材约 1.5 GB 不入库，等 B 站归档。${R}`,
-        '',
-      ].join('\n');
-    }
-    if (arg === 'files' || arg === 'files/') {
-      return [`  ${padEnd(REPORT.file, 40)}${C.dim}${REPORT.cap}${R}`, `  ${C.dim}open report 打开${R}`, ''].join('\n');
-    }
     return `ls: ${arg}: No such file or directory`;
   },
 };
@@ -79,7 +64,7 @@ function wikiLs(): string {
     const cert = d.cert === 'hitl' ? `${C.yellow}[HITL]${R}` : d.cert === 'human' ? `${C.green}[H]${R}` : '     ';
     return `  ${padEnd(cert, 10)}${C.cyan}${padEnd(d.name.replace('wiki/', ''), 24)}${R}${C.dim}${d.summary}${R}`;
   });
-  return [`${C.dim}wiki/ — Human in the loop = 使用GenAI+人工review；[H] = 匠心手作${R}`, ...lines, `${C.dim}全文带图表版：${R}${link(`${C.cyan}jiatong-wei.github.io/wiki${R}`, 'https://jiatong-wei.github.io/wiki/')}${C.dim}（open wiki）${R}`, ''].join('\n');
+  return [`${C.dim}wiki/ — Human in the loop = 使用GenAI+人工review；[H] = 匠心手作${R}`, ...lines, `${C.dim}全文带图表版：${R}${link(`${C.cyan}jiatong-wei.github.io/wiki${R}`, 'https://jiatong-wei.github.io/wiki/')}${R}`, ''].join('\n');
 }
 
 export const wiki: Command = {
@@ -97,8 +82,7 @@ export const cat: Command = {
     const name = argv[0].replace(/^\//, '');
     const doc = docByName(name);
     if (doc) return renderDoc(doc);
-    if (GC_ASSETS.some((a) => a.file === name)) return `${C.dim}binary file — 试试 open gc-1${R}`;
-    if (name === REPORT.file) return `${C.dim}binary file — 试试 open report${R}`;
+    if (/\.(jpe?g|png|pdf)$/i.test(name)) return `${C.dim}binary file — 图片和 PDF 全文都在 wiki 站${R}`;
     return `cat: ${argv[0]}: No such file or directory`;
   },
 };
@@ -110,10 +94,8 @@ export const tree: Command = {
     const lines = [
       `${C.accent}~${R}`,
       ...topDocs().map((d) => `├── ${C.cyan}${d.name}.md${R}`),
-      `├── ${C.accent}wiki/${R}`,
-      ...wikiDocs().map((d) => `│   ├── ${C.cyan}${d.name.replace('wiki/', '')}.md${R}`),
-      `├── ${C.accent}files/${R} ${C.dim}${REPORT.file}${R}`,
-      `└── ${C.accent}images/gc/${R} ${C.dim}${GC_ASSETS.map((a) => a.file).join(' · ')}${R}`,
+      `└── ${C.accent}wiki/${R}`,
+      ...wikiDocs().map((d) => `    ├── ${C.cyan}${d.name.replace('wiki/', '')}.md${R}`),
       '',
     ];
     return lines.join('\n');
@@ -173,21 +155,6 @@ export const grep: Command = {
     }
     if (!hits.length) return `${C.dim}（没有匹配行）${R}`;
     return hits.join('\n');
-  },
-};
-
-export const open: Command = {
-  name: 'open',
-  summary: '打开图片/文件/链接',
-  usage: 'open <gc-1|gc-2|gc-3|report|splat|github|email>',
-  minArgs: 1,
-  run: ({ argv, api }) => {
-    const t = OPEN_TARGETS[argv[0]];
-    if (!t) return `open: 未知目标 ${argv[0]} — 可选：${Object.keys(OPEN_TARGETS).join(' · ')}`;
-    if (t.url.endsWith('.jpg') || t.url.endsWith('.png')) api.openImage(t.url, t.desc);
-    else if (t.url.endsWith('.pdf')) api.openPdf(t.url, t.desc);
-    else api.openUrl(t.url);
-    return `${C.accent}→${R} ${t.desc}`;
   },
 };
 
@@ -417,5 +384,5 @@ export const theme: Command = {
 };
 
 export const builtins: Command[] = [
-  help, ls, wiki, cat, tree, wc, grep, open, clear, echo, history, whoami, pwd, date, uname, boot, theme,
+  help, ls, wiki, cat, tree, wc, grep, clear, echo, history, whoami, pwd, date, uname, boot, theme,
 ];

@@ -37,34 +37,3 @@ export const docByName = (name: string): Doc | undefined =>
 
 export const topDocs = (): Doc[] => DOCS.filter((d) => !d.name.includes('/'));
 export const wikiDocs = (): Doc[] => DOCS.filter((d) => d.name.startsWith('wiki/'));
-
-export interface Asset {
-  file: string;
-  url: string;
-  kind: 'img' | 'pdf';
-  cap: string;
-}
-
-export const GC_ASSETS: Asset[] = [
-  { file: 'grasp.jpg', url: 'images/gc/grasp.jpg', kind: 'img', cap: 'FIG.03 · 省赛夹取实况 — 转盘供料，车在盘沿作业' },
-  { file: 'prototype.jpg', url: 'images/gc/prototype.jpg', kind: 'img', cap: 'FIG.02 · 原型机 — 前伸舵机爪 + 前置相机 + 双侧料盒' },
-  { file: 'venue.jpg', url: 'images/gc/venue.jpg', kind: 'img', cap: 'FIG.01 · 省赛决赛场地入口，陕西赛区竞赛' },
-];
-
-export const REPORT: Asset = {
-  file: 'Isaac_Grasping_Research_Report.pdf',
-  url: 'files/Isaac_Grasping_Research_Report.pdf',
-  kind: 'pdf',
-  cap: '技术报告 · 28 页 · 2026-08-29 封版',
-};
-
-export const OPEN_TARGETS: Record<string, { url: string; desc: string }> = {
-  'gc-1': { url: 'images/gc/grasp.jpg', desc: '省赛夹取实况（图）' },
-  'gc-2': { url: 'images/gc/prototype.jpg', desc: '备赛原型机（图）' },
-  'gc-3': { url: 'images/gc/venue.jpg', desc: '省赛决赛场地（图）' },
-  report: { url: 'files/Isaac_Grasping_Research_Report.pdf', desc: 'Isaac 抓取技术报告（PDF，28 页）' },
-  splat: { url: 'https://3d.explorerglobal.cn/collection/web/5vxjmwx8', desc: '高斯泼溅作品（外链）' },
-  github: { url: 'https://github.com/Jiatong-Wei', desc: 'GitHub @Jiatong-Wei（外链）' },
-  wiki: { url: 'https://jiatong-wei.github.io/wiki/', desc: 'Wiki 站：全文 + 图表 + PDF（外链）' },
-  email: { url: 'mailto:joyetong58@gmail.com', desc: '发邮件' },
-};

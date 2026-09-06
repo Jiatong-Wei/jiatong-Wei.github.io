@@ -81,11 +81,6 @@ export interface Ui {
   themeName(): ThemeName;
   toggleTheme(): ThemeName;
   clear(): void;
-  openImage(url: string, caption: string): void;
-  openUrl(url: string): void;
-  /** PDF in the overlay lightbox (desktop); falls back to a new tab on touch. */
-  openPdf(url: string, caption: string): void;
-  note(text: string): void;
   /** True when the screen rectangle (viewport px) covers no terminal text. */
   isBlankRect(x: number, y: number, w: number, h: number): boolean;
 }
@@ -109,12 +104,10 @@ const CMD_MAP: Record<string, string> = {
   joints: 'joints',
   boot: 'boot',
   tree: 'tree',
-  github: 'open github',
-  splat: 'open splat',
   umi: 'umi',
 };
 
-const CMD_RE = /\b(?:about|awards|news|links|help|neofetch|whoami|joints|boot|tree|github|splat|umi)\b|wiki\/[a-z0-9-]+/gi;
+const CMD_RE = /\b(?:about|awards|news|links|help|neofetch|whoami|joints|boot|tree|umi)\b|wiki\/[a-z0-9-]+/gi;
 
 function registerCommandLinks(term: Terminal): void {
   const workingCell = term.buffer.active.getNullCell();
@@ -167,63 +160,7 @@ function registerCommandLinks(term: Terminal): void {
   });
 }
 
-// --- overlay lightbox ---
-
-function initOverlay(): Pick<Ui, 'openImage' | 'openUrl' | 'openPdf' | 'note'> {
-  const overlay = document.getElementById('overlay')!;
-  const overlayImg = document.getElementById('overlay-img') as HTMLImageElement;
-  const overlayCap = document.getElementById('overlay-cap')!;
-  const overlayPdf = document.getElementById('overlay-pdf') as HTMLIFrameElement;
-  const hideOverlay = () => {
-    overlay.classList.remove('show');
-    overlayImg.src = '';
-    overlayCap.textContent = '';
-    overlayImg.style.display = '';
-    overlayPdf.style.display = 'none';
-    overlayPdf.src = '';
-  };
-  overlay.addEventListener('click', (e) => {
-    if (e.target === overlay) hideOverlay();
-  });
-  (overlay.querySelector('.close') as HTMLButtonElement).addEventListener('click', hideOverlay);
-  // Capture phase: xterm swallows Escape in the bubble phase.
-  window.addEventListener(
-    'keydown',
-    (e) => {
-      if (e.key === 'Escape' && overlay.classList.contains('show')) hideOverlay();
-    },
-    true,
-  );
-
-  return {
-    openImage: (url, caption) => {
-      overlayImg.style.display = '';
-      overlayImg.src = url;
-      overlayCap.textContent = caption;
-      overlay.classList.add('show');
-    },
-    openUrl: (url) => window.open(url, '_blank', 'noopener'),
-    // PDFs render inline on desktop; iOS/Android webviews can't, so those
-    // still pop a new tab
-    openPdf: (url, caption) => {
-      const touch = window.matchMedia('(pointer: coarse)').matches;
-      if (touch) {
-        window.open(url, '_blank', 'noopener');
-        return;
-      }
-      overlayImg.style.display = 'none';
-      overlayPdf.style.display = '';
-      overlayPdf.src = url;
-      overlayCap.textContent = caption;
-      overlay.classList.add('show');
-    },
-    note: (text) => {
-      overlayImg.style.display = 'none';
-      overlayCap.textContent = text;
-      overlay.classList.add('show');
-    },
-  };
-}
+// --- overlay lightbox removed with the open pipeline ---
 
 // --- terminal + theme ---
 
@@ -264,8 +201,6 @@ export function createUi(): Ui {
   };
   applyTheme(initialTheme());
 
-  const overlay = initOverlay();
-
   // Map a viewport-pixel rectangle onto terminal cells and scan the buffer:
   // blank means the pet can sit there without covering any text.
   const isBlankRect = (x: number, y: number, w: number, h: number): boolean => {
@@ -303,7 +238,6 @@ export function createUi(): Ui {
       term.clear();
       term.write('\x1b[2J\x1b[H');
     },
-    ...overlay,
     isBlankRect,
   };
 }

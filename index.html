@@ -117,23 +117,6 @@
     }
     #term-wrap { flex: 1; min-height: 0; padding: 8px 10px 12px; }
     #term, #term .xterm { height: 100%; }
-    #overlay {
-      position: fixed; inset: 0; z-index: 50; display: none;
-      background: color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter: blur(2px);
-      align-items: center; justify-content: center; padding: 24px;
-    }
-    #overlay.show { display: flex; }
-    #overlay img { max-width: 92vw; max-height: 86vh; border: 1px solid var(--line); }
-    #overlay iframe { width: 92vw; height: 86vh; border: 1px solid var(--line); background: var(--bg); }
-    #overlay .cap {
-      position: absolute; bottom: 18px; left: 0; right: 0; text-align: center;
-      color: var(--dim); font-size: 13px;
-    }
-    #overlay .close {
-      position: absolute; top: 14px; right: 18px; font-size: 22px; cursor: pointer;
-      color: var(--dim); background: none; border: none;
-    }
-    #overlay .close:hover { color: var(--accent); }
     #pet {
       position: fixed; bottom: 6px; right: 18px; z-index: 40;
       cursor: grab; user-select: none; touch-action: none;
@@ -203,13 +186,7 @@
       </span>
     </header>
     <div id="term-wrap"><div id="term"></div></div>
-  </div>
-  <div id="overlay" role="dialog" aria-modal="true">
-    <button class="close" aria-label="关闭">✕</button>
-    <img id="overlay-img" alt="" />
-    <iframe id="overlay-pdf" title="PDF 预览" style="display:none"></iframe>
-    <div class="cap" id="overlay-cap"></div>
-  </div>
+</div>
   <noscript>
     <div>
       <h1>魏佳桐（joye）</h1>

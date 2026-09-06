@@ -4,7 +4,7 @@ import { DOCS } from '../generated/content';
 import { renderDoc } from '../term/mdansi';
 import { builtins } from './builtins';
 import { funCommands } from './fun';
-import { Command, docByName, OPEN_TARGETS, wikiDocs } from './env';
+import { Command, docByName, wikiDocs } from './env';
 
 /** Every content document is also a command: `about` ≡ `cat about`. */
 const contentCommands: Command[] = DOCS.map((d) => ({
@@ -28,14 +28,13 @@ export function completionCandidates(line: string): string[] {
       .filter((k) => k.startsWith(frag))
       .sort();
   }
-  // completing an argument: docs (with/without slash form), open targets, wiki entries
+  // completing an argument: docs (with/without slash form), wiki entries
   const fragMatch = /(^|\s)([^\s]*)$/.exec(line);
   const frag = (fragMatch?.[2] ?? '').replace(/^\//, '');
   const pool = [
     ...DOCS.map((d) => d.name),
     ...DOCS.map((d) => `${d.name}.md`),
-    ...Object.keys(OPEN_TARGETS),
-    'wiki gc-1 gc-2 gc-3 files images/gc',
+    'wiki',
   ]
     .flatMap((s) => s.split(' '))
     .filter((s) => s.startsWith(frag));
