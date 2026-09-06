@@ -14,17 +14,17 @@ export const help: Command = {
   run: () => {
     const rows: Array<[string, string]> = [];
     rows.push(['', '文档即命令：cat about ≡ about；试试 Tab 补全和 ↑↓ 历史']);
-    rows.push(['ls / tree', '看看这里有什么']);
-    rows.push(['cat <doc>', '读一篇文章（about / awards / news / links / wiki/…）']);
-    rows.push(['wiki', '研究记录目录（Human / Human in the loop 标识都在）']);
+    rows.push(['ls / tree', '快来看看我的个人站里都有什么']);
+    rows.push(['cat <doc>', '读一读我的手作文章（about / awards / news / links / wiki/…）']);
+    rows.push(['wiki', '研究札记']);
     rows.push(['open <target>', `打开图片/文件/链接：${Object.keys(OPEN_TARGETS).join(' · ')}`]);
     rows.push(['wc [-l] <doc>', '数行数，支持管道 cat about | wc -l']);
     rows.push(['grep <词> [<doc>]', '找关键词，命中高亮，支持管道']);
-    rows.push(['neofetch', '我是谁，我的机器是什么']);
+    rows.push(['neofetch', '我是谁']);
     rows.push(['rostopic', 'ROS 惯急了的可以试这个']);
     rows.push(['whoami / joints / boot', '彩蛋三件套']);
-    rows.push(['pet', '桌宠优米（UMI）：会遛弯会歪头，点它汪']);
-    rows.push(['fetch / walk umi', '叼红方块 / 撒绳全屏散步']);
+    rows.push(['pet', '优米（UMI）：爱遛弯并且喜欢被摸狗头']);
+    rows.push(['fetch / walk umi', '优米会叼走方块 / 撒欢（再敲一次 walk umi 召回）']);
     rows.push(['theme / clear / history / echo', '老四样']);
     const w = Math.max(...rows.map(([a]) => strWidth(a)));
     return [
@@ -32,7 +32,7 @@ export const help: Command = {
       '',
       ...rows.map(([a, b]) => (a ? `  ${padEnd(a, w)}  ${C.dim}${b}${R}` : `  ${C.dim}${b}${R}`)),
       '',
-      `${C.dim}本站灵感抄自 jiangyy.github.io —— 站在 jyy 的终端里。${R}`,
+      `${C.dim}本站借鉴了 jiangyy.github.io —— 感谢我那素未谋面的绿导师。${R}`,
       '',
     ].join('\n');
   },
@@ -79,7 +79,7 @@ function wikiLs(): string {
     const cert = d.cert === 'hitl' ? `${C.yellow}[HITL]${R}` : d.cert === 'human' ? `${C.green}[H]${R}` : '     ';
     return `  ${padEnd(cert, 10)}${C.cyan}${padEnd(d.name.replace('wiki/', ''), 24)}${R}${C.dim}${d.summary}${R}`;
   });
-  return [`${C.dim}wiki/ — Human in the loop = 用了生成式AI并由我 review；[H] = 纯手工${R}`, ...lines, `${C.dim}全文带图表版：${R}${link(`${C.cyan}jiatong-wei.github.io/wiki${R}`, 'https://jiatong-wei.github.io/wiki/')}${C.dim}（open wiki）${R}`, ''].join('\n');
+  return [`${C.dim}wiki/ — Human in the loop = 使用GenAI+人工review；[H] = 匠心手作${R}`, ...lines, `${C.dim}全文带图表版：${R}${link(`${C.cyan}jiatong-wei.github.io/wiki${R}`, 'https://jiatong-wei.github.io/wiki/')}${C.dim}（open wiki）${R}`, ''].join('\n');
 }
 
 export const wiki: Command = {
@@ -227,9 +227,8 @@ export const whoami: Command = {
   summary: '我是谁',
   run: () =>
     [
-      `${C.accent}${bold('魏佳桐')}${R} ${C.dim}(Leo Wei)${R} — 西北工业大学 · 水声工程 · 2023–2027`,
+      `${C.accent}${bold('魏佳桐')}${R} ${C.dim}(joye)${R} — 西北工业大学 · 水声工程 · 2023–2027`,
       '',
-      `${C.dim}把实车上调过的控制环，和仿真里拆过的抓取任务，接到同一条研究路上。${R}`,
       `${C.dim}toward more capable, safer, and more inclusive Physical AI${R}`,
       '',
       `  mail   ${link(`${C.cyan}joyetong58@gmail.com${R}`, 'mailto:joyetong58@gmail.com')}`,
@@ -255,7 +254,7 @@ export const date: Command = {
 export const uname: Command = {
   name: 'uname',
   summary: '系统信息',
-  run: () => 'RoboStation 6.0 nwpu-xian franka/gnu ROS2 Humble — 在仿真里较真',
+  run: () => 'RoboStation 1.0 nwpu franka/gnu ROS2 Humble',
 };
 
 // --- first screen (jyy-style profile) ---
@@ -394,12 +393,10 @@ export function profileScreen(cols: number): string[] {
 }
 
 export const BOOT_LINES: Array<{ kind: 'ok' | 'warn'; text: string; delay?: number }> = [
-  { kind: 'ok', text: 'mcu: STM32 angle-loop @ 200Hz — 麦轮底盘听话了（wiki/gc-logistics）' },
-  { kind: 'ok', text: 'sim: Isaac Sim 6.0 · Franka Panda loaded — reach 0.855 m' },
-  { kind: 'ok', text: 'policy: DAgger ×4 · best approach 0.094 m' },
+  { kind: 'ok', text: 'mcu: STM32 angle-loop @ 200Hz — 角度环加载成功（wiki/gc-logistics）' },
   { kind: 'warn', text: 'grasp success: 0/5 — 只报真数字（wiki/nine-generations）' },
   { kind: 'ok', text: 'net: joyetong58@gmail.com · github.com/Jiatong-Wei' },
-  { kind: 'ok', text: 'operator: 魏佳桐 (Jiatong Wei) online — 在仿真里较真' },
+  { kind: 'ok', text: 'operator: 魏佳桐 (joye) online' },
 ];
 
 export const boot: Command = {

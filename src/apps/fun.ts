@@ -24,16 +24,14 @@ const ART = [
 ];
 
 const INFO: Array<[string, string]> = [
-  ['', `${C.accent}${bold('魏佳桐')}${R} ${C.dim}(Leo Wei)${R}`],
-  ['os', 'RoboStation 6.0 — 在仿真里较真'],
-  ['host', '西安 · NWPU 水声工程 2023–2027'],
+  ['', `${C.accent}${bold('魏佳桐')}${R} ${C.dim}(joye)${R}`],
+  ['os', 'RoboStation 1.0'],
+  ['host', '西安 · NWPU 2023–2027'],
   ['research', 'Physical AI — capable · safe · inclusive'],
-  ['stack', 'STM32 · ROS2 · LeRobot · PyTorch'],
+  ['stack', 'STM32 · SolidWorks · LeRobot · 持续学习中...'],
   ['sim', 'Isaac Sim 6.0 · Franka Panda'],
-  ['best', '0.094 m approach (4× DAgger)'],
-  ['grasp', '0/5 — 只报真数字'],
   ['mail', 'joyetong58@gmail.com'],
-  ['shell', '本终端，灵感欠 jyy 一次饭'],
+  ['shell', '本终端灵感源自绿导师，他已经原谅我了'],
 ];
 
 export const neofetch: Command = {
