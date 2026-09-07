@@ -347,7 +347,7 @@ export function profileScreenParts(cols: number): {
   tail.push(`${C.accent}•${R} This page doubles as a shell.`);
   tail.push(`  Try: ${C.accent}help${R}${C.dim}, ${R}${C.accent}neofetch${R}${C.dim}, ${R}${C.accent}cat about | wc -l${R}${C.dim}.${R}`);
   tail.push('');
-  tail.push(`${C.dim}│${R} 🐶  右下角那只狗叫 ${C.accent}优米${R}（${C.accent}UMI${R}${C.dim}）——试试摸摸它，或者键入 ${C.accent}pet${R}${C.dim}。${R}`);
+  tail.push(`${C.dim}│${R} 🐶  右下角那只狗叫 ${C.accent}优米${R}${C.dim}（${R}${C.accent}UMI${R}${C.dim}）——试试摸摸它，或者键入 ${C.accent}pet${R}${C.dim}。${R}`);
   tail.push('');
   tail.push(dim(`Last update: ${lastUpdate()}`));
   tail.push('');
