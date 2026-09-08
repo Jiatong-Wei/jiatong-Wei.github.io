@@ -1,4 +1,5 @@
 <!-- cert: hitl -->
+<!-- hidden: true -->
 <!-- title: 三个 AI 代理的 git 协作协议 -->
 <!-- date: 2026.08 -->
 <!-- summary: 不同模型不同席位，只共用一个裸 git 仓库 -->

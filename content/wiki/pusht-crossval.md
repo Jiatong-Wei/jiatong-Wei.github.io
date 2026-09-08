@@ -1,4 +1,5 @@
 <!-- cert: hitl -->
+<!-- hidden: true -->
 <!-- title: LeRobot × PushT 交叉验证 -->
 <!-- date: 2026.08 -->
 <!-- summary: 先问评估器有没有在撒谎，再看分数 -->

@@ -10,6 +10,7 @@ export interface DocMeta {
   summary: string;
   date: string;
   cert: 'human' | 'hitl' | null;
+  hidden: boolean; // true = cat 可达，但不进 wiki/ls/tree 列表（与 wiki 站注释隐藏同义）
   tokens: Token[];
 }
 
@@ -38,6 +39,7 @@ function parseDoc(rel: string): DocMeta {
     summary: meta['summary'] ?? '',
     date: meta['date'] ?? '',
     cert,
+    hidden: meta['hidden'] === 'true',
     tokens,
   };
 }
@@ -61,7 +63,7 @@ export function generateContent(): void {
     `// Edit content/*.md instead. Generated: ${new Date().toISOString()}\n\n` +
     `export interface DocMeta {\n` +
     `  path: string; name: string; title: string; summary: string; date: string;\n` +
-    `  cert: 'human' | 'hitl' | null; tokens: unknown[];\n` +
+    `  cert: 'human' | 'hitl' | null; hidden: boolean; tokens: unknown[];\n` +
     `}\n\n` +
     `export const GENERATED_AT = '${new Date().toISOString()}';\n\n` +
     `export const DOCS: DocMeta[] = ${JSON.stringify(docs, null, 1)};\n`;

@@ -30,10 +30,11 @@ interface DocMetaLike {
   summary: string;
   date: string;
   cert: 'human' | 'hitl' | null;
+  hidden: boolean;
 }
 
 export const docByName = (name: string): Doc | undefined =>
   DOCS.find((d) => d.name === name || d.name === name.replace(/\.md$/, '') || d.path === name);
 
 export const topDocs = (): Doc[] => DOCS.filter((d) => !d.name.includes('/'));
-export const wikiDocs = (): Doc[] => DOCS.filter((d) => d.name.startsWith('wiki/'));
+export const wikiDocs = (): Doc[] => DOCS.filter((d) => d.name.startsWith('wiki/') && !d.hidden);
