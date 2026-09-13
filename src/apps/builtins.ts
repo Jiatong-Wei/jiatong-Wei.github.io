@@ -337,6 +337,12 @@ export function profileScreenParts(cols: number): {
   tail.push(
     `${bold('Vision')}${C.dim} — ${R}${italic('toward Physical AI that is more capable, safer, and more inclusive')}`,
   );
+  tail.push(
+    `${bold('Contests')}${C.dim} — ${R}蚂蚁灵波具身大模型挑战赛 ${C.dim}·${R} 星海图 G0.5 开源共创挑战`,
+  );
+  tail.push(
+    `${C.dim}           欢迎找我组队，或聊一切和比赛有关的事${R}`,
+  );
   tail.push('');
   tail.push(`${C.dim}│${R} 🤖  ${C.accent}About${R}${C.dim} · ${R}🏅  ${C.accent}Awards${R}${C.dim} · ${R}📰  ${C.accent}News${R}`);
   tail.push(`${C.dim}│${R} 📖  ${C.accent}Wiki${R}${C.dim} · ${R}🔗  ${C.accent}Links${R}${C.dim} · ${R}🐙  ${C.accent}GitHub${R}`);
